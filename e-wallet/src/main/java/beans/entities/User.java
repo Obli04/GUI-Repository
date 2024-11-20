@@ -1,6 +1,11 @@
 package beans.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
@@ -25,8 +30,13 @@ public class User {
     private Boolean isVerified;
 
     @Column(nullable = false)
+    private double piggyBank;
+
+    @Column(nullable = false)
     private double balance;
 
+    @Column(nullable = false)
+    private double budget;
 
     // Getters and setters
     public Long getId() {
@@ -83,5 +93,21 @@ public class User {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public double getPiggyBank() {
+        return piggyBank;
+    }
+
+    public void setPiggyBank(double piggyBank) {
+        this.piggyBank = piggyBank;
+    }
+
+    public double getBudget() {
+        return budget;
+    }
+
+    public void setBudget(double budget) {
+        this.budget = budget;
     }
 }
