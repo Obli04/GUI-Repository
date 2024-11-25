@@ -1,0 +1,12 @@
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.1">
+    <persistence-unit name="eWalletPU">
+        <class>e_wallet.entities.User</class>
+        <properties>
+            <property name="jakarta.persistence.jdbc.url" value="postgres://avnadmin:AVNS_qgBkbecdVlX3r2SEBS5@cashhive-cashhive.e.aivencloud.com:12749/defaultdb?sslmode=require" />
+            <property name="jakarta.persistence.jdbc.user" value="avnadmin" />
+            <property name="jakarta.persistence.jdbc.password" value="AVNS_qgBkbecdVlX3r2SEBS5" />
+            <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
+            <property name="jakarta.persistence.schema-generation.database.action" value="update" />
+        </properties>
+    </persistence-unit>
+</persistence>

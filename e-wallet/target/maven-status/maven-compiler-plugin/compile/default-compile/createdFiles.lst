@@ -1,4 +1,4 @@
 beans\entities\Transaction.class
-DatabaseMigration.class
 beans\entities\User.class
 UserBean.class
+DatabaseMigration.class

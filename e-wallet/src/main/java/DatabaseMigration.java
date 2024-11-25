@@ -8,14 +8,19 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 public class DatabaseMigration {
     public static void main(String[] args) {
-        // Load environment variables
-        Dotenv dotenv = Dotenv.load();
+        // Load environment variables from the correct path
+        Dotenv dotenv = Dotenv.configure()
+            .directory("src/main/resources")  // Update this path
+            .load();
 
         String url = dotenv.get("DB_URL");
         String user = dotenv.get("DB_USER");
         String password = dotenv.get("DB_PASSWORD");
 
         try {
+            // Load PostgreSQL JDBC Driver
+            Class.forName("org.postgresql.Driver");
+
             // Read SQL file
             String sql = new String(Files.readAllBytes(Paths.get("src/main/resources/db/migration/V1_Create_User_And_Transaction_Tables.sql")));
 
@@ -25,13 +30,13 @@ public class DatabaseMigration {
 
             // Execute SQL
             statement.execute(sql);
-
-            System.out.println("Migration completed successfully.");
+            System.out.println("Database tables created successfully!");
 
             // Close resources
             statement.close();
             connection.close();
         } catch (Exception e) {
+            System.err.println("Error during database migration: " + e.getMessage());
             e.printStackTrace();
         }
     }
