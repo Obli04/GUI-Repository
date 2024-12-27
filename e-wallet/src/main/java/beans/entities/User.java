@@ -1,5 +1,8 @@
 package beans.entities;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,34 +12,48 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
+    @Column(name = "first_name")
     private String firstName;
 
-    @Column(nullable = false)
+    @Column(name = "second_name")
     private String secondName;
 
-    @Column(nullable = false)
+    @Column(unique = true)
+    private String email;
+
+    @Column
+    private String password;
+
+    @Column(name = "is_verified")
     private Boolean isVerified;
 
-    @Column(nullable = false)
-    private double piggyBank;
+    @Column(name = "verification_token")
+    private String verificationToken;
 
-    @Column(nullable = false)
-    private double balance;
+    @Column(name = "token_expiry")
+    private LocalDateTime tokenExpiry;
 
-    @Column(nullable = false)
-    private double budget;
+    @Column(name = "two_factor_secret")
+    private String twoFactorSecret;
+
+    @Column(name = "two_factor_enabled")
+    private boolean twoFactorEnabled;
+
+    @Column
+    private Double balance = 0.0;
+
+    @Column
+    private Double budget = 0.0;
+
+    @Column(name = "piggy_bank")
+    private Double piggyBank = 0.0;
 
     // Getters and setters
     public Long getId() {
@@ -109,5 +126,37 @@ public class User {
 
     public void setBudget(double budget) {
         this.budget = budget;
+    }
+
+    public String getVerificationToken() {
+        return verificationToken;
+    }
+
+    public void setVerificationToken(String verificationToken) {
+        this.verificationToken = verificationToken;
+    }
+
+    public LocalDateTime getTokenExpiry() {
+        return tokenExpiry;
+    }
+
+    public void setTokenExpiry(LocalDateTime tokenExpiry) {
+        this.tokenExpiry = tokenExpiry;
+    }
+
+    public String getTwoFactorSecret() {
+        return twoFactorSecret;
+    }
+
+    public void setTwoFactorSecret(String twoFactorSecret) {
+        this.twoFactorSecret = twoFactorSecret;
+    }
+
+    public boolean isTwoFactorEnabled() {
+        return twoFactorEnabled;
+    }
+
+    public void setTwoFactorEnabled(boolean twoFactorEnabled) {
+        this.twoFactorEnabled = twoFactorEnabled;
     }
 }

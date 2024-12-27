@@ -19,8 +19,11 @@ public class Transaction {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "id_sender", nullable = false)
+    @JoinColumn(name = "id_sender", nullable = true)
     private User sender;
+
+    @Column(name = "name_of_sender", nullable = true)
+    private String nameOfSender;
 
     @ManyToOne
     @JoinColumn(name = "id_receiver", nullable = false)
@@ -53,6 +56,14 @@ public class Transaction {
 
     public void setSender(User sender) {
         this.sender = sender;
+    }
+
+    public String getNameOfSender() {
+        return nameOfSender;
+    }
+
+    public void setNameOfSender(String nameOfSender) {
+        this.nameOfSender = nameOfSender;
     }
 
     public User getReceiver() {

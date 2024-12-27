@@ -1,4 +1,12 @@
-C:\Users\scacc\OneDrive\Desktop\Università\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\DatabaseMigration.java
-C:\Users\scacc\OneDrive\Desktop\Università\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\UserBean.java
-C:\Users\scacc\OneDrive\Desktop\Università\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\entities\Transaction.java
-C:\Users\scacc\OneDrive\Desktop\Università\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\entities\User.java
+C:\Users\scacc\OneDrive\Desktop\Universita\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\UserBean.java
+C:\Users\scacc\OneDrive\Desktop\Universita\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\entities\User.java
+C:\Users\scacc\OneDrive\Desktop\Universita\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\services\RateLimiterService.java
+C:\Users\scacc\OneDrive\Desktop\Universita\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\SecurityFilter.java
+C:\Users\scacc\OneDrive\Desktop\Universita\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\SessionTimeoutConfig.java
+C:\Users\scacc\OneDrive\Desktop\Universita\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\VerificationBean.java
+C:\Users\scacc\OneDrive\Desktop\Universita\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\services\AuthService.java
+C:\Users\scacc\OneDrive\Desktop\Universita\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\services\EmailService.java
+C:\Users\scacc\OneDrive\Desktop\Universita\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\CSRFFilter.java
+C:\Users\scacc\OneDrive\Desktop\Universita\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\DatabaseMigration.java
+C:\Users\scacc\OneDrive\Desktop\Universita\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\entities\Transaction.java
+C:\Users\scacc\OneDrive\Desktop\Universita\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\services\RegistrationResult.java
