@@ -1,0 +1,226 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #00b894, #00cec9);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.p-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+    backdrop-filter: blur(10px);
+    padding: 3rem !important;
+    width: 450px !important;
+    max-width: 90vw !important;
+}
+
+.register-card {
+    width: 500px !important;
+}
+
+h1 {
+    color: #2d3436;
+    margin-bottom: 2.5rem;
+    font-weight: 600;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.p-fluid .p-field {
+    margin-bottom: 1.5rem !important;
+    width: 100% !important;
+}
+
+.p-inputtext, .p-password {
+    width: 100% !important;
+    border-radius: 12px !important;
+    padding: 1rem 1.25rem !important;
+    border: 2px solid #e0e0e0 !important;
+    transition: all 0.3s ease !important;
+    font-size: 1rem !important;
+    background: white !important;
+}
+
+.p-inputtext:focus, .p-password:focus {
+    border-color: #00b894 !important;
+    box-shadow: 0 0 0 3px rgba(0, 184, 148, 0.2) !important;
+}
+
+.p-password-panel {
+    margin-top: 0.5rem !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.submit-button {
+    background: #00b894 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 1.25rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    transition: all 0.3s ease !important;
+    width: 100% !important;
+    margin: 1.5rem 0 !important;
+}
+
+.submit-button:hover {
+    background: #00a084 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 184, 148, 0.2) !important;
+}
+
+.links-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    gap: 1rem;
+}
+
+.switch-page-link, .forgot-password-link {
+    color: #00b894 !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    font-size: 0.9rem !important;
+    display: inline-block !important;
+    margin-top: 1rem !important;
+}
+
+.switch-page-link:hover, .forgot-password-link:hover {
+    color: #00a084 !important;
+    text-decoration: underline !important;
+}
+
+small {
+    color: #636e72;
+    font-size: 0.85rem;
+    display: block;
+    margin-top: 0.75rem;
+}
+
+.p-message {
+    margin: 1rem 0 !important;
+    border-radius: 12px !important;
+    padding: 1rem !important;
+    background: #e8f5e9 !important;
+    border: none !important;
+    color: #2e7d32 !important;
+}
+
+.success-message {
+    background: #e8f5e9 !important;
+    color: #2e7d32 !important;
+    padding: 1rem !important;
+    border-radius: 12px !important;
+    margin-bottom: 1.5rem !important;
+    text-align: center !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .p-card {
+        padding: 2rem !important;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .links-container {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+.password-requirements {
+    margin-top: 0.75rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+.password-requirements small {
+    color: #495057;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.password-requirements ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    color: #6c757d;
+}
+
+.password-requirements li {
+    margin: 0.25rem 0;
+}
+
+/* Customize PrimeFaces password meter */
+.p-password-meter {
+    margin-top: 0.5rem !important;
+    background: #e9ecef !important;
+    height: 4px !important;
+    border-radius: 2px !important;
+}
+
+.p-password-meter .p-password-meter-value {
+    border-radius: 2px !important;
+    transition: width 0.3s ease !important;
+}
+
+.custom-messages {
+    margin: 10px 0;
+}
+
+.custom-messages .ui-messages-info,
+.custom-messages .ui-messages-error {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Add these styles to your existing CSS file */
+.p-card {
+    margin: 2rem;
+    padding: 1rem;
+    max-width: 400px;
+    width: 100%;
+}
+
+.p-text-center {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.p-button {
+    margin: 1rem 0;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.p-button-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.p-button-primary:hover {
+    background-color: #0056b3;
+}
