@@ -1,13 +1,20 @@
+DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS users;
+
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    first_name VARCHAR(255) NOT NULL,
-    second_name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    is_verified BOOLEAN NOT NULL,
-    piggy_bank DOUBLE PRECISION NOT NULL,
-    balance DOUBLE PRECISION NOT NULL,
-    budget DOUBLE PRECISION NOT NULL
+    first_name VARCHAR(255),
+    second_name VARCHAR(255),
+    email VARCHAR(255) UNIQUE,
+    password VARCHAR(255),
+    is_verified BOOLEAN DEFAULT FALSE,
+    verification_token VARCHAR(255),
+    token_expiry TIMESTAMP,
+    two_factor_secret VARCHAR(255),
+    two_factor_enabled BOOLEAN DEFAULT FALSE,
+    balance DOUBLE PRECISION DEFAULT 0.0,
+    budget DOUBLE PRECISION DEFAULT 0.0,
+    piggy_bank DOUBLE PRECISION DEFAULT 0.0
 );
 
 CREATE TABLE transactions (
