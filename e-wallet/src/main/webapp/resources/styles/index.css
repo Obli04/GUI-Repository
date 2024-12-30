@@ -1,0 +1,54 @@
+body {
+    background-image: url('../resources/images/bg.jpg');
+    background-size: cover;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+}
+
+.navbar, .footer {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navbar a, .footer a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.navbar a:hover, .footer a:hover {
+    color: #ff9800;
+}
+
+.content {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.content img {
+    width: 200px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.content p {
+    font-size: 1.2em;
+    margin: 20px 0;
+}
+
+.cta-button {
+    background-color: #ff9800;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.cta-button:hover {
+    background-color: #e68900;
+}

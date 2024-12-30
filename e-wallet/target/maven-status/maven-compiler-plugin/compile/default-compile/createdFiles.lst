@@ -6,8 +6,10 @@ beans\services\EmailService$1.class
 beans\SecurityFilter.class
 beans\UserBean.class
 beans\entities\Transaction.class
+beans\DatabasePrint.class
 beans\entities\User.class
 beans\services\EmailService$2.class
 beans\services\EmailService.class
 beans\services\RateLimiterService.class
 beans\SessionTimeoutConfig.class
+beans\DatabaseMigration.class

@@ -7,7 +7,7 @@
 <h:head>
     <title>Login - CashHive</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
-    <h:outputStylesheet name="styles/regLogin.css"/>
+    <h:outputStylesheet library="styles" name="regLogin.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </h:head>
 <h:body>
@@ -23,10 +23,14 @@
                     <p:inputText value="#{userBean.email}" 
                                  placeholder="Email"
                                  required="true"
+                                 label="Email"
+                                 requiredMessage="Email is required."
                                  style="width: 100%;"/>
                     <p:password value="#{userBean.password}" 
                                 placeholder="Password"
                                 required="true"
+                                label="Password"
+                                requiredMessage="Password is required."
                                 toggleMask="true"
                                 style="width: 100%;"/>
                     <p:messages id="messages" showDetail="true" closable="true" styleClass="custom-messages">
