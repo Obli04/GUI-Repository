@@ -1,0 +1,35 @@
+body {
+    background-image: url('../resources/images/bg.jpg');
+    background-size: cover;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+}
+
+.navbar {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navbar a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.navbar a:hover {
+    color: #ff9800;
+}
+
+.content {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.content p {
+    font-size: 1.2em;
+    margin: 20px 0;
+}

@@ -17,33 +17,24 @@ public class VerificationBean {
     @Inject
     private AuthService authService;
     
-    public void verifyEmail() {
+    public String verifyEmail() {
         try {
-            System.out.println("Verifying email with token: " + token);
-            
             if (token == null || token.trim().isEmpty()) {
-                addMessage(FacesMessage.SEVERITY_ERROR, "Invalid Token", 
-                    "No verification token provided.");
-                return;
+                addMessage(FacesMessage.SEVERITY_ERROR, "Invalid Token", "No verification token provided.");
+                return null;
             }
             
             boolean verified = authService.verifyEmail(token);
             if (verified) {
-                addMessage(FacesMessage.SEVERITY_INFO, "Success!", 
-                    "Your email has been verified. You can now log in.");
+                addMessage(FacesMessage.SEVERITY_INFO, "Success!", "Your email has been verified. You can now log in.");
+                return "login?faces-redirect=true"; // Redirect to login page
             } else {
-                addMessage(FacesMessage.SEVERITY_ERROR, "Verification Failed", 
-                    "The verification link is invalid or has expired. Please request a new one.");
+                addMessage(FacesMessage.SEVERITY_ERROR, "Verification Failed", "The verification link is invalid or has expired. Please request a new one.");
             }
-            
-            System.out.println("Email verification result: " + verified);
-            
         } catch (Exception e) {
-            System.err.println("Error during email verification: " + e.getMessage());
-            e.printStackTrace();
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", 
-                "An error occurred during verification: " + e.getMessage());
+            addMessage(FacesMessage.SEVERITY_ERROR, "Error", "An error occurred during verification: " + e.getMessage());
         }
+        return null;
     }
     
     private void addMessage(FacesMessage.Severity severity, String summary, String detail) {

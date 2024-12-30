@@ -19,20 +19,20 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "second_name")
+    @Column(name = "second_name", nullable = false)
     private String secondName;
 
-    @Column(unique = true)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "is_verified")
-    private Boolean isVerified;
+    @Column(name = "is_verified", nullable = false)
+    private Boolean isVerified = false;
 
     @Column(name = "verification_token")
     private String verificationToken;
@@ -43,17 +43,20 @@ public class User implements Serializable {
     @Column(name = "two_factor_secret")
     private String twoFactorSecret;
 
-    @Column(name = "two_factor_enabled")
-    private boolean twoFactorEnabled;
+    @Column(name = "two_factor_enabled", nullable = false)
+    private boolean twoFactorEnabled = false;
 
-    @Column
+    @Column(name = "balance", nullable = false)
     private Double balance = 0.0;
 
-    @Column
+    @Column(name = "budget", nullable = false)
     private Double budget = 0.0;
 
-    @Column(name = "piggy_bank")
+    @Column(name = "piggy_bank", nullable = false)
     private Double piggyBank = 0.0;
+
+    @Column(name = "iban", nullable = false)
+    private String iban;
 
     // Getters and setters
     public Long getId() {
@@ -158,5 +161,13 @@ public class User implements Serializable {
 
     public void setTwoFactorEnabled(boolean twoFactorEnabled) {
         this.twoFactorEnabled = twoFactorEnabled;
+    }
+
+    public String getIban() {
+        return iban;
+    }
+
+    public void setIban(String iban) {
+        this.iban = iban;
     }
 }

@@ -20,6 +20,8 @@ import beans.services.RegistrationResult;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.PhaseEvent;
+import jakarta.faces.event.PhaseId;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.http.HttpSession;
@@ -35,6 +37,9 @@ public class UserBean implements Serializable {
     private String firstName;
     private String secondName;
     private String twoFactorCode;
+    private Double balance;
+    private Double budget;
+    private Double piggyBank;
     
     // Session data
     private User currentUser;
@@ -52,46 +57,45 @@ public class UserBean implements Serializable {
     // Login method
     public String login() {
         try {
-            User user = authService.findUserByEmail(email);
-            if (user == null) {
-                addErrorMessage("Login failed", "User not found");
-                return null;
-            }
-
-            if (!user.getIsVerified()) {
-                // Resend verification email
-                try {
-                    authService.resendVerificationEmail(user);
-                    addErrorMessage("Email not verified", 
-                        "Your email is not verified. A new verification email has been sent.");
-                } catch (Exception e) {
-                    addErrorMessage("Email not verified", 
-                        "Your email is not verified. Please check your inbox or spam folder for the verification email.");
+            boolean isAuthenticated = authService.login(email, password, twoFactorCode);
+            if (isAuthenticated) {
+                // Retrieve the authenticated user
+                currentUser = authService.findUserByEmail(email);
+                
+                if (currentUser != null) {
+                    // Set names and other fields
+                    this.firstName = currentUser.getFirstName();
+                    this.secondName = currentUser.getSecondName();
+                    this.email = currentUser.getEmail();
+                    this.balance = currentUser.getBalance();
+                    this.budget = currentUser.getBudget();
+                    this.piggyBank = currentUser.getPiggyBank();
+                    
+                    // Store in session with attribute name "userBean" for consistency
+                    FacesContext facesContext = FacesContext.getCurrentInstance();
+                    HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(true);
+                    session.setAttribute("userBean", this);
+                    
+                    // Redirect to dashboard
+                    return "dashboard.xhtml?faces-redirect=true";
+                } else {
+                    FacesContext.getCurrentInstance().addMessage(null, 
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Login Failed", "User data not found."));
+                    return null;
                 }
-                return null;
-            }
-
-            if (authService.login(email, password, twoFactorCode)) {
-                currentUser = user;
-                if (currentUser.isTwoFactorEnabled()) {
-                    return "2fa.xhtml?faces-redirect=true";
-                }
-                return "dashboard.xhtml?faces-redirect=true";
             } else {
-                addErrorMessage("Login failed", "Invalid email or password");
+                FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Login Failed", "Invalid credentials or 2FA code."));
                 return null;
             }
-        } catch (Exception e) {
-            addErrorMessage("Error", e.getMessage());
+        } catch (SecurityException se) {
+            FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Login Error", se.getMessage()));
             return null;
-        } finally {
-            jakarta.faces.context.ExternalContext externalContext = facesContext.getExternalContext();
-            HttpSession session = (HttpSession) externalContext.getSession(false);
-            
-            if (session != null) {
-                // Generate new CSRF token after successful login
-                session.setAttribute("csrf_token", generateNewToken());
-            }
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Login Error", "An unexpected error occurred."));
+            return null;
         }
     }
 
@@ -107,8 +111,10 @@ public class UserBean implements Serializable {
             }
 
             authService.validatePassword(password);
+           
             User newUser = new User();
             newUser.setEmail(email.trim().toLowerCase());
+            
             newUser.setPassword(password);
             newUser.setFirstName(firstName.trim());
             newUser.setSecondName(secondName.trim());
@@ -132,7 +138,7 @@ public class UserBean implements Serializable {
             // Force flush the system output before redirect
             System.out.flush();
             
-            return "regLogin?faces-redirect=true";
+            return "login.xhtml?faces-redirect=true";
             
         } catch (Exception e) {
             System.err.println("Registration failed with error: " + e.getMessage());
@@ -141,7 +147,7 @@ public class UserBean implements Serializable {
             return null;
         }
     }
-
+ 
     // Add this method to handle the registration message after redirect
     public void checkRegistrationMessage() {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -209,6 +215,24 @@ public class UserBean implements Serializable {
         }
         return qrCodeImage;
     }
+    
+    // Method to refresh user data from the database
+    public void refreshUserData() {
+        if (currentUser != null && currentUser.getEmail() != null) {
+            User freshUser = authService.findUserByEmail(currentUser.getEmail());
+            if (freshUser != null) {
+                this.currentUser = freshUser;
+                this.firstName = freshUser.getFirstName();
+                this.secondName = freshUser.getSecondName();
+                this.email = freshUser.getEmail();
+                this.balance = freshUser.getBalance();
+                this.budget = freshUser.getBudget();
+                this.piggyBank = freshUser.getPiggyBank();
+            } else {
+                addErrorMessage("Error", "Unable to refresh user data.");
+            }
+        }
+    }
 
     // Helper methods for displaying messages
     private void addErrorMessage(String summary, String detail) {
@@ -228,12 +252,14 @@ public class UserBean implements Serializable {
 
     // Logout method
     public String logout() {
-        jakarta.servlet.http.HttpSession session = (jakarta.servlet.http.HttpSession) FacesContext.getCurrentInstance()
-            .getExternalContext().getSession(false);
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
         if (session != null) {
             session.invalidate();
         }
-        return "regLogin.xhtml?faces-redirect=true";
+        facesContext.addMessage(null, 
+            new FacesMessage(FacesMessage.SEVERITY_INFO, "Logged Out", "You have been successfully logged out."));
+        return "index.xhtml?faces-redirect=true";
     }
 
     // Getters and Setters
