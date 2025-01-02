@@ -14,3 +14,4 @@ beans\services\RateLimiterService.class
 beans\SessionTimeoutConfig.class
 beans\DatabaseMigration.class
 beans\WithdrawalBean.class
+beans\TransHistory.class

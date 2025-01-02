@@ -106,3 +106,14 @@ body {
     border-radius: 10px !important;
     backdrop-filter: blur(10px);
 }
+
+/* Amount Colors */
+.positive-amount {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+.negative-amount {
+    color: #e74c3c;
+    font-weight: bold;
+} 
