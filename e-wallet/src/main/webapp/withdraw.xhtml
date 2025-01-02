@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Withdraw - CashHive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+    <h:outputStylesheet library="styles" name="dashboard.css"/>
+</h:head>
+<h:body>
+    <div class="container">
+        <h2>Withdraw Funds</h2>
+        
+        <h:form id="withdrawForm">
+            <p:panel>
+                <h:panelGrid columns="2" cellpadding="5">
+                    <p:outputLabel for="amount" value="Amount:"/>
+                    <p:inputNumber id="amount" 
+                                 value="#{withdrawalBean.amount}" 
+                                 symbol="Kč" 
+                                 decimalPlaces="2"
+                                 required="true"
+                                 minValue="0.01"/>
+                                 
+                    <p:outputLabel value="Current Balance:"/>
+                    <h:outputText value="#{userBean.currentUser.balance}">
+                        <f:convertNumber type="currency" currencySymbol="Kč"/>
+                    </h:outputText>
+                </h:panelGrid>
+                
+                <p:messages id="messages" showDetail="true" closable="true">
+                    <p:autoUpdate/>
+                </p:messages>
+                
+                <f:facet name="footer">
+                    <p:commandButton value="Withdraw" 
+                                   action="#{withdrawalBean.withdraw}"
+                                   update="@form"
+                                   styleClass="p-button-success"/>
+                    <p:button value="Cancel" 
+                             outcome="dashboard"
+                             styleClass="p-button-secondary"/>
+                </f:facet>
+            </p:panel>
+        </h:form>
+    </div>
+</h:body>
+</html>

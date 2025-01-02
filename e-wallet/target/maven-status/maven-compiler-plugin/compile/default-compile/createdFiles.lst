@@ -13,3 +13,4 @@ beans\services\EmailService.class
 beans\services\RateLimiterService.class
 beans\SessionTimeoutConfig.class
 beans\DatabaseMigration.class
+beans\WithdrawalBean.class
