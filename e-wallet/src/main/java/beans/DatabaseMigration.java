@@ -27,15 +27,15 @@ public class DatabaseMigration {
             Statement statement = connection.createStatement();
 
             // Clear existing tables
-            statement.execute("DROP TABLE IF EXISTS transactions CASCADE;");
-            statement.execute("DROP TABLE IF EXISTS users CASCADE;");
+            //statement.execute("DROP TABLE IF EXISTS transactions CASCADE;");
+            //statement.execute("DROP TABLE IF EXISTS users CASCADE;");
 
             // Read SQL file
-            String sql = new String(Files.readAllBytes(Paths.get("src/main/resources/db/migration/V1_Create_User_And_Transaction_Tables.sql")));
+            String sql = new String(Files.readAllBytes(Paths.get("src/main/resources/db/migration/V4_Add_Money.sql")));
 
             // Execute SQL
             statement.execute(sql);
-            System.out.println("Database tables created successfully!");
+            System.out.println("Database tables updated successfully!");
 
             // Close resources
             statement.close();
