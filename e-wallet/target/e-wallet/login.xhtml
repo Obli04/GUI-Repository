@@ -1,97 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>CashHive Login</title>
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-
-    <!-- Styles -->
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f4f6f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: #333;
-        }
-
-        .container {    
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-        }
-
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            background-color: #00b894;
-            border: none;
-            color: white;
-            font-size: 1rem;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            width: 100%;
-        }
-
-        .btn:hover {
-            background-color: #00a084;
-        }
-
-        .link {
-            margin-top: 20px;
-            display: block;
-            font-size: 0.9rem;
-            color: #3498db;
-            text-decoration: none;
-        }
-
-    </style>
-
-    <script>
-        function login() {
-            // Simulate a successful login and redirect to dashboard
-            window.location.href = "dashboard.html";
-        }
-    </script>
-</head>
-<body>
-
-    <div class="container">
-        <h1>Login</h1>
-        <h:input type="email" placeholder="Email" required>
-        <h:input type="password" placeholder="Password" required>
-        <h:button class="btn" onclick="login()">Login</button>
-        <a href="#" class="link">New here? Register</a>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Login - CashHive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+    <h:outputStylesheet library="styles" name="regLogin.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</h:head>
+<h:body>
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{userBean.checkRegistrationMessage}"/>
+    </f:metadata>
+    
+    <div class="p-d-flex p-jc-center p-ai-center" style="height: 100vh;">
+        <p:card styleClass="p-shadow-4" style="width: 400px;">
+            <h1 class="p-text-center">Welcome Back</h1>
+            <h:form>
+                <p:panelGrid columns="1" styleClass="p-fluid">
+                    <p:inputText value="#{userBean.email}" 
+                                 placeholder="Email"
+                                 required="true"
+                                 label="Email"
+                                 requiredMessage="Email is required."
+                                 style="width: 100%;"/>
+                    <p:password value="#{userBean.password}" 
+                                placeholder="Password"
+                                required="true"
+                                label="Password"
+                                requiredMessage="Password is required."
+                                toggleMask="true"
+                                style="width: 100%;"/>
+                    <p:messages id="messages" showDetail="true" closable="true" styleClass="custom-messages">
+                        <p:autoUpdate />
+                    </p:messages>
+                    <p:commandButton value="Login" 
+                                     action="#{userBean.login}"
+                                     update="@form messages"
+                                     styleClass="p-button p-button-rounded p-button-success"
+                                     ajax="false"/>
+                    <div class="p-d-flex p-jc-between">
+                        <p:link outcome="register" 
+                                value="Create new account"
+                                styleClass="p-link"/>
+                        <p:link outcome="passwordRecovery" 
+                                value="Forgot Password?"
+                                styleClass="p-link"/>
+                    </div>
+                </p:panelGrid>
+            </h:form>
+        </p:card>
     </div>
-
-</body>
+</h:body>
 </html>
