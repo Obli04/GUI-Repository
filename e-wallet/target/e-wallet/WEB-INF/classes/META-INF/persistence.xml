@@ -1,12 +1,17 @@
-<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.1">
-    <persistence-unit name="eWalletPU">
-        <class>e_wallet.entities.User</class>
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+    <persistence-unit name="e-walletPU" transaction-type="JTA">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <jta-data-source>jdbc/PostgresPool</jta-data-source>
+        <class>beans.entities.User</class>
+        <class>beans.entities.Transaction</class>
         <properties>
-            <property name="jakarta.persistence.jdbc.url" value="postgres://avnadmin:AVNS_qgBkbecdVlX3r2SEBS5@cashhive-cashhive.e.aivencloud.com:12749/defaultdb?sslmode=require" />
-            <property name="jakarta.persistence.jdbc.user" value="avnadmin" />
-            <property name="jakarta.persistence.jdbc.password" value="AVNS_qgBkbecdVlX3r2SEBS5" />
-            <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
-            <property name="jakarta.persistence.schema-generation.database.action" value="update" />
+            <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
+            <property name="eclipselink.logging.level" value="FINE"/>
+            <property name="eclipselink.logging.parameters" value="true"/>
+            <property name="eclipselink.target-database" value="PostgreSQL"/>
         </properties>
     </persistence-unit>
 </persistence>
