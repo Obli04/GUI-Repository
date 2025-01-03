@@ -15,7 +15,7 @@
         <f:event type="preRenderView" listener="#{userBean.refreshUserData}"/>
     </f:metadata>
     
-    <div class="navbar">
+    <div class="main-navbar">
         <p:menubar>
             <p:menuitem value="Dashboard" outcome="dashboard.xhtml"/>
             <p:menuitem value="Deposit Money" outcome="deposit.xhtml"/>
@@ -28,19 +28,21 @@
         </p:menubar>
     </div>
 
-    <div class="content">
-        <h1>Hello, #{userBean.firstName} #{userBean.secondName}</h1>
-        <p>Email: #{userBean.email}</p>
-        <p>IBAN: #{userBean.currentUser.iban}</p>
+    <div class="dashboard-content">
+        <div class="user-info">
+            <h1>Hello, #{userBean.firstName} #{userBean.secondName}</h1>
+            <p class="user-detail">Email: #{userBean.email}</p>
+            <p class="user-detail">IBAN: #{userBean.currentUser.iban}</p>
+        </div>
 
-        <p:card title="Account Overview" styleClass="p-shadow-4" style="margin-top: 20px;">
-            <p:panelGrid columns="2" styleClass="p-fluid">
-                <p:outputLabel value="Balance:"/>
-                <p:outputLabel value="#{userBean.currentUser.balance} CZK"/>
-                <p:outputLabel value="Budget:"/>
-                <p:outputLabel value="#{userBean.currentUser.budget} CZK"/>
-                <p:outputLabel value="Piggy Bank:"/>
-                <p:outputLabel value="#{userBean.currentUser.piggyBank} CZK"/>
+        <p:card title="Account Overview" styleClass="dashboard-card p-shadow-4" style="margin-top: 20px;">
+            <p:panelGrid columns="2" styleClass="dashboard-grid p-fluid">
+                <p:outputLabel value="Balance:" styleClass="dashboard-label"/>
+                <p:outputLabel value="#{userBean.currentUser.balance} CZK" styleClass="dashboard-value"/>
+                <p:outputLabel value="Budget:" styleClass="dashboard-label"/>
+                <p:outputLabel value="#{userBean.currentUser.budget} CZK" styleClass="dashboard-value"/>
+                <p:outputLabel value="Piggy Bank:" styleClass="dashboard-label"/>
+                <p:outputLabel value="#{userBean.currentUser.piggyBank} CZK" styleClass="dashboard-value"/>
             </p:panelGrid>
         </p:card>
 

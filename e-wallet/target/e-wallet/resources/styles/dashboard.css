@@ -106,3 +106,183 @@ body {
     border-radius: 10px !important;
     backdrop-filter: blur(10px);
 }
+
+/* Form specific styles */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.p-grid.p-fluid {
+    display: grid;
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+.p-col-12 {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.balance-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #4CAF50;
+    display: block;
+    margin-top: 0.5rem;
+}
+
+/* Input field enhancements */
+.ui-inputfield, .ui-selectonemenu {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-top: 0.3rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.ui-inputfield:focus, .ui-selectonemenu:focus {
+    border-color: #ff9800 !important;
+    box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2) !important;
+}
+
+/* Card and Panel improvements */
+.p-card {
+    padding: 1.5rem !important;
+    margin: 0 auto !important;
+    max-width: 600px !important;
+}
+
+.ui-panel {
+    padding: 1rem !important;
+}
+
+/* Label styling */
+.ui-outputlabel {
+    color: #333333 !important;
+    font-weight: 500 !important;
+    font-size: 1.1em !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.ui-card-title {
+    color: #333333 !important;
+    font-size: 1.5em !important;
+    font-weight: 600 !important;
+    margin-bottom: 1.5rem !important;
+}
+
+/* Required field asterisk */
+.ui-outputlabel-rfi {
+    color: #ff9800 !important;
+    margin-left: 4px !important;
+}
+
+/* Messages styling */
+.ui-messages {
+    margin: 1.5rem 0 !important;
+    border: none !important;
+}
+
+.ui-message {
+    border-radius: 6px !important;
+    margin-bottom: 0.5rem !important;
+}
+
+/* Dashboard specific styles */
+.main-navbar {
+    background-color: rgba(0, 0, 0, 0.85);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.dashboard-content {
+    text-align: center;
+    margin-top: 50px;
+    padding: 0 20px;
+}
+
+.user-info {
+    margin-bottom: 2rem;
+}
+
+.user-detail {
+    color: #ffffff !important;
+    font-size: 1.1em;
+    margin: 0.5rem 0;
+}
+
+.dashboard-card {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 10px !important;
+    backdrop-filter: blur(10px);
+    max-width: 600px !important;
+    margin: 0 auto !important;
+    padding: 1.5rem !important;
+}
+
+.dashboard-grid {
+    margin: 1rem 0 !important;
+}
+
+.dashboard-label {
+    color: #333333 !important;
+    font-weight: 500 !important;
+    font-size: 1.1em !important;
+}
+
+.dashboard-value {
+    font-weight: 600 !important;
+    color: #4CAF50 !important;
+    font-size: 1.2em !important;
+}
+
+@media (max-width: 768px) {
+    .dashboard-content {
+        margin-top: 30px;
+        padding: 0 10px;
+    }
+    
+    .main-navbar {
+        padding: 10px;
+    }
+    
+    .user-detail {
+        font-size: 1em;
+    }
+}
+
+h1 {
+    color: #ffffff !important;
+    margin-bottom: 1.5rem;
+}
+
+/* Keep white text only for elements on dark backgrounds */
+.main-navbar a,
+.user-detail,
+h1,
+.navbar a {
+    color: #ffffff !important;
+}
+
+/* Placeholder text color */
+::placeholder {
+    color: #666666 !important;
+    opacity: 0.7;
+}
+
+/* Card background adjustment */
+.p-card, .ui-panel {
+    background-color: #ffffff !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
