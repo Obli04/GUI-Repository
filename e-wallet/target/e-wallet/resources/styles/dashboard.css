@@ -1,27 +1,38 @@
 body {
     background-image: url('../resources/images/bg.jpg');
     background-size: cover;
-    color: white;
+    background-attachment: fixed;
+    background-position: center;
+    color: #f0f0f0;
     font-family: 'Poppins', sans-serif;
+    margin: 0;
+    min-height: 100vh;
 }
 
 .navbar {
-    background-color: rgba(0, 0, 0, 0.8);
-    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.85);
+    padding: 15px 20px;
     display: flex;
     justify-content: center;
     align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .navbar a {
     color: white;
-    margin: 0 10px;
+    margin: 0 15px;
     text-decoration: none;
-    transition: color 0.3s;
+    transition: all 0.3s ease;
+    padding: 8px 15px;
+    border-radius: 4px;
 }
 
 .navbar a:hover {
     color: #ff9800;
+    background-color: rgba(255, 152, 0, 0.1);
 }
 
 .content {
@@ -32,4 +43,368 @@ body {
 .content p {
     font-size: 1.2em;
     margin: 20px 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ui-panel {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    margin-top: 2rem;
+}
+
+.ui-panelgrid {
+    margin-bottom: 1.5rem;
+}
+
+.ui-button {
+    margin-right: 0.8rem !important;
+    transition: transform 0.2s ease !important;
+}
+
+.ui-button:hover {
+    transform: translateY(-2px);
+}
+
+.ui-messages {
+    margin: 1rem 0;
+    border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin: 1rem;
+        padding: 0.5rem;
+    }
+    
+    .navbar {
+        flex-direction: column;
+        padding: 10px;
+    }
+    
+    .navbar a {
+        margin: 5px 0;
+    }
+}
+
+.ui-inputfield {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 4px !important;
+    padding: 8px 12px !important;
+    border: 1px solid #ff9800 !important;
+    color: #333333 !important;
+}
+
+.p-card {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 10px !important;
+    backdrop-filter: blur(10px);
+}
+
+/* Form specific styles */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.p-grid.p-fluid {
+    display: grid;
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+.p-col-12 {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.balance-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #4CAF50;
+    display: block;
+    margin-top: 0.5rem;
+}
+
+/* Input field enhancements */
+.ui-inputfield, .ui-selectonemenu {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-top: 0.3rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.ui-inputfield:focus, .ui-selectonemenu:focus {
+    border-color: #ff9800 !important;
+    box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2) !important;
+}
+
+/* Card and Panel improvements */
+.p-card {
+    padding: 1.5rem !important;
+    margin: 0 auto !important;
+    max-width: 600px !important;
+}
+
+.ui-panel {
+    padding: 1rem !important;
+}
+
+/* Label styling */
+.ui-outputlabel {
+    color: #ff9800 !important;
+    font-weight: 500 !important;
+    font-size: 1.1em !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.ui-card-title {
+    color: #ffffff !important;
+    font-size: 1.5em !important;
+    font-weight: 600 !important;
+    margin-bottom: 1.5rem !important;
+}
+
+/* Required field asterisk */
+.ui-outputlabel-rfi {
+    color: #ff9800 !important;
+    margin-left: 4px !important;
+}
+
+/* Messages styling */
+.ui-messages {
+    margin: 1.5rem 0 !important;
+    border: none !important;
+}
+
+.ui-message {
+    border-radius: 6px !important;
+    margin-bottom: 0.5rem !important;
+}
+
+/* Dashboard specific styles */
+.main-navbar {
+    background-color: rgba(0, 0, 0, 0.85);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.dashboard-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.user-info {
+    margin-bottom: 2rem;
+}
+
+.user-detail {
+    color: #ffffff !important;
+    font-size: 1.1em;
+    margin: 0.5rem 0;
+}
+
+.dashboard-card {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 10px !important;
+    backdrop-filter: blur(10px);
+    max-width: 600px !important;
+    margin: 0 auto !important;
+    padding: 1.5rem !important;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.dashboard-label {
+    color: #ffffff !important;
+    font-weight: 500 !important;
+    font-size: 1.1em !important;
+}
+
+.dashboard-value {
+    font-weight: 600 !important;
+    color: #4CAF50 !important;
+    font-size: 1.2em !important;
+}
+
+@media (max-width: 768px) {
+    .dashboard-content {
+        padding: 1rem;
+    }
+
+    .user-info-card {
+        padding: 1.5rem;
+    }
+
+    .user-welcome h1 {
+        font-size: 1.5rem;
+    }
+
+    .user-details {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-content {
+        padding: 1rem;
+    }
+}
+
+h1 {
+    color: #ffffff !important;
+    margin-bottom: 1.5rem;
+}
+
+/* Keep white text only for elements on dark backgrounds */
+.main-navbar a,
+.user-detail,
+h1,
+.navbar a {
+    color: #ffffff !important;
+}
+
+/* Placeholder text color */
+::placeholder {
+    color: #999999 !important;
+    opacity: 1;
+}
+
+/* Card background adjustment */
+.p-card, .ui-panel {
+    background-color: #ffffff !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* User Info Card */
+.user-info-card {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.user-welcome h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: white !important;
+}
+
+.user-details {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.user-detail {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.user-detail i {
+    font-size: 1.2rem;
+}
+
+/* Card Styles */
+.balance-card, .budget-card, .piggy-card {
+    border-radius: 12px !important;
+    transition: transform 0.2s ease-in-out;
+}
+
+.balance-card:hover, .budget-card:hover, .piggy-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    padding: 1rem;
+    border-radius: 50%;
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+}
+
+.balance-info h3 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.balance-amount {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Custom Menubar */
+.custom-menubar {
+    background: transparent !important;
+    border: none !important;
+    padding: 0.5rem !important;
+}
+
+.custom-menubar .ui-menuitem-link {
+    color: white !important;
+    font-weight: 500 !important;
+    padding: 0.7rem 1rem !important;
+    border-radius: 6px !important;
+    transition: background-color 0.2s ease;
+}
+
+.custom-menubar .ui-menuitem-link:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Card Color Variations */
+.balance-card .card-icon {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+}
+
+.budget-card .card-icon {
+    background: rgba(46, 204, 113, 0.1);
+    color: #2ecc71;
+}
+
+.piggy-card .card-icon {
+    background: rgba(155, 89, 182, 0.1);
+    color: #9b59b6;
 }
