@@ -1,6 +1,3 @@
-DROP TABLE IF EXISTS transactions;
-DROP TABLE IF EXISTS users;
-
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(255),
