@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/stylesheet/style.css">
+    <title>Send Transaction</title>
+</head>
+<body>
+<header>
+    <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/logout">Logout</a>
+    </nav>
+</header>
+<main>
+    <h1>Send Money</h1>
+
+    <!-- Display success message -->
+    <div th:if="${message}" style="color: green;">
+        <p th:text="${message}"></p>
+    </div>
+
+    <!-- Display error message -->
+    <div th:if="${error}" style="color: red;">
+        <p th:text="${error}"></p>
+    </div>
+        <a href="/dashboard">
+            <button> Return to dashboard </button>
+        </a>
+    </form>
+</main>
+<footer>
+    <p>&copy; 2024 CashHive. All rights reserved.</p>
+</footer>
+</body>
+</html>
