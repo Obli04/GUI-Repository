@@ -198,12 +198,38 @@ public class AuthService {
            user.setIsVerified(true);
            user.setVerificationToken(null);
            user.setTokenExpiry(null);
+           user.setIban(generateIban());
            em.merge(user);
            return true;
        }
        return false;
    }
-    public boolean login(String email, String password, String twoFactorCode) {
+
+   private String generateIban() {
+       String countryCode = "CZ";
+       String bankCode = "0800"; // Example bank code
+       String accountNumber = String.format("%010d", (int) (Math.random() * 1000000000));
+       String prefix = "000000"; // Example prefix
+
+       String bban = bankCode + prefix + accountNumber;
+       String checkDigits = calculateCheckDigits(countryCode, bban);
+
+       return countryCode + checkDigits + bban;
+   }
+
+   private String calculateCheckDigits(String countryCode, String bban) {
+       String numericCountryCode = countryCode.chars()
+               .mapToObj(c -> String.valueOf(c - 'A' + 10))
+               .reduce("", String::concat);
+
+       String checkString = bban + numericCountryCode + "00";
+       int checkValue = new java.math.BigInteger(checkString).mod(java.math.BigInteger.valueOf(97)).intValue();
+       int checkDigits = 98 - checkValue;
+
+       return String.format("%02d", checkDigits);
+   }
+
+   public boolean login(String email, String password, String twoFactorCode) {
        if (!rateLimiter.isAllowed(email)) {
            LocalDateTime lockoutEnd = rateLimiter.getLockoutEndTime(email);
            throw new SecurityException("Account temporarily locked. Try again after " + 

@@ -1,16 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-!DOCTYPE html>
-html xmlns="http://www.w3.org/1999/xhtml"
-     xmlns:h="http://xmlns.jcp.org/jsf/html"
-     xmlns:p="http://primefaces.org/ui">
-h:head>
-   <title>Dashboard - CashHive</title>
-   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
-   <h:outputStylesheet name="styles/dashboard.css"/>
-   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-/h:head>
-h:body>
-   <h1>Welcome to CashHive Dashboard</h1>
-   <p>Your dashboard content will go here.</p>
-/h:body>
-/html>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Dashboard - CashHive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+    <h:outputStylesheet library="styles" name="dashboard.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</h:head>
+<h:body>
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{userBean.refreshUserData}"/>
+    </f:metadata>
+    
+    <div class="navbar">
+        <p:menubar>
+            <p:menuitem value="Dashboard" outcome="dashboard.xhtml"/>
+            <p:menuitem value="Deposit Money" outcome="deposit.xhtml"/>
+            <p:menuitem value="Withdraw Money" outcome="withdraw.xhtml"/>
+            <p:menuitem value="Budget" outcome="budget.xhtml"/>
+            <p:menuitem value="Transaction History" outcome="transactions.xhtml"/>
+            <p:menuitem value="Send/Receive Money" outcome="transfer.xhtml"/>
+            <p:menuitem value="PiggyBank" outcome="piggybank.xhtml"/>
+            <p:menuitem value="Logout" action="#{userBean.logout}" ajax="false"/>
+        </p:menubar>
+    </div>
+
+    <div class="content">
+        <h1>Hello, #{userBean.firstName} #{userBean.secondName}</h1>
+        <p>Email: #{userBean.email}</p>
+        <p>IBAN: #{userBean.currentUser.iban}</p>
+
+        <p:card title="Account Overview" styleClass="p-shadow-4" style="margin-top: 20px;">
+            <p:panelGrid columns="2" styleClass="p-fluid">
+                <p:outputLabel value="Balance:"/>
+                <p:outputLabel value="#{userBean.currentUser.balance} CZK"/>
+                <p:outputLabel value="Budget:"/>
+                <p:outputLabel value="#{userBean.currentUser.budget} CZK"/>
+                <p:outputLabel value="Piggy Bank:"/>
+                <p:outputLabel value="#{userBean.currentUser.piggyBank} CZK"/>
+            </p:panelGrid>
+        </p:card>
+
+        <!-- Uncomment and configure the chart if needed -->
+        <!-- <p:chart type="line" model="#{transactionBean.transactionModel}" style="width:100%;height:400px;"/> -->
+    </div>
+</h:body>
+</html>
