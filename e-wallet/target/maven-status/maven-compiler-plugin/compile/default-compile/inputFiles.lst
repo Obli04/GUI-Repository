@@ -1,4 +1,20 @@
-C:\Users\scacc\OneDrive\Desktop\Università\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\DatabaseMigration.java
-C:\Users\scacc\OneDrive\Desktop\Università\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\UserBean.java
-C:\Users\scacc\OneDrive\Desktop\Università\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\entities\Transaction.java
-C:\Users\scacc\OneDrive\Desktop\Università\Graphical User Interface in Java\Project\GUI-Rep\e-wallet\src\main\java\beans\entities\User.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\VerificationBean.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\BankSimulatorBean.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\DatabasePrint.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\services\PaymentInfo.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\DatabaseMigration.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\services\RateLimiterService.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\CSRFFilter.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\services\AuthService.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\api\SimulatedPayment.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\services\EmailService.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\api\JaxRsApplication.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\entities\User.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\api\BankApiSimulator.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\services\RegistrationResult.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\entities\Transaction.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\SessionTimeoutConfig.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\DepositBean.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\services\PaymentService.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\SecurityFilter.java
+C:\Users\danil\Documents\GitHub\GUI-Repository\e-wallet\src\main\java\beans\UserBean.java

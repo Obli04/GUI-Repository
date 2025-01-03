@@ -1,0 +1,24 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+<h:head>
+    <title>Welcome to CashHive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+    <h:outputStylesheet library="styles" name="index.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</h:head>
+<h:body>
+    <div class="navbar">
+        <h:link outcome="login.xhtml" value="Login"/>
+        <h:link outcome="register.xhtml" value="Register"/>
+    </div>
+    <div class="content">
+        <h:graphicImage name="resources/images/ewallet-logo.png" alt="CashHive Logo"/>
+        <p>Welcome to CashHive, your ultimate e-wallet solution. Manage your finances with ease and security.</p>
+        <p>Join us today and experience seamless transactions, budget management, and more!</p>
+        <h:link outcome="register.xhtml" styleClass="cta-button" value="Get Started"/>
+    </div>
+    <div class="footer">
+        <p>Contact us: support@cashhive.com | +123 456 7890</p>
+    </div>
+</h:body>
+</html>
