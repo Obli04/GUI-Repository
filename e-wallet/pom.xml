@@ -136,7 +136,7 @@
             </execution>
           </executions>
           <configuration>
-            <mainClass>beans.DatabaseMigration</mainClass>
+            <mainClass>beans.DatabasePrint</mainClass>
           </configuration>
         </plugin>
       </plugins>
