@@ -1,10 +1,12 @@
 beans\services\RegistrationResult.class
 beans\VerificationBean.class
 beans\CSRFFilter.class
+beans\DepositBean.class
 beans\services\AuthService.class
 beans\services\EmailService$1.class
 beans\SecurityFilter.class
 beans\UserBean.class
+beans\services\PaymentInfo.class
 beans\entities\Transaction.class
 beans\DatabasePrint.class
 beans\entities\User.class
@@ -13,3 +15,4 @@ beans\services\EmailService.class
 beans\services\RateLimiterService.class
 beans\SessionTimeoutConfig.class
 beans\DatabaseMigration.class
+beans\services\PaymentService.class
