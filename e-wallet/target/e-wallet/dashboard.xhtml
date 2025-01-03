@@ -16,7 +16,7 @@
     </f:metadata>
     
     <div class="main-navbar">
-        <p:menubar>
+        <p:menubar styleClass="custom-menubar">
             <p:menuitem value="Dashboard" outcome="dashboard.xhtml"/>
             <p:menuitem value="Deposit Money" outcome="deposit.xhtml"/>
             <p:menuitem value="Withdraw Money" outcome="withdraw.xhtml"/>
@@ -29,25 +29,47 @@
     </div>
 
     <div class="dashboard-content">
-        <div class="user-info">
-            <h1>Hello, #{userBean.firstName} #{userBean.secondName}</h1>
-            <p class="user-detail">Email: #{userBean.email}</p>
-            <p class="user-detail">IBAN: #{userBean.currentUser.iban}</p>
+        <div class="user-info-card">
+            <div class="user-welcome">
+                <h1>Welcome back, #{userBean.firstName}!</h1>
+                <div class="user-details">
+                    <p class="user-detail"><i class="pi pi-envelope"></i> #{userBean.email}</p>
+                    <p class="user-detail"><i class="pi pi-id-card"></i> #{userBean.currentUser.iban}</p>
+                </div>
+            </div>
         </div>
 
-        <p:card title="Account Overview" styleClass="dashboard-card p-shadow-4" style="margin-top: 20px;">
-            <p:panelGrid columns="2" styleClass="dashboard-grid p-fluid">
-                <p:outputLabel value="Balance:" styleClass="dashboard-label"/>
-                <p:outputLabel value="#{userBean.currentUser.balance} CZK" styleClass="dashboard-value"/>
-                <p:outputLabel value="Budget:" styleClass="dashboard-label"/>
-                <p:outputLabel value="#{userBean.currentUser.budget} CZK" styleClass="dashboard-value"/>
-                <p:outputLabel value="Piggy Bank:" styleClass="dashboard-label"/>
-                <p:outputLabel value="#{userBean.currentUser.piggyBank} CZK" styleClass="dashboard-value"/>
-            </p:panelGrid>
-        </p:card>
+        <div class="dashboard-grid">
+            <p:card styleClass="balance-card">
+                <div class="card-content">
+                    <i class="pi pi-wallet card-icon"></i>
+                    <div class="balance-info">
+                        <h3>Current Balance</h3>
+                        <span class="balance-amount">#{userBean.currentUser.balance} CZK</span>
+                    </div>
+                </div>
+            </p:card>
 
-        <!-- Uncomment and configure the chart if needed -->
-        <!-- <p:chart type="line" model="#{transactionBean.transactionModel}" style="width:100%;height:400px;"/> -->
+            <p:card styleClass="budget-card">
+                <div class="card-content">
+                    <i class="pi pi-chart-line card-icon"></i>
+                    <div class="balance-info">
+                        <h3>Budget</h3>
+                        <span class="balance-amount">#{userBean.currentUser.budget} CZK</span>
+                    </div>
+                </div>
+            </p:card>
+
+            <p:card styleClass="piggy-card">
+                <div class="card-content">
+                    <i class="pi pi-money-bill card-icon"></i>
+                    <div class="balance-info">
+                        <h3>Piggy Bank</h3>
+                        <span class="balance-amount">#{userBean.currentUser.piggyBank} CZK</span>
+                    </div>
+                </div>
+            </p:card>
+        </div>
     </div>
 </h:body>
 </html>
