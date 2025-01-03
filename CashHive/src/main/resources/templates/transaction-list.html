@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/stylesheet/style.css">
+    <title th:text="${title}"></title>
+</head>
+<body>
+<h1 th:text="${title}"></h1>
+<ul>
+    <li th:each="transaction : ${transactions}">
+        <p>Sender: <span th:text="${transaction.sender}"></span></p>
+        <p>Receiver: <span th:text="${transaction.receiver}"></span></p>
+        <p>Amount: <span th:text="${transaction.amount}"></span></p>
+        <p>Reason: <span th:text="${transaction.reason}"></span></p>
+    </li>
+</ul>
+</body>
+</html>
