@@ -9,7 +9,6 @@ import beans.entities.Transaction;
 import beans.entities.User;
 import beans.services.PaymentInfo;
 import beans.services.PaymentService;
-import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.push.Push;
 import jakarta.faces.push.PushContext;
@@ -17,7 +16,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 /**
- * Bean handling deposit functionality for the e-wallet application.
+ * Bean handling deposit functionality
  * Manages payment information display and processing of incoming payments.
  */
 @Named
@@ -37,13 +36,13 @@ public class DepositBean implements Serializable {
     private StreamedContent qrCode;
     private String spaydString;
     
-    @PostConstruct
-    public void init() {
-        // Generate a unique variable symbol for this deposit session
+    /**
+     * Initializes or reinitializes deposit information
+     * Called after successful login
+     */
+    public void initializeDeposit() {
         generateVariableSymbol();
-        // Generate SPD (Short Payment Descriptor)
         generateSpayd();
-        // Generate QR code based on SPD
         generateQRCode();
     }
     

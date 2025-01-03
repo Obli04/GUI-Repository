@@ -20,8 +20,6 @@ import beans.services.RegistrationResult;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.faces.event.PhaseEvent;
-import jakarta.faces.event.PhaseId;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.http.HttpSession;
@@ -54,6 +52,9 @@ public class UserBean implements Serializable {
     @Inject
     private FacesContext facesContext;
     
+    @Inject
+    private DepositBean depositBean;
+
     // Login method
     public String login() {
         try {
@@ -75,6 +76,9 @@ public class UserBean implements Serializable {
                     FacesContext facesContext = FacesContext.getCurrentInstance();
                     HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(true);
                     session.setAttribute("userBean", this);
+                    
+                    // Initialize deposit information
+                    depositBean.initializeDeposit();
                     
                     // Redirect to dashboard
                     return "dashboard.xhtml?faces-redirect=true";
