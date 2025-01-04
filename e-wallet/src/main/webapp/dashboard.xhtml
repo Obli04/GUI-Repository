@@ -44,8 +44,33 @@
             </p:panelGrid>
         </p:card>
 
-        <!-- Uncomment and configure the chart if needed -->
-        <!-- <p:chart type="line" model="#{transactionBean.transactionModel}" style="width:100%;height:400px;"/> -->
+        <p:card styleClass="p-shadow-4" style="margin-top: 20px;">
+            <h3>Recent Transactions</h3>
+            <p:dataTable value="#{transactionBean.getUserTransactions(userBean.currentUser.id)}"
+                         var="transaction"
+                         rows="5"
+                         paginator="false">
+                <p:column headerText="Date">
+                    <h:outputText value="#{transaction.transactionDate}">
+                        <f:convertDateTime type="localDateTime" pattern="yyyy-MM-dd HH:mm:ss" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Type">
+                    <h:outputText value="#{transaction.type}" />
+                </p:column>
+                <p:column headerText="Amount">
+                    <h:outputText value="#{transaction.value}" 
+                                  styleClass="#{transaction.type eq 'Withdrawal' ? 'negative-amount' : 
+                                               transaction.type eq 'Deposit' ? 'positive-amount' : 
+                                               transaction.type eq 'Send' ? 'negative-amount' : 
+                                               transaction.type eq 'Receive' ? 'positive-amount' : 'negative-amount'}">
+                        <f:convertNumber type="currency" currencySymbol="Kč"/>
+                    </h:outputText>
+                </p:column>
+            </p:dataTable>
+            <p:link outcome="transactions" value="View All Transactions" 
+                    style="display: block; text-align: right; margin-top: 10px;"/>
+        </p:card>
     </div>
 </h:body>
 </html>
