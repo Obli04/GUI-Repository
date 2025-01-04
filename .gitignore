@@ -1,3 +1,4 @@
 *.war
-e-wallet/src/main/resources/META-INF/persistance.xml
 *.env
+*.class
+e-wallet/target/**
