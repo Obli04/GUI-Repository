@@ -2,6 +2,9 @@ package beans;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -12,12 +15,10 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @WebFilter(filterName = "SecurityFilter", urlPatterns = {
     "/dashboard.xhtml", "/deposit.xhtml", "/withdraw.xhtml", 
-    "/budget.xhtml", "/transactions.xhtml", "/transfer.xhtml", "/piggybank.xhtml"
+    "/budget.xhtml", "/account.xhtml", "/transactions.xhtml", "/transfer.xhtml", "/piggybank.xhtml"
 })
 public class SecurityFilter implements Filter {
     
@@ -32,10 +33,12 @@ public class SecurityFilter implements Filter {
         HttpSession session = httpRequest.getSession(false);
         
         String loginURL = httpRequest.getContextPath() + "/login.xhtml";
+        String indexURL = httpRequest.getContextPath() + "/index.xhtml";
         String requestURI = httpRequest.getRequestURI();
         
         boolean isLoggedIn = (session != null && session.getAttribute("userBean") != null);
         boolean isLoginPage = requestURI.equals(loginURL);
+        boolean isIndexPage = requestURI.equals(indexURL);
         boolean isResourceRequest = requestURI.contains("javax.faces.resource");
         boolean isVerificationPage = requestURI.contains("verify.xhtml");
         boolean isPasswordRecoveryPage = requestURI.contains("passwordRecovery.xhtml");
@@ -44,7 +47,8 @@ public class SecurityFilter implements Filter {
         logger.debug("Request URI: {}", requestURI);
         logger.debug("Is Logged In: {}", isLoggedIn);
         
-        if (isLoggedIn || isLoginPage || isResourceRequest || isVerificationPage || isPasswordRecoveryPage || is2FApage) {
+        if (isLoggedIn || isLoginPage || isIndexPage || isResourceRequest || 
+            isVerificationPage || isPasswordRecoveryPage || is2FApage) {
             logger.debug("Access granted to: {}", requestURI);
             chain.doFilter(request, response);
         } else {

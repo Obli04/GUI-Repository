@@ -88,6 +88,26 @@
         <artifactId>jakarta.ws.rs-api</artifactId>
         <version>3.1.0</version>
     </dependency>
+    <!-- JPA API -->
+    <dependency>
+        <groupId>jakarta.persistence</groupId>
+        <artifactId>jakarta.persistence-api</artifactId>
+        <version>3.1.0</version>
+    </dependency>
+    
+    <!-- Hibernate Core -->
+    <dependency>
+        <groupId>org.hibernate.orm</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>6.2.7.Final</version>
+    </dependency>
+    
+    <!-- Hibernate EntityManager -->
+    <dependency>
+        <groupId>org.hibernate.orm</groupId>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>6.0.0.Alpha7</version>
+    </dependency>
   </dependencies>
 
   <build>
