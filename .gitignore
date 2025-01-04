@@ -1,4 +1,4 @@
 *.war
 *.env
 *.class
-e-wallet/target/**
+target/
