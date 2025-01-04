@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>Bank Simulator - CashHive</title>
+    <h:outputStylesheet library="styles" name="dashboard.css"/>
+    <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/favicon.ico"/>
+</h:head>
+<h:body>
+    <h:form>
+        <ui:include src="navbar.xhtml"/>
+    </h:form>
+    <div class="content">
+        <h1>Bank Payment Simulator</h1>
+        
+        <p:card styleClass="payment-form">
+            <h:form>
+                <p:panelGrid columns="2" styleClass="ui-noborder">
+                    <p:outputLabel for="senderAccount" value="From Account:"/>
+                    <p:inputText id="senderAccount" 
+                               value="#{bankSimulatorBean.senderAccount}"
+                               required="true"/>
+                    
+                    <p:outputLabel for="receiverAccount" value="To Account (IBAN):"/>
+                    <p:inputText id="receiverAccount" 
+                               value="#{bankSimulatorBean.receiverAccount}"
+                               required="true"/>
+                    
+                    <p:outputLabel for="amount" value="Amount (CZK):"/>
+                    <p:inputNumber id="amount" 
+                                 value="#{bankSimulatorBean.amount}"
+                                 required="true"
+                                 minValue="0.01"
+                                 decimalPlaces="2"/>
+                    
+                    <p:outputLabel for="variableSymbol" value="Variable Symbol:"/>
+                    <p:inputText id="variableSymbol" 
+                               value="#{bankSimulatorBean.variableSymbol}"
+                               required="true"/>
+                </p:panelGrid>
+                
+                <div class="button-container">
+                    <p:commandButton value="Send Payment" 
+                                   action="#{bankSimulatorBean.simulatePayment}"
+                                   styleClass="p-button-success"
+                                   update="@form"/>
+                </div>
+                
+                <p:messages showDetail="true" closable="true">
+                    <p:autoUpdate />
+                </p:messages>
+            </h:form>
+            
+            <div class="instructions">
+                <h3>Instructions:</h3>
+                <ol>
+                    <li>Copy the IBAN and Variable Symbol from the deposit page</li>
+                    <li>Enter the amount you want to send</li>
+                    <li>Click "Send Payment" to simulate the bank transfer</li>
+                    <li>You will be redirected to the deposit page to see the result</li>
+                </ol>
+            </div>
+        </p:card>
+    </div>
+</h:body>
+</html> 
