@@ -61,7 +61,7 @@ public class BudgetBean implements Serializable {
         }
     }
     
-    @Transactional
+    /*@Transactional
     public String setCategoryBudget() {
         try {
             if (categoryAmount <= 0) {
@@ -96,7 +96,7 @@ public class BudgetBean implements Serializable {
                 "An error occurred while setting the category budget: " + e.getMessage());
             return null;
         }
-    }
+    }*/
     
     public double getRemainingBudget() {
         User currentUser = userBean.getCurrentUser();
