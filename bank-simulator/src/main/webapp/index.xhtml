@@ -19,7 +19,15 @@
                 Make a Payment
             </f:facet>
             
-            <h:form styleClass="form-container">
+            <div class="budget-info">
+                <h3>Available Budget: 
+                    <h:outputText id="budget-display" value="#{paymentBean.budget}">
+                        <f:convertNumber pattern="#,##0.00 CZK"/>
+                    </h:outputText>
+                </h3>
+            </div>
+            
+            <h:form id="form" styleClass="form-container">
                 <p:panelGrid columns="2" styleClass="ui-noborder">
                     <p:outputLabel for="senderAccount" value="From Account:"/>
                     <p:inputText id="senderAccount" 
@@ -37,9 +45,14 @@
                                  value="#{paymentBean.amount}"
                                  required="true"
                                  minValue="0.01"
+                                 maxValue="#{paymentBean.budget}"
                                  decimalPlaces="2"
                                  symbol=" CZK"
-                                 symbolPosition="s"/>
+                                 symbolPosition="s">
+                        <p:ajax event="change" 
+                                listener="#{paymentBean.validateAmount}"
+                                update="@form"/>
+                    </p:inputNumber>
                     
                     <p:outputLabel for="variableSymbol" value="Variable Symbol:"/>
                     <p:inputText id="variableSymbol" 
@@ -51,7 +64,7 @@
                 <div class="button-container">
                     <p:commandButton value="Send Payment"
                                    action="#{paymentBean.sendPayment}"
-                                   update="@form"
+                                   update="@form budget-display"
                                    styleClass="p-button-success"/>
                 </div>
                 

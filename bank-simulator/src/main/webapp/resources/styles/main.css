@@ -23,4 +23,17 @@
     color: #1f4f7c;
     font-size: 2rem;
     font-weight: bold;
+}
+
+.budget-info {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.budget-info h3 {
+    color: #2196F3;
+    margin: 0;
 } 
