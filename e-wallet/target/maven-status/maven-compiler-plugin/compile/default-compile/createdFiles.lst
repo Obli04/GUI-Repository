@@ -11,6 +11,7 @@ beans\api\BankApiSimulator.class
 beans\api\JaxRsApplication.class
 beans\SessionTimeoutConfig.class
 beans\DatabaseMigration.class
+beans\WithdrawalBean.class
 beans\UserBean.class
 beans\services\PaymentInfo.class
 beans\entities\Transaction.class

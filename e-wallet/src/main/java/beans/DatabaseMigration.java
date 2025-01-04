@@ -40,9 +40,9 @@ public class DatabaseMigration {
             // Close resources
             statement.close();
             connection.close();
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             System.err.println("Error during database migration: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }   

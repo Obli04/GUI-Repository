@@ -3,31 +3,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 <h:head>
     <title>Dashboard - CashHive</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/favicon.ico"/>
     <h:outputStylesheet library="styles" name="dashboard.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </h:head>
 <h:body>
-    <f:metadata>
-        <f:event type="preRenderView" listener="#{userBean.refreshUserData}"/>
-    </f:metadata>
-    
-    <div class="main-navbar">
-        <p:menubar styleClass="custom-menubar">
-            <p:menuitem value="Dashboard" outcome="dashboard.xhtml"/>
-            <p:menuitem value="Deposit Money" outcome="deposit.xhtml"/>
-            <p:menuitem value="Withdraw Money" outcome="withdraw.xhtml"/>
-            <p:menuitem value="Budget" outcome="budget.xhtml"/>
-            <p:menuitem value="Transaction History" outcome="transactions.xhtml"/>
-            <p:menuitem value="Send/Receive Money" outcome="transfer.xhtml"/>
-            <p:menuitem value="PiggyBank" outcome="piggybank.xhtml"/>
-            <p:menuitem value="Logout" action="#{userBean.logout}" ajax="false"/>
-        </p:menubar>
-    </div>
-
+    <h:form>
+        <f:websocket channel="payment" onmessage="handlePaymentUpdate" />
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{userBean.refreshUserData}"/>
+        </f:metadata>
+        <ui:include src="navbar.xhtml"/>
+    </h:form>
     <div class="dashboard-content">
         <div class="user-info-card">
             <div class="user-welcome">
@@ -71,5 +63,21 @@
             </p:card>
         </div>
     </div>
+
+    <h:outputScript>
+        function handlePaymentUpdate(message) {
+            // Refresh the page to update balances
+            location.reload();
+            
+            // Show notification
+            PF('growl').renderMessage({
+                "summary": "Balance Updated",
+                "detail": message,
+                "severity": "info"
+            });
+        }
+    </h:outputScript>
+    
+    <p:growl id="growl" widgetVar="growl" showDetail="true" sticky="true"/>
 </h:body>
 </html>

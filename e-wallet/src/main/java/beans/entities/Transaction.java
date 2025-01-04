@@ -29,18 +29,21 @@ public class Transaction {
     @JoinColumn(name = "id_receiver", nullable = false)
     private User receiver;
 
-    @Column(nullable = false)
+    @Column(name="value", nullable = false)
     private double value;
 
-    @Column(nullable = false)
+    @Column(name="type", nullable = false)
     private String type; // e.g., Withdraw, Deposit, Send, Receive
 
     @Column(name = "transaction_date", nullable = false)
     private LocalDateTime transactionDate;
 
-    @Column
+    @Column(name="category", nullable=true)
     private String category; // e.g., Payments, Utilities, Food, Travel, Shopping
 
+    @Column(name="iban_receiver", nullable=true)
+    private String iban_receiver;
+    
     // Getters and setters
     public Long getId() {
         return id;
@@ -104,5 +107,13 @@ public class Transaction {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getIban_receiver() {
+        return iban_receiver;
+    }
+
+    public void setIban_receiver(String iban_receiver) {
+        this.iban_receiver = iban_receiver;
     }
 } 

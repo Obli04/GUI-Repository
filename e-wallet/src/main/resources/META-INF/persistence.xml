@@ -12,6 +12,10 @@
             <property name="eclipselink.logging.level" value="FINE"/>
             <property name="eclipselink.logging.parameters" value="true"/>
             <property name="eclipselink.target-database" value="PostgreSQL"/>
+            <property name="eclipselink.weaving" value="true"/>
+            <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="database"/>
+            <property name="eclipselink.deploy-on-startup" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>

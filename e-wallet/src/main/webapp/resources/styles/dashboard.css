@@ -9,32 +9,6 @@ body {
     min-height: 100vh;
 }
 
-.navbar {
-    background-color: rgba(0, 0, 0, 0.85);
-    padding: 15px 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-.navbar a {
-    color: white;
-    margin: 0 15px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    padding: 8px 15px;
-    border-radius: 4px;
-}
-
-.navbar a:hover {
-    color: #ff9800;
-    background-color: rgba(255, 152, 0, 0.1);
-}
-
 .content {
     text-align: center;
     margin-top: 50px;
@@ -83,15 +57,6 @@ body {
     .container {
         margin: 1rem;
         padding: 0.5rem;
-    }
-    
-    .navbar {
-        flex-direction: column;
-        padding: 10px;
-    }
-    
-    .navbar a {
-        margin: 5px 0;
     }
 }
 
@@ -194,19 +159,6 @@ body {
     margin-bottom: 0.5rem !important;
 }
 
-/* Dashboard specific styles */
-.main-navbar {
-    background-color: rgba(0, 0, 0, 0.85);
-    padding: 15px 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
 .dashboard-content {
     max-width: 1200px;
     margin: 0 auto;
@@ -284,7 +236,6 @@ h1 {
 }
 
 /* Keep white text only for elements on dark backgrounds */
-.main-navbar a,
 .user-detail,
 h1,
 .navbar a {
@@ -372,25 +323,6 @@ h1,
     font-size: 1.5rem;
     font-weight: 600;
     color: #2c3e50;
-}
-
-/* Custom Menubar */
-.custom-menubar {
-    background: transparent !important;
-    border: none !important;
-    padding: 0.5rem !important;
-}
-
-.custom-menubar .ui-menuitem-link {
-    color: white !important;
-    font-weight: 500 !important;
-    padding: 0.7rem 1rem !important;
-    border-radius: 6px !important;
-    transition: background-color 0.2s ease;
-}
-
-.custom-menubar .ui-menuitem-link:hover {
-    background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Card Color Variations */
