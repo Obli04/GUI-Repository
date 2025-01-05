@@ -20,7 +20,6 @@ import jakarta.ws.rs.core.Response;
 @SessionScoped
 public class PaymentBean implements Serializable {
     
-    private String senderAccount = "CZ6550000000001234567890";
     private String receiverAccount;
     private double amount;
     private String variableSymbol;
@@ -45,7 +44,6 @@ public class PaymentBean implements Serializable {
             Client client = ClientBuilder.newClient();
             
             Payment payment = new Payment();
-            payment.setSenderAccount(senderAccount);
             payment.setReceiverAccount(receiverAccount);
             payment.setAmount(amount);
             payment.setVariableSymbol(variableSymbol);
@@ -91,9 +89,6 @@ public class PaymentBean implements Serializable {
     }
     
     // Getters and setters
-    public String getSenderAccount() { return senderAccount; }
-    public void setSenderAccount(String senderAccount) { this.senderAccount = senderAccount; }
-    
     public String getReceiverAccount() { return receiverAccount; }
     public void setReceiverAccount(String receiverAccount) { this.receiverAccount = receiverAccount; }
     
