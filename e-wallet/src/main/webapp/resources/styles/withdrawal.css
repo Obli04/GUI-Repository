@@ -1,0 +1,153 @@
+body {
+    background-image: url('../resources/images/bg.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    color: #f0f0f0;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.navbar {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar a {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 8px 15px;
+    border-radius: 4px;
+}
+
+.navbar a:hover {
+    color: #ff9800;
+    background-color: rgba(255, 152, 0, 0.1);
+}
+
+.content {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 1.5rem auto;
+    padding: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.balance-header {
+    background-color: rgba(241,240,246,255);
+    padding: 1rem;
+    color: #4CAF50;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.modern-card {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 2rem;
+}
+
+.modern-panel {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.modern-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.modern-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.modern-label {
+    color: #333;
+    font-weight: 500;
+    font-size: 1.1em;
+}
+
+.modern-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modern-input:focus {
+    border-color: #ff9800;
+    box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2);
+}
+
+.modern-messages {
+    margin: 1rem 0;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #333;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.modern-button-success {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.modern-button-success:hover {
+    background-color: #45a049;
+}
+
+.modern-button-secondary {
+    background-color: #757575;
+    border-color: #757575;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.modern-button-secondary:hover {
+    background-color: #6c6c6c;
+}
+
+@media (max-width: 768px) {
+    .modern-grid {
+        grid-template-columns: 1fr;
+    }
+} 
