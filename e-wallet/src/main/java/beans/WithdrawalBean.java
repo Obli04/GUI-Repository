@@ -159,4 +159,12 @@ public class WithdrawalBean implements Serializable {
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
     }
+    
+    public void updateIBANPrefix() {
+        if (countryCode != null && !countryCode.isEmpty()) {
+            if (recipientIBAN == null || recipientIBAN.length() < 2 || !recipientIBAN.startsWith(countryCode)) {
+                recipientIBAN = countryCode + (recipientIBAN != null ? recipientIBAN.substring(2) : "");
+            }
+        }
+    }
 }
