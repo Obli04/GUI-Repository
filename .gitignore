@@ -1,4 +1,4 @@
 *.war
 *.env
 *.class
-target/
+*.lst
