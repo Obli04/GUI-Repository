@@ -29,11 +29,6 @@
             
             <h:form id="form" styleClass="form-container">
                 <p:panelGrid columns="2" styleClass="ui-noborder">
-                    <p:outputLabel for="senderAccount" value="From Account:"/>
-                    <p:inputText id="senderAccount" 
-                               value="#{paymentBean.senderAccount}"
-                               required="true"/>
-                    
                     <p:outputLabel for="receiverAccount" value="To Account (IBAN):"/>
                     <p:inputText id="receiverAccount" 
                                value="#{paymentBean.receiverAccount}"
