@@ -2,3 +2,4 @@
 *.env
 *.class
 *.lst
+target/
