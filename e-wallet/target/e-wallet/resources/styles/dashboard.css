@@ -1,0 +1,119 @@
+body {
+    background-image: url('../resources/images/bg.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.navbar {
+    background-color: rgba(0, 0, 0, 0.85);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar a {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 8px 15px;
+    border-radius: 4px;
+}
+
+.navbar a:hover {
+    color: #ff9800;
+    background-color: rgba(255, 152, 0, 0.1);
+}
+
+.content {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.content p {
+    font-size: 1.2em;
+    margin: 20px 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ui-panel {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    margin-top: 2rem;
+}
+
+.ui-panelgrid {
+    margin-bottom: 1.5rem;
+}
+
+.ui-button {
+    margin-right: 0.8rem !important;
+    transition: transform 0.2s ease !important;
+}
+
+.ui-button:hover {
+    transform: translateY(-2px);
+}
+
+.ui-messages {
+    margin: 1rem 0;
+    border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin: 1rem;
+        padding: 0.5rem;
+    }
+    
+    .navbar {
+        flex-direction: column;
+        padding: 10px;
+    }
+    
+    .navbar a {
+        margin: 5px 0;
+    }
+}
+
+.ui-inputfield {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 4px !important;
+    padding: 8px 12px !important;
+}
+
+.p-card {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 10px !important;
+    backdrop-filter: blur(10px);
+}
+
+/* Amount Colors */
+.positive-amount {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+.negative-amount {
+    color: #e74c3c;
+    font-weight: bold;
+} 

@@ -13,8 +13,7 @@ public class PaymentInfo {
     private String variableSymbol;
     
     // Constructor
-    public PaymentInfo(String senderAccount, String receiverAccount, 
-                      double amount, LocalDateTime date, String variableSymbol) {
+    public PaymentInfo(String senderAccount, String receiverAccount, double amount, LocalDateTime date, String variableSymbol) {
         this.senderAccount = senderAccount;
         this.receiverAccount = receiverAccount;
         this.amount = amount;

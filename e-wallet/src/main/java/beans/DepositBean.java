@@ -35,6 +35,7 @@ public class DepositBean implements Serializable {
     private String variableSymbol;
     private StreamedContent qrCode;
     private String spaydString;
+    private double amount = 0.0;
     
     /**
      * Initializes or reinitializes deposit information
@@ -59,8 +60,9 @@ public class DepositBean implements Serializable {
      */
     private void generateSpayd() {
         User currentUser = userBean.getCurrentUser();
-        spaydString = String.format("SPD*1.0*ACC:%s*AM:0.00*CC:CZK*MSG:Deposit to CashHive*X-VS:%s",
+        spaydString = String.format("SPD*1.0*ACC:%s*AM:%.2f*CC:CZK*MSG:Deposit to CashHive*X-VS:%s",
             currentUser.getIban(),
+            amount,
             variableSymbol);
     }
     
@@ -88,6 +90,14 @@ public class DepositBean implements Serializable {
         }
     }
     
+    /**
+     * Updates QR code when amount changes
+     */
+    public void onAmountChange() {
+        generateSpayd();
+        generateQRCode();
+    }
+    
     // Getters and setters
     public String getVariableSymbol() {
         return variableSymbol;
@@ -103,5 +113,13 @@ public class DepositBean implements Serializable {
     
     public String getBankAccount() {
         return userBean.getCurrentUser().getIban();
+    }
+    
+    public double getAmount() {
+        return amount;
+    }
+    
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 } 
