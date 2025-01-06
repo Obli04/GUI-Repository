@@ -3,40 +3,55 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:p="http://primefaces.org/ui">
 <h:head>
     <title>Withdraw - CashHive</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
-    <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/favicon.ico"/>
-    <h:outputStylesheet library="styles" name="dashboard.css"/>
+    <h:outputStylesheet library="styles" name="withdrawal.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </h:head>
 <h:body>
-    <h:form>
-        <ui:include src="navbar.xhtml"/>
-    </h:form>
+    <div class="navbar">
+        <h:form>
+            <p:menubar>
+                <p:menuitem value="Dashboard" outcome="dashboard.xhtml"/>
+                <p:menuitem value="Deposit Money" outcome="deposit.xhtml"/>
+                <p:menuitem value="Withdraw Money" outcome="withdraw.xhtml"/>
+                <p:menuitem value="Budget" outcome="budget.xhtml"/>
+                <p:menuitem value="Transaction History" outcome="transactions.xhtml"/>
+                <p:menuitem value="Send/Receive Money" outcome="transfer.xhtml"/>
+                <p:menuitem value="PiggyBank" outcome="piggybank.xhtml"/>
+                <p:menuitem value="Logout" action="#{userBean.logout}" ajax="false"/>
+            </p:menubar>
+        </h:form>
+    </div>
+
     <div class="content">
         <div class="container">
-            <h1>Withdraw Funds</h1>
+            <div class="balance-header">
+                Current Balance: 
+                <h:outputText value="#{userBean.currentUser.balance}" styleClass="balance-text">
+                    <f:convertNumber type="currency" currencySymbol="Kč"/>
+                </h:outputText>
+            </div>
             
-            <p:card styleClass="p-shadow-4" style="margin-top: 20px;">
+            <p:card styleClass="modern-card">
                 <h:form id="withdrawForm">
-                    <p:panel>
-                        <div class="p-grid p-fluid">
-                            <div class="p-col-12">
-                                <p:outputLabel for="recipientBank" value="Bank Name:"/>
+                    <p:panel styleClass="modern-panel">
+                        <div class="modern-grid">
+                            <div class="modern-col">
+                                <p:outputLabel for="recipientBank" value="Bank Name:" styleClass="modern-label"/>
                                 <p:inputText id="recipientBank" 
                                            value="#{withdrawalBean.recipientBank}"
                                            required="true"
                                            placeholder="Enter bank name"
-                                           styleClass="ui-inputfield"/>
+                                           styleClass="modern-input"/>
                             </div>
 
-                            <div class="p-col-12">
-                                <p:outputLabel for="countryCode" value="Country:"/>
+                            <div class="modern-col">
+                                <p:outputLabel for="countryCode" value="Country:" styleClass="modern-label"/>
                                 <p:selectOneMenu id="countryCode" value="#{withdrawalBean.countryCode}" 
-                                               required="true" styleClass="ui-inputfield">
+                                               required="true" styleClass="modern-input">
                                     <f:selectItem itemLabel="Select Country" itemValue=""/>
                                     <f:selectItem itemLabel="Austria (AT)" itemValue="AT"/>
                                     <f:selectItem itemLabel="Belgium (BE)" itemValue="BE"/>
@@ -65,41 +80,33 @@
                                     <f:selectItem itemLabel="Slovenia (SI)" itemValue="SI"/>
                                     <f:selectItem itemLabel="Spain (ES)" itemValue="ES"/>
                                     <f:selectItem itemLabel="Sweden (SE)" itemValue="SE"/>
+                                    <p:ajax update="recipientIBAN" listener="#{withdrawalBean.updateIBANPrefix}"/>
                                 </p:selectOneMenu>
                             </div>
 
-                            <div class="p-col-12">
-                                <p:outputLabel for="recipientIBAN" value="IBAN Number:"/>
+                            <div class="modern-col">
+                                <p:outputLabel for="recipientIBAN" value="IBAN Number:" styleClass="modern-label"/>
                                 <p:inputText id="recipientIBAN" 
                                            value="#{withdrawalBean.recipientIBAN}"
                                            required="true"
                                            maxlength="32"
-                                           placeholder="Enter numbers only"
-                                           styleClass="ui-inputfield">
-                                    <p:keyFilter mask="num"/>
-                                </p:inputText>
+                                           placeholder="Enter IBAN"
+                                           styleClass="modern-input"/>
                             </div>
 
-                            <div class="p-col-12">
-                                <p:outputLabel for="amount" value="Amount:"/>
+                            <div class="modern-col">
+                                <p:outputLabel for="amount" value="Amount:" styleClass="modern-label"/>
                                 <p:inputNumber id="amount" 
                                              value="#{withdrawalBean.amount}" 
                                              symbol="Kč" 
                                              decimalPlaces="2"
                                              required="true"
                                              minValue="0.01"
-                                             styleClass="ui-inputfield"/>
-                            </div>
-                                     
-                            <div class="p-col-12">
-                                <p:outputLabel value="Current Balance:"/>
-                                <h:outputText value="#{userBean.currentUser.balance}" styleClass="balance-text">
-                                    <f:convertNumber type="currency" currencySymbol="Kč"/>
-                                </h:outputText>
+                                             styleClass="modern-input"/>
                             </div>
                         </div>
                         
-                        <p:messages id="messages" showDetail="true" closable="true">
+                        <p:messages id="messages" showDetail="true" closable="true" styleClass="modern-messages">
                             <p:autoUpdate/>
                         </p:messages>
                         
@@ -107,10 +114,10 @@
                             <p:commandButton value="Withdraw" 
                                            action="#{withdrawalBean.withdraw}"
                                            update="@form"
-                                           styleClass="p-button-success ui-button"/>
+                                           styleClass="modern-button-success"/>
                             <p:button value="Cancel" 
                                      outcome="dashboard"
-                                     styleClass="p-button-secondary ui-button"/>
+                                     styleClass="modern-button-secondary"/>
                         </div>
                     </p:panel>
                 </h:form>

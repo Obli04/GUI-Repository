@@ -16,7 +16,6 @@
         <ui:include src="navbar.xhtml"/>
     </h:form>
 
-
     <div class="content">
         <h1>Deposit Money</h1>
         
@@ -29,11 +28,25 @@
                 
                 <h:outputText value="Variable Symbol:"/>
                 <h:outputText value="#{depositBean.variableSymbol}" styleClass="highlight"/>
+                
+                <h:outputText value="Amount (CZK):"/>
+                <h:form>
+                    <p:inputNumber id="amount" 
+                                 value="#{depositBean.amount}" 
+                                 minValue="0.01"
+                                 decimalPlaces="2"
+                                 symbol=" CZK"
+                                 symbolPosition="s">
+                        <p:ajax event="change" 
+                               listener="#{depositBean.onAmountChange}" 
+                               update="qrCode"/>
+                    </p:inputNumber>
+                </h:form>
             </p:panelGrid>
             
             <div class="qr-section">
                 <h3>Scan QR Code for Payment</h3>
-                <p:graphicImage value="#{depositBean.qrCode}" cache="false"/>
+                <p:graphicImage id="qrCode" value="#{depositBean.qrCode}" cache="false"/>
             </div>
             
             <p:divider/>
@@ -41,14 +54,12 @@
             <div class="instructions">
                 <h3>Instructions:</h3>
                 <ol>
+                    <li>Enter the amount you wish to deposit</li>
                     <li>Use your bank's mobile app to scan the QR code, or</li>
                     <li>Manually enter the account number and variable symbol in your bank's transfer form</li>
-                    <li>Enter any amount you wish to deposit</li>
                     <li>Confirm the transfer in your bank's app</li>
                     <li>The deposit will be credited to your account automatically once processed</li>
                 </ol>
-                <p:link outcome="bank-simulator" value="Open Bank Simulator" 
-                        styleClass="p-button p-button-secondary"/>
             </div>
         </p:card>
         
