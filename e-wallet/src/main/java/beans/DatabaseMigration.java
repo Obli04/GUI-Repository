@@ -31,7 +31,7 @@ public class DatabaseMigration {
             //statement.execute("DROP TABLE IF EXISTS users CASCADE;");
 
             // Read SQL file
-            String sql = new String(Files.readAllBytes(Paths.get("src/main/resources/db/migration/V5_ADD_IBAN_RECEIVER.sql")));
+            String sql = new String(Files.readAllBytes(Paths.get("src/main/resources/db/migration/V3_Clear_Database.sql")));
 
             // Execute SQL
             statement.execute(sql);

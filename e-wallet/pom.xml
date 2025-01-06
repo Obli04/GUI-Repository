@@ -10,8 +10,6 @@
   <packaging>war</packaging>
 
   <name>e-wallet Maven Webapp</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -88,37 +86,47 @@
         <artifactId>jakarta.ws.rs-api</artifactId>
         <version>3.1.0</version>
     </dependency>
-    <!-- JPA API -->
     <dependency>
         <groupId>jakarta.persistence</groupId>
         <artifactId>jakarta.persistence-api</artifactId>
         <version>3.1.0</version>
     </dependency>
     
-    <!-- Hibernate Core -->
     <dependency>
         <groupId>org.hibernate.orm</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>6.2.7.Final</version>
     </dependency>
-    
-    <!-- Hibernate EntityManager -->
     <dependency>
         <groupId>org.hibernate.orm</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
         <version>6.0.0.Alpha7</version>
     </dependency>
+    <dependency>
+        <groupId>com.google.zxing</groupId>
+        <artifactId>javase</artifactId>
+        <version>3.5.2</version>
+    </dependency>
+    <dependency>
+        <groupId>com.warrenstrange</groupId>
+        <artifactId>googleauth</artifactId>
+        <version>1.5.0</version>
+    </dependency>
+    <dependency>
+        <groupId>com.google.zxing</groupId>
+        <artifactId>core</artifactId>
+        <version>3.5.2</version>
+    </dependency>
   </dependencies>
 
   <build>
     <finalName>e-wallet</finalName>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+    <pluginManagement>
       <plugins>
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>
         </plugin>
-        <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_war_packaging -->
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.0.2</version>
@@ -155,7 +163,7 @@
             </execution>
           </executions>
           <configuration>
-            <mainClass>beans.DatabasePrint</mainClass>
+            <mainClass>beans.DatabaseMigration</mainClass>
           </configuration>
         </plugin>
       </plugins>

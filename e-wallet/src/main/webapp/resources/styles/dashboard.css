@@ -74,7 +74,6 @@ body {
     backdrop-filter: blur(10px);
 }
 
-/* Form specific styles */
 .button-container {
     display: flex;
     justify-content: center;
@@ -102,7 +101,6 @@ body {
     margin-top: 0.5rem;
 }
 
-/* Input field enhancements */
 .ui-inputfield, .ui-selectonemenu {
     width: 100% !important;
     box-sizing: border-box !important;
@@ -116,7 +114,6 @@ body {
     box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2) !important;
 }
 
-/* Card and Panel improvements */
 .p-card {
     padding: 1.5rem !important;
     margin: 0 auto !important;
@@ -127,7 +124,6 @@ body {
     padding: 1rem !important;
 }
 
-/* Label styling */
 .ui-outputlabel {
     color: #ff9800 !important;
     font-weight: 500 !important;
@@ -235,27 +231,23 @@ h1 {
     margin-bottom: 1.5rem;
 }
 
-/* Keep white text only for elements on dark backgrounds */
 .user-detail,
 h1,
 .navbar a {
     color: #ffffff !important;
 }
 
-/* Placeholder text color */
 ::placeholder {
     color: #999999 !important;
     opacity: 1;
 }
 
-/* Card background adjustment */
 .p-card, .ui-panel {
     background-color: #ffffff !important;
     border-radius: 10px !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* User Info Card */
 .user-info-card {
     background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
     border-radius: 15px;
@@ -288,7 +280,6 @@ h1,
     font-size: 1.2rem;
 }
 
-/* Card Styles */
 .balance-card, .budget-card, .piggy-card {
     border-radius: 12px !important;
     transition: transform 0.2s ease-in-out;
@@ -325,7 +316,6 @@ h1,
     color: #2c3e50;
 }
 
-/* Card Color Variations */
 .balance-card .card-icon {
     background: rgba(52, 152, 219, 0.1);
     color: #3498db;

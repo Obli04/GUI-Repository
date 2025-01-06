@@ -6,7 +6,10 @@
 }
 
 body {
-    background: linear-gradient(135deg, #00b894, #00cec9);
+    background-image: url('../resources/images/bg.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
     min-height: 100vh;  
     display: flex;
     justify-content: center;
@@ -16,9 +19,9 @@ body {
 }
 
 .p-card {
-    background: rgba(255, 255, 255, 0.95) !important;
+    background: rgba(255, 255, 255, 1) !important;
     border-radius: 20px !important;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
     backdrop-filter: blur(10px);
     padding: 2rem !important;
     width: 450px !important;
@@ -26,11 +29,17 @@ body {
 }
 
 .register-card {
-    width: 500px !important;
+    width: 450px !important;
+    padding: 1.5rem !important;
+}
+
+.login-card {
+    width: 450px !important;
+    padding: 2rem !important;
 }
 
 h1 {
-    color: #2d3436;
+    color: #ffffff;
     margin-bottom: 1.5rem;
     font-weight: 600;
     font-size: 2rem;
@@ -45,23 +54,39 @@ h1 {
     width: 100% !important;
 }
 
-/* Fix for input fields and password field width */
-.p-inputtext, 
-.p-password,
-.p-password input {
+.p-password {
     width: 100% !important;
-    border-radius: 12px !important;
-    padding: 0.75rem 1rem !important;
-    border: 2px solid #e0e0e0 !important;
-    transition: all 0.3s ease !important;
-    font-size: 1rem !important;
-    background: white !important;
-    margin-bottom: 0.5rem !important;
+    display: block !important;
+    margin-bottom: 1rem !important;
+    position: relative;
 }
 
-/* Specific fix for PrimeFaces password component */
-.p-password {
-    display: block !important;
+.p-password input {
+    width: 100% !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #000000 !important;
+}
+
+.p-password .ui-icon {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #999999 !important;
+}
+
+.p-password .ui-icon:hover {
+    color: #ff9800 !important;
+}
+
+.p-inputtext:focus,
+.p-password input:focus {
+    border-color: #ff9800 !important;
+    box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2) !important;
 }
 
 small {
@@ -72,7 +97,7 @@ small {
 }
 
 .submit-button {
-    background: #00b894 !important;
+    background: linear-gradient(135deg, #ff9800, #ff5722) !important;
     border: none !important;
     border-radius: 12px !important;
     padding: 1rem !important;
@@ -82,19 +107,25 @@ small {
     transition: all 0.3s ease !important;
     width: 100% !important;
     margin: 1rem 0 !important;
+    color: #ffffff !important;
+}
+
+.submit-button:hover {
+    background: linear-gradient(135deg, #ff5722, #ff9800) !important;
+    transform: translateY(-2px);
 }
 
 .p-link {
     display: block;
     text-align: center;
     margin-top: 1rem;
-    color: #00b894 !important;
+    color: #ff9800 !important;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .p-link:hover {
-    color: #00a084 !important;
+    color: #ff5722 !important;
     text-decoration: underline;
 }
 
@@ -103,7 +134,6 @@ small {
     border-radius: 12px !important;
 }
 
-/* Password strength meter styling */
 .p-password-meter {
     margin-top: 0.25rem !important;
     background: #e9ecef !important;
@@ -111,9 +141,11 @@ small {
     border-radius: 2px !important;
 }
 
-/* Responsive adjustments */
 @media (max-width: 480px) {
-    .p-card {
+    .p-card,
+    .register-card,
+    .login-card {
+        width: 90vw !important;
         padding: 1.5rem !important;
     }
     
@@ -126,29 +158,38 @@ small {
 .form-container {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1rem;
     width: 100%;
 }
 
-.form-input {
+.form-input,
+.form-input input,
+.p-password,
+.p-password input {
     width: 100% !important;
+    display: block !important;
 }
 
-.form-input input {
+.form-input input,
+.p-password input {
     width: 100% !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #000000 !important;
 }
 
-/* Fix for password input */
 .p-password {
     width: 100% !important;
     display: block !important;
 }
 
-.p-password input {
+.p-password > input {
     width: 100% !important;
+    display: block !important;
 }
 
-/* Reduce spacing */
 .password-hint {
     margin: 0.25rem 0 0.5rem 0 !important;
     font-size: 0.8rem;
@@ -158,13 +199,18 @@ small {
 .links-container {
     display: flex;
     justify-content: space-between;
-    margin-top: 0.5rem;
+    width: 100%;
+    margin-top: 1rem;
 }
 
-/* Card sizes */
 .login-card {
-    width: 400px !important;
-    padding: 1.5rem !important;
+    width: 450px !important;
+    max-width: 90vw !important;
+    background: rgba(255, 255, 255, 1) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(10px);
+    padding: 2rem !important;
 }
 
 .register-card {
@@ -172,23 +218,19 @@ small {
     padding: 1.5rem !important;
 }
 
-/* Messages styling */
 .p-messages {
     margin: 0.5rem 0 !important;
 }
 
-/* Submit button */
 .submit-button {
     margin: 0.5rem 0 !important;
     width: 100% !important;
 }
 
-/* Password strength meter */
 .p-password-meter {
     margin: 0.25rem 0 !important;
 }
 
-/* Responsive adjustments */
 @media (max-width: 480px) {
     .login-card,
     .register-card {
@@ -228,7 +270,7 @@ small {
 
 .auth-buttons {
     display: flex;
-    gap: 1rem;
+    margin-right: 1rem;
 }
 
 .auth-button {
@@ -238,6 +280,7 @@ small {
     border-radius: 8px;
     transition: all 0.3s ease;
     font-weight: 500;
+    margin: 0 0.5rem; /* Add horizontal margin */
 }
 
 .login-btn {
@@ -257,4 +300,218 @@ small {
 .register-btn:hover {
     background-color: #e68900;
     transform: translateY(-2px);
+}
+
+.two-factor-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+}
+
+.two-factor-container h2 {
+    color: #2d3436;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.two-factor-container p {
+    color: #636e72;
+    margin-bottom: 1rem;
+}
+
+.back-link {
+    color: #00b894;
+    text-decoration: none;
+    margin-top: 1rem;
+    cursor: pointer;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.p-card h1,
+.p-card p,
+.p-card small {
+    color: #000000 !important;
+}
+
+.p-password input {
+    width: 100% !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #000000 !important;
+}
+.submit-button {
+    color: #ffffff !important;
+}
+
+.field-label {
+    display: block !important;
+    color: #000000 !important;
+    margin-bottom: 0.5rem !important;
+    font-weight: 500 !important;
+}
+
+.verification-card {
+    background: rgba(255, 255, 255, 1) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(10px);
+    padding: 2rem !important;
+    width: 450px !important;
+    max-width: 90vw !important;
+}
+
+.verification-title {
+    color: #000000 !important;
+    margin-bottom: 1.5rem !important;
+    font-size: 1.8rem !important;
+}
+
+.verification-content {
+    text-align: center;
+}
+
+.verification-actions {
+    margin-top: 1.5rem;
+}
+
+/* Specific login form styles */
+.login-form {
+    width: 100% !important;
+}
+
+.login-form .form-container {
+    width: 100%;
+}
+.back-button {
+    background: #e9ecef !important;
+    color: #495057 !important;
+    border: none !important;
+    margin-top: 0.5rem !important;
+    padding: 1rem !important;
+    border-radius: 12px !important;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease !important;
+}
+
+.back-button:hover {
+    background: #dee2e6 !important;
+    transform: translateY(-2px);
+}
+
+/* Ensure consistent width for both normal and 2FA states */
+.p-outputpanel {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+/* Consistent input styling for all states */
+.form-input,
+.p-inputtext,
+.p-password {
+    width: 100% !important;
+    display: block !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Input field styling */
+.form-input input,
+.p-inputtext,
+.p-password input {
+    width: 100% !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #000000 !important;
+}
+
+/* Output panel styling for 2FA state */
+.p-outputpanel {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+}
+/* Consistent button spacing */
+.submit-button,
+.back-button {
+    margin: 1rem 0 !important;
+    width: 100% !important;
+}
+
+/* Output panel full width */
+.p-outputpanel {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+}
+
+/* Button styling */
+.submit-button,
+.back-button {
+    width: 100% !important;
+    margin: 1rem 0 !important;
+}
+
+/* Links container */
+.links-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+/* Login form specific */
+.login-form {
+    width: 100% !important;
+}
+
+/* Force full width on all direct children of form container */
+.form-container > * {
+    width: 100% !important;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.input-field {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.form-input,
+.p-password {
+    width: 100% !important;
+    display: block !important;
+}
+
+.p-password input {
+    width: 100% !important;
+    display: block !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #000000 !important;
 }

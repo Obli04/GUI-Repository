@@ -47,7 +47,7 @@ public class User implements Serializable {
     private LocalDateTime tokenExpiry;
 
     @Column(name = "two_factor_secret")
-    private String twoFactorSecret;
+    private String twoFactorSecret = null;
 
     @Column(name = "two_factor_enabled", nullable = false)
     private boolean twoFactorEnabled = false;

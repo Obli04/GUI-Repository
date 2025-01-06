@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.mindrot.jbcrypt.BCrypt;
 
 import com.warrenstrange.googleauth.GoogleAuthenticator;
+import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 
 import beans.entities.User;
 import jakarta.annotation.PostConstruct;
@@ -23,18 +24,19 @@ public class AuthService {
    @Inject
    private EmailService emailService;
    
-   private GoogleAuthenticator gAuth;
-   
    @Inject
    private RateLimiterService rateLimiter;
    
    @jakarta.annotation.Resource
    private UserTransaction userTransaction;
    
+   private GoogleAuthenticator gAuth;
+   
    @PostConstruct
    public void init() {
-       gAuth = new GoogleAuthenticator();
-       System.out.println("AuthService initialized. EntityManager: " + (em != null ? "present" : "null"));
+       this.gAuth = new GoogleAuthenticator();
+       // Default window size is 3, which allows for ±1 time steps (30 seconds each)
+       System.out.println("AuthService initialized with GoogleAuthenticator");
    }
 
    private static final String PASSWORD_PATTERN = 
@@ -118,25 +120,12 @@ public class AuthService {
            // Set default values
            user.setIsVerified(false);
            user.setTwoFactorEnabled(false);
+           user.setTwoFactorSecret(null);  // Don't generate secret at registration
            
            // Generate verification token
            String token = UUID.randomUUID().toString();
            user.setVerificationToken(token);
            user.setTokenExpiry(LocalDateTime.now().plusHours(24));
-           
-           // Initialize GoogleAuthenticator if needed
-           if (gAuth == null) {
-               gAuth = new GoogleAuthenticator();
-           }
-           
-           // Generate 2FA secret
-           try {
-               String secret = gAuth.createCredentials().getKey();
-               user.setTwoFactorSecret(secret);
-           } catch (Exception e) {
-               System.err.println("Error generating 2FA secret: " + e.getMessage());
-               throw new Exception("Error setting up 2FA");
-           }
            
            // Save user
            try {
@@ -275,16 +264,28 @@ public class AuthService {
    @Transactional
    public boolean verify2FA(User user, String code) {
        try {
-           if (user != null && code != null) {
-               boolean isValid = gAuth.authorize(user.getTwoFactorSecret(), Integer.parseInt(code));
-               if (isValid) {
-                   user.setTwoFactorEnabled(true);
-                   em.merge(user);
-               }
-               return isValid;
+           if (user == null || code == null || user.getTwoFactorSecret() == null) {
+               System.out.println("2FA verification failed: null check failed");
+               return false;
            }
-           return false;
-       } catch (NumberFormatException e) {
+           
+           String cleanCode = code.trim().replaceAll("[^0-9]", "");
+           System.out.println("Verifying 2FA code: " + cleanCode);
+           System.out.println("User secret: " + user.getTwoFactorSecret());
+           
+           if (cleanCode.length() != 6) {
+               System.out.println("2FA verification failed: invalid code length");
+               return false;
+           }
+
+           int codeInt = Integer.parseInt(cleanCode);
+           boolean isValid = gAuth.authorize(user.getTwoFactorSecret(), codeInt);
+           
+           System.out.println("2FA verification result: " + isValid);
+           return isValid;
+       } catch (Exception e) {
+           System.err.println("2FA verification error: " + e.getMessage());
+           e.printStackTrace();
            return false;
        }
    }
@@ -342,5 +343,53 @@ public class AuthService {
            e.printStackTrace();
            throw new Exception("Failed to resend verification email: " + e.getMessage());
        }
+   }
+
+   @Transactional
+   public void updateUser(User user) throws Exception {
+       try {
+           // Validate user exists
+           User existingUser = findUserByEmail(user.getEmail());
+           if (existingUser == null) {
+               throw new Exception("User not found");
+           }
+
+           // Update the user
+           em.merge(user);
+           em.flush();
+       } catch (Exception e) {
+           System.err.println("Error updating user: " + e.getMessage());
+           throw new Exception("Failed to update user: " + e.getMessage());
+       }
+   }
+
+   @Transactional
+   public void updatePassword(User user, String newPassword) throws Exception {
+       try {
+           validatePassword(newPassword);
+           user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+           em.merge(user);
+           em.flush();
+       } catch (Exception e) {
+           System.err.println("Error updating password: " + e.getMessage());
+           throw new Exception("Failed to update password: " + e.getMessage());
+       }
+   }
+
+   public boolean verifyPassword(String email, String password) {
+       try {
+           User user = findUserByEmail(email);
+           return user != null && BCrypt.checkpw(password, user.getPassword());
+       } catch (Exception e) {
+           return false;
+       }
+   }
+
+   public String generateNewTwoFactorSecret() {
+       GoogleAuthenticator gAuth = new GoogleAuthenticator();
+       GoogleAuthenticatorKey key = gAuth.createCredentials();
+       String secret = key.getKey();
+       System.out.println("Generated new 2FA secret: " + secret);
+       return secret;
    }
 }

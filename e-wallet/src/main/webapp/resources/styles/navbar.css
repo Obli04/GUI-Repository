@@ -51,15 +51,15 @@
 }
 
 .custom-menubar .ui-menuitem:last-child .ui-menuitem-link {
-    background: linear-gradient(135deg, #ff9800 0%, #ff7043 100%) !important;
-    color: #fff !important;
+    background: transparent !important;
+    color: #ff9800 !important;
     font-weight: 600 !important;
-    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+    border: 2px solid #ff9800 !important;
 }
 
 .custom-menubar .ui-menuitem:last-child .ui-menuitem-link:hover {
-    background: linear-gradient(135deg, #ff7043 0%, #ff5722 100%) !important;
-    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+    background: rgba(255, 152, 0, 0.1) !important;
+    box-shadow: none;
 }
 
 .custom-menubar .ui-menuitem-icon {
@@ -113,4 +113,28 @@
 
 .custom-menubar .ui-menuitem:last-child .ui-menuitem-link .ui-menuitem-text {
     color: #ffffff !important;
+}
+
+.custom-menubar .ui-menuitem .ui-menuitem-link.active-page {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.2) 0%, rgba(255, 152, 0, 0.3) 100%) !important;
+    color: #ff9800 !important;
+}
+
+.custom-menubar .ui-menuitem-link.active-page::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 80%;
+    height: 2px;
+    background: #ff9800;
+    transform: translateX(-50%);
+}
+
+.custom-menubar .ui-menuitem-link.active-page:hover::after {
+    width: 80%;
+}
+
+.custom-menubar .ui-menuitem-link:not(.active-page):hover::after {
+    width: 80%;
 }
