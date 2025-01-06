@@ -19,7 +19,7 @@ beans\services\PaymentInfo.class
 beans\entities\Transaction.class
 beans\DatabasePrint.class
 beans\entities\User.class
+beans\api\RestApplication.class
 beans\services\RateLimiterService.class
 beans\services\PaymentService.class
 beans\api\SimulatedPayment.class
-beans\BankSimulatorBean.class
