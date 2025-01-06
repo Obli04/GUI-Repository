@@ -27,17 +27,17 @@
         <f:event type="preRenderView" listener="#{verificationBean.verifyEmail}"/>
     </f:metadata>
     
-    <div class="p-d-flex p-jc-center p-ai-center">
-        <p:card>
-            <h1 class="p-text-center">Email Verification</h1>
-            <div class="p-fluid">
+    <div class="p-d-flex p-jc-center p-ai-center" style="height: calc(100vh - 60px);">
+        <p:card styleClass="p-shadow-4 verification-card">
+            <h1 class="p-text-center verification-title" style="color:black;">Email Verification</h1>
+            <div class="verification-content">
                 <p:messages id="messages" showDetail="true" closable="true">
                     <p:autoUpdate />
                 </p:messages>
                 
-                <div class="p-text-center">
+                <div class="p-text-center verification-actions">
                     <p:link outcome="login" value="Return to Login" 
-                           styleClass="p-button p-button-primary"/>
+                           styleClass="auth-button login-btn"/>
                 </div>
             </div>
         </p:card>

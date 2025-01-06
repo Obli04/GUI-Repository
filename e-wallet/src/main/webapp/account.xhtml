@@ -3,16 +3,153 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
-    <title>CashHive - Account</title>
+    <title>CashHive - Account Settings</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
     <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/favicon.ico"/>
+    <h:outputStylesheet library="styles" name="account.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </h:head>
 <h:body>
     <h:form>
         <ui:include src="navbar.xhtml"/>
     </h:form>
+
+    <div class="dashboard-content">
+        <div class="user-info-card">
+            <div class="user-welcome">
+                <h1>Account Settings</h1>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <p:card styleClass="settings-card">
+                <f:facet name="title">
+                    <i class="pi pi-user"></i> Personal Information
+                </f:facet>
+                <h:form id="personalInfoForm">
+                    <div class="form-group">
+                        <p:outputLabel for="firstName" value="First Name" styleClass="field-label"/>
+                        <p:inputText id="firstName" value="#{userBean.firstName}" 
+                                    placeholder="First Name"
+                                    required="true"/>
+                                    
+                        <p:outputLabel for="lastName" value="Last Name" styleClass="field-label"/>
+                        <p:inputText id="lastName" value="#{userBean.secondName}" 
+                                    placeholder="Last Name"
+                                    required="true"/>
+                                    
+                        <p:outputLabel for="email" value="Email" styleClass="field-label"/>
+                        <p:inputText id="email" value="#{userBean.email}" 
+                                    placeholder="Email"
+                                    required="true"/>
+                        <p:commandButton value="Update Profile"
+                                       action="#{userBean.updateProfile}"
+                                       update="@form"
+                                       styleClass="p-button-success"/>
+                    </div>
+                </h:form>
+            </p:card>
+            <!-- Password Change Card -->
+            <p:card styleClass="settings-card">
+                <f:facet name="title">
+                    <i class="pi pi-lock"></i> Change Password
+                </f:facet>
+                <h:form id="passwordForm">
+                    <div class="form-group">
+                        <p:outputLabel for="currentPw" value="Current Password" styleClass="field-label"/>
+                        <p:password id="currentPw" value="#{userBean.currentPassword}"
+                                   placeholder="Current Password"
+                                   required="true"
+                                   toggleMask="true"
+                                   feedback="false"
+                                   styleClass="full-width"/>
+                                   
+                        <p:outputLabel for="newPw" value="New Password" styleClass="field-label"/>
+                        <p:password id="newPw" value="#{userBean.newPassword}"
+                                   placeholder="New Password"
+                                   required="true"
+                                   toggleMask="true"
+                                   feedback="false"
+                                   styleClass="full-width"/>
+                                   
+                        <p:outputLabel for="confirmPw" value="Confirm New Password" styleClass="field-label"/>
+                        <p:password id="confirmPw" value="#{userBean.confirmPassword}"
+                                   placeholder="Confirm New Password"
+                                   required="true"
+                                   toggleMask="true"
+                                   feedback="false"
+                                   styleClass="full-width"/>
+                        <p:commandButton value="Change Password"
+                                       action="#{userBean.changePassword}"
+                                       update="@form"
+                                       styleClass="p-button-warning full-width"/>
+                    </div>
+                </h:form>
+            </p:card>
+
+            <p:card styleClass="settings-card">
+                <f:facet name="title">
+                    <i class="pi pi-shield"></i> Two-Factor Authentication
+                </f:facet>
+                <h:form id="twoFactorForm">
+                    <div class="form-group">
+                        <div class="two-factor-status">
+                            <p:outputLabel value="2FA Status: " styleClass="field-label"/>
+                            <p:chip label="#{userBean.currentUser.twoFactorEnabled ? 'Enabled' : 'Disabled'}"
+                                   styleClass="#{userBean.currentUser.twoFactorEnabled ? 'status-enabled' : 'status-disabled'}"/>
+                        </div>
+                        
+                        <h:panelGroup rendered="#{!userBean.currentUser.twoFactorEnabled}">
+                            <div class="qr-setup-container">
+                                <p:commandButton value="Setup 2FA"
+                                               action="#{userBean.initiate2FASetup}"
+                                               update="@form messages"
+                                               styleClass="p-button-primary"
+                                               rendered="#{userBean.currentUser.twoFactorSecret == null}"/>
+                                
+                                <h:panelGroup rendered="#{userBean.currentUser.twoFactorSecret != null}">
+                                    <p:graphicImage value="#{userBean.qrCodeImage}" 
+                                                  width="200"
+                                                  height="200"
+                                                  cache="false"/>
+                                    <div class="two-factor-input">
+                                        <p:outputLabel value="2FA Code" styleClass="field-label"/>
+                                        <p:inputText id="twoFactorCode1" value="#{userBean.twoFactorCode}"
+                                                   required="true"
+                                                   placeholder="Enter code from Google Authenticator"/>
+                                    </div>
+
+                                    <p:commandButton value="Enable 2FA"
+                                                   action="#{userBean.enable2FA}"
+                                                   update="@form messages"
+                                                   styleClass="p-button-success"/>
+                                </h:panelGroup>
+                            </div>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{userBean.currentUser.twoFactorEnabled}">
+                            <div class="form-group">
+                                <p:outputLabel for="twoFactorCode" value="2FA Code" styleClass="field-label"/>
+                                <p:inputText id="twoFactorCode" value="#{userBean.twoFactorCode}"
+                                            required="true"
+                                            placeholder="Enter 2FA code to disable"/>
+                                <p:commandButton value="Verify and Disable 2FA"
+                                               action="#{userBean.disable2FA}"
+                                               update="@form messages"
+                                               styleClass="p-button-danger"/>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </h:form>
+            </p:card>
+        </div>
+    </div>
+
+    <p:messages id="messages" showDetail="true" closable="true">
+        <p:autoUpdate />
+    </p:messages>
 </h:body>
 </html>

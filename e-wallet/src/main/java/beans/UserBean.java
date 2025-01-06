@@ -1,11 +1,15 @@
 package beans;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.util.Base64;
+
+import javax.imageio.ImageIO;
 
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -55,6 +59,15 @@ public class UserBean implements Serializable {
     
     @Inject
     private DepositBean depositBean;
+
+    private String currentPassword;
+    private String newPassword;
+    private String confirmPassword;
+
+    private boolean showTwoFactorInput = false;
+    private User tempUser; // Store user temporarily during 2FA
+
+    private String currentQRSecret; // Add this field
 
     // Login method
     public String login() {
@@ -203,34 +216,37 @@ public class UserBean implements Serializable {
 
     // QR Code generation for 2FA
     public StreamedContent getQrCodeImage() {
-        if (qrCodeImage == null && currentUser != null && 
-            currentUser.getTwoFactorSecret() != null) {
+        // Only generate QR if user has a secret and it's different from current QR
+        if (currentUser != null && 
+            currentUser.getTwoFactorSecret() != null && 
+            (!currentUser.getTwoFactorSecret().equals(currentQRSecret) || qrCodeImage == null)) {
+            
             try {
-                String otpAuthURL = String.format(
+                String otpauthURL = String.format(
                     "otpauth://totp/CashHive:%s?secret=%s&issuer=CashHive",
-                    currentUser.getEmail(),
+                    URLEncoder.encode(currentUser.getEmail(), "UTF-8"),
                     currentUser.getTwoFactorSecret()
                 );
 
                 QRCodeWriter qrCodeWriter = new QRCodeWriter();
                 BitMatrix bitMatrix = qrCodeWriter.encode(
-                    otpAuthURL, 
+                    otpauthURL, 
                     BarcodeFormat.QR_CODE, 
-                    200, 
-                    200
+                    250, 
+                    250
                 );
 
+                BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
                 ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
-                MatrixToImageWriter.writeToStream(
-                    bitMatrix, 
-                    "PNG", 
-                    pngOutputStream
-                );
+                ImageIO.write(qrImage, "PNG", pngOutputStream);
 
                 qrCodeImage = DefaultStreamedContent.builder()
                     .contentType("image/png")
                     .stream(() -> new ByteArrayInputStream(pngOutputStream.toByteArray()))
                     .build();
+                
+                // Store the secret used for this QR code
+                currentQRSecret = currentUser.getTwoFactorSecret();
             } catch (Exception e) {
                 addErrorMessage("Error", "Failed to generate QR code");
             }
@@ -350,5 +366,218 @@ public class UserBean implements Serializable {
     private boolean isValidEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
         return email != null && email.matches(emailRegex);
+    }
+
+    public String updateProfile() {
+        try {
+            User user = authService.findUserByEmail(currentUser.getEmail());
+            user.setFirstName(firstName);
+            user.setSecondName(secondName);
+            
+            // If email is changed, verify it's not already in use
+            if (!user.getEmail().equals(email)) {
+                if (authService.findUserByEmail(email) != null) {
+                    addErrorMessage("Update Failed", "Email already in use");
+                    return null;
+                }
+                user.setEmail(email);
+            }
+            
+            authService.updateUser(user);
+            currentUser = user;
+            addInfoMessage("Success", "Profile updated successfully");
+            return null;
+        } catch (Exception e) {
+            addErrorMessage("Update Failed", e.getMessage());
+            return null;
+        }
+    }
+
+    public String changePassword() {
+        try {
+            if (!newPassword.equals(confirmPassword)) {
+                addErrorMessage("Password Change Failed", "New passwords do not match");
+                return null;
+            }
+
+            if (authService.verifyPassword(currentUser.getEmail(), currentPassword)) {
+                authService.updatePassword(currentUser, newPassword);
+                addInfoMessage("Success", "Password changed successfully");
+                // Clear password fields
+                currentPassword = null;
+                newPassword = null;
+                confirmPassword = null;
+                return null;
+            } else {
+                addErrorMessage("Password Change Failed", "Current password is incorrect");
+                return null;
+            }
+        } catch (Exception e) {
+            addErrorMessage("Password Change Failed", e.getMessage());
+            return null;
+        }
+    }
+
+    public String enable2FA() {
+        try {
+            System.out.println("Attempting 2FA setup with:");
+            System.out.println("User: " + currentUser.getEmail());
+            System.out.println("Secret: " + currentUser.getTwoFactorSecret());
+            System.out.println("Code: " + twoFactorCode);
+
+            if (authService.verify2FA(currentUser, twoFactorCode)) {
+                currentUser.setTwoFactorEnabled(true);
+                authService.updateUser(currentUser);
+                addInfoMessage("Success", "Two-factor authentication enabled");
+                return null;
+            } else {
+                addErrorMessage("Error", "Invalid verification code");
+                return null;
+            }
+        } catch (Exception e) {
+            addErrorMessage("Error", "Failed to enable 2FA");
+            return null;
+        }
+    }
+
+    public String disable2FA() {
+        try {
+            if (twoFactorCode == null || twoFactorCode.trim().isEmpty()) {
+                addErrorMessage("Error", "Please enter your 2FA code");
+                return null;
+            }
+
+            if (authService.verify2FA(currentUser, twoFactorCode)) {
+                currentUser.setTwoFactorEnabled(false);
+                currentUser.setTwoFactorSecret(null);  // Clear the secret
+                authService.updateUser(currentUser);
+                
+                // Clear form data
+                twoFactorCode = null;
+                qrCodeImage = null;
+                
+                addInfoMessage("Success", "Two-factor authentication disabled");
+                return null;
+            } else {
+                addErrorMessage("Error", "Invalid verification code");
+                return null;
+            }
+        } catch (Exception e) {
+            System.err.println("Error disabling 2FA: " + e.getMessage());
+            e.printStackTrace();
+            addErrorMessage("Error", "Failed to disable 2FA");
+            return null;
+        }
+    }
+
+    public String getCurrentPassword() { return currentPassword; }
+    public void setCurrentPassword(String currentPassword) { this.currentPassword = currentPassword; }
+
+    public String getNewPassword() { return newPassword; }
+    public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
+
+    public String getConfirmPassword() { return confirmPassword; }
+    public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
+
+    public boolean isShowTwoFactorInput() {
+        return showTwoFactorInput;
+    }
+
+    // Split the login process into two steps
+    public String initiateLogin() {
+        try {
+            User user = authService.findUserByEmail(email);
+            if (user == null || !authService.verifyPassword(email, password)) {
+                addErrorMessage("Login Failed", "Invalid email or password.");
+                return null;
+            }
+
+            if (!user.getIsVerified()) {
+                addErrorMessage("Login Failed", "Email not verified.");
+                return null;
+            }
+
+            if (user.isTwoFactorEnabled()) {
+                // Store user temporarily and show 2FA input
+                this.tempUser = user;
+                this.showTwoFactorInput = true;
+                return null;
+            } else {
+                // Complete login immediately if 2FA is not enabled
+                completeLogin(user);
+                return "dashboard.xhtml?faces-redirect=true";
+            }
+        } catch (Exception e) {
+            addErrorMessage("Login Error", "An unexpected error occurred.");
+            return null;
+        }
+    }
+
+    public String completeTwoFactorLogin() {
+        try {
+            if (tempUser != null && authService.verify2FA(tempUser, twoFactorCode)) {
+                completeLogin(tempUser);
+                resetLoginForm();
+                return "dashboard.xhtml?faces-redirect=true";
+            }
+            addErrorMessage("Verification Failed", "Invalid 2FA code");
+            return null;
+        } catch (Exception e) {
+            addErrorMessage("Login Error", e.getMessage());
+            return null;
+        }
+    }
+
+    public String resetLogin() {
+        resetLoginForm();
+        return null;
+    }
+
+    private void resetLoginForm() {
+        this.showTwoFactorInput = false;
+        this.tempUser = null;
+        this.twoFactorCode = null;
+        this.password = null;
+    }
+
+    private void completeLogin(User user) {
+        currentUser = user;
+        this.firstName = user.getFirstName();
+        this.secondName = user.getSecondName();
+        this.email = user.getEmail();
+        this.balance = user.getBalance();
+        this.budget = user.getBudget();
+        this.piggyBank = user.getPiggyBank();
+        
+        // Store in session
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(true);
+        session.setAttribute("userBean", this);
+        
+        // Initialize deposit information
+        depositBean.initializeDeposit();
+    }
+
+    public String initiate2FASetup() {
+        try {
+            // Generate new secret
+            String secret = authService.generateNewTwoFactorSecret();
+            
+            // Update user with new secret
+            currentUser.setTwoFactorSecret(secret);
+            currentUser.setTwoFactorEnabled(false);
+            authService.updateUser(currentUser);
+            
+            // Clear existing code field and QR code
+            twoFactorCode = null;
+            qrCodeImage = null;
+            currentQRSecret = null; // Reset the QR secret tracker
+            
+            addInfoMessage("2FA Setup", "Scan the QR code with your authenticator app");
+            return null;
+        } catch (Exception e) {
+            addErrorMessage("Error", "Failed to initiate 2FA setup");
+            return null;
+        }
     }
 }
