@@ -85,6 +85,7 @@ h1 {
 
 .p-inputtext:focus,
 .p-password input:focus {
+    width: 100% !important;
     border-color: #ff9800 !important;
     box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2) !important;
 }
@@ -159,7 +160,7 @@ small {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    width: 100%;
+    width: 100% !important;
 }
 
 .form-input,
@@ -181,11 +182,6 @@ small {
 }
 
 .p-password {
-    width: 100% !important;
-    display: block !important;
-}
-
-.p-password > input {
     width: 100% !important;
     display: block !important;
 }
@@ -353,8 +349,10 @@ small {
 .field-label {
     display: block !important;
     color: #000000 !important;
-    margin-bottom: 0.5rem !important;
+    margin: 0 0 0.25rem 0 !important;
+    padding: 0 !important;
     font-weight: 500 !important;
+    font-size: 0.9rem !important;
 }
 
 .verification-card {
@@ -496,17 +494,22 @@ small {
 }
 
 .input-field {
-    width: 100%;
-    margin-bottom: 1rem;
-}
-
-.form-input,
-.p-password {
     width: 100% !important;
     display: block !important;
+    position: relative !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-.p-password input {
+.input-field .ui-password,
+.input-field .ui-inputwrapper {
+    width: 100% !important;
+    display: block !important;
+    position: relative !important;
+}
+
+.input-field .ui-password input,
+.input-field .ui-inputwrapper input {
     width: 100% !important;
     display: block !important;
     padding: 0.75rem 1rem !important;
@@ -514,4 +517,49 @@ small {
     border: 1px solid rgba(0, 0, 0, 0.2) !important;
     background: rgba(255, 255, 255, 0.9) !important;
     color: #000000 !important;
+}
+
+.input-field .ui-password-icon {
+    position: absolute !important;
+    right: 0.75rem !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    cursor: pointer !important;
+}
+
+.p-fluid .p-inputtext {
+    margin: 0 0 0.5rem 0 !important;
+}
+
+/* Target panelGrid and its cells */
+.p-panelgrid .p-panelgrid-cell {
+    padding: 0.5rem 0 !important;
+    margin: 0 !important;
+}
+
+/* Adjust input spacing */
+.p-fluid .p-inputtext {
+    margin: 0 0 0.5rem 0 !important;
+}
+
+/* Make form more compact */
+.p-card .p-card-content {
+    padding: 1rem !important;
+    width: 100% !important;
+}
+
+/* Adjust form container spacing */
+.p-fluid .p-panelgrid .p-panelgrid-content {
+    padding: 0 !important;
+}
+
+/* Form should take full width */
+.p-card form {
+    width: 100% !important;
+}
+
+/* Ensure the input takes full width */
+.input-field .p-inputtext {
+    width: 100% !important;
+    display: block !important;
 }
