@@ -41,11 +41,6 @@
       <version>10.0.0</version>
       <scope>provided</scope>
     </dependency>
-      <dependency>
-       <groupId>org.flywaydb</groupId>
-       <artifactId>flyway-core</artifactId>
-       <version>9.0.0</version> <!-- Use the latest version -->
-    </dependency>
     <dependency>
       <groupId>io.github.cdimascio</groupId>
       <artifactId>dotenv-java</artifactId>
@@ -74,12 +69,12 @@
     <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.30</version>
+        <version>1.7.36</version>
     </dependency>
     <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.2.3</version>
+        <version>1.2.13</version>
     </dependency>
     <dependency>
         <groupId>jakarta.ws.rs</groupId>
@@ -101,16 +96,6 @@
         <groupId>org.hibernate.orm</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
         <version>6.0.0.Alpha7</version>
-    </dependency>
-    <dependency>
-        <groupId>com.google.zxing</groupId>
-        <artifactId>javase</artifactId>
-        <version>3.5.2</version>
-    </dependency>
-    <dependency>
-        <groupId>com.warrenstrange</groupId>
-        <artifactId>googleauth</artifactId>
-        <version>1.5.0</version>
     </dependency>
     <dependency>
         <groupId>org.glassfish.jersey.inject</groupId>
