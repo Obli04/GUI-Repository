@@ -64,7 +64,7 @@ public class User implements Serializable {
     @Column(name = "iban", nullable = false)
     private String iban;
 
-    @Column(name = "variable_symbol", nullable = false)
+    @Column(name = "variable_symbol", nullable = false, unique = true)
     private String variableSymbol;
 
     // Getters and setters
