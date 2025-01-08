@@ -64,6 +64,9 @@ public class User implements Serializable {
     @Column(name = "iban", nullable = false)
     private String iban;
 
+    @Column(name = "variable_symbol", nullable = false)
+    private String variableSymbol;
+
     // Getters and setters
     public Long getId() {
         return id;
@@ -187,5 +190,13 @@ public class User implements Serializable {
                ", secondName='" + secondName + '\'' +
                ", isVerified=" + isVerified +
                '}';
+    }
+
+    public String getVariableSymbol() {
+        return variableSymbol;
+    }
+
+    public void setVariableSymbol(String variableSymbol) {
+        this.variableSymbol = variableSymbol;
     }
 }
