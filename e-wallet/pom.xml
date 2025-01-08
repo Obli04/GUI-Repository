@@ -163,7 +163,8 @@
             </execution>
           </executions>
           <configuration>
-            <mainClass>beans.DatabaseMigration</mainClass>
+            <mainClass>beans.DatabasePrint</mainClass>
+            <classpathScope>compile</classpathScope>
           </configuration>
         </plugin>
       </plugins>
