@@ -330,3 +330,132 @@ h1,
     background: rgba(155, 89, 182, 0.1);
     color: #9b59b6;
 }
+
+/* Financial Cards Styling */
+.financial-cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem auto;
+    max-width: 1200px;
+}
+
+.financial-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.financial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.financial-card.balance {
+    border-left: 5px solid #3498db;
+}
+
+.financial-card.budget {
+    border-left: 5px solid #2ecc71;
+}
+
+.financial-card.piggy {
+    border-left: 5px solid #9b59b6;
+}
+
+.financial-card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.financial-card-icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+
+.balance .financial-card-icon { color: #3498db; }
+.budget .financial-card-icon { color: #2ecc71; }
+.piggy .financial-card-icon { color: #9b59b6; }
+
+.financial-card-title {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.financial-card-amount {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+}
+
+.balance .financial-card-amount { color: #3498db; }
+.budget .financial-card-amount { color: #2ecc71; }
+.piggy .financial-card-amount { color: #9b59b6; }
+
+/* Transactions Table Styling */
+.transactions-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 2rem auto;
+    max-width: 1200px;
+}
+
+.ui-datatable {
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ui-datatable thead th {
+    background: #f8f9fa !important;
+    color: #2c3e50 !important;
+    padding: 1rem !important;
+    border: none !important;
+    font-weight: 600 !important;
+}
+
+.ui-datatable tbody td {
+    padding: 1rem !important;
+    border: none !important;
+    border-bottom: 1px solid #eee !important;
+}
+
+.ui-datatable tbody tr:hover {
+    background: #f8f9fa !important;
+}
+
+.transaction-amount {
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+}
+
+.positive-amount {
+    color: #2ecc71 !important;
+}
+
+.negative-amount {
+    color: #e74c3c !important;
+}
+
+.user-full-name {
+    color: #ff9800;
+    font-weight: 600;
+    background: -webkit-linear-gradient(45deg, #ff9800, #ff5722);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    animation: nameGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes nameGlow {
+    from {
+        opacity: 0.8;
+    }
+    to {
+        opacity: 1;
+    }
+}
