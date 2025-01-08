@@ -21,22 +21,37 @@
     </h:form>
 
     <div class="content">
-        <h1>Hello, #{userBean.firstName} #{userBean.secondName}</h1>
+        <h1>Hello, <span class="user-full-name">#{userBean.firstName} #{userBean.secondName}</span></h1>
         <p>Email: #{userBean.email}</p>
-        <p>IBAN: #{userBean.currentUser.iban}</p>
 
-        <p:card title="Account Overview" styleClass="p-shadow-4" style="margin-top: 20px;">
-            <p:panelGrid columns="2" styleClass="p-fluid">
-                <p:outputLabel value="Balance:"/>
-                <p:outputLabel value="#{userBean.currentUser.balance} CZK"/>
-                <p:outputLabel value="Budget:"/>
-                <p:outputLabel value="#{userBean.currentUser.budget} CZK"/>
-                <p:outputLabel value="Piggy Bank:"/>
-                <p:outputLabel value="#{userBean.currentUser.piggyBank} CZK"/>
-            </p:panelGrid>
-        </p:card>
 
-        <p:card styleClass="p-shadow-4" style="margin-top: 20px;">
+        <div class="financial-cards-container">
+            <div class="financial-card balance">
+                <div class="financial-card-header">
+                    <i class="financial-card-icon pi pi-wallet"></i>
+                    <h3 class="financial-card-title">Balance</h3>
+                </div>
+                <div class="financial-card-amount">#{userBean.currentUser.balance} CZK</div>
+            </div>
+            
+            <div class="financial-card budget">
+                <div class="financial-card-header">
+                    <i class="financial-card-icon pi pi-chart-bar"></i>
+                    <h3 class="financial-card-title">Budget</h3>
+                </div>
+                <div class="financial-card-amount">#{userBean.currentUser.budget} CZK</div>
+            </div>
+            
+            <div class="financial-card piggy">
+                <div class="financial-card-header">
+                    <i class="financial-card-icon pi pi-money-bill"></i>
+                    <h3 class="financial-card-title">Piggy Bank</h3>
+                </div>
+                <div class="financial-card-amount">#{userBean.currentUser.piggyBank} CZK</div>
+            </div>
+        </div>
+
+        <div class="transactions-card">
             <h3>Recent Transactions</h3>
             <p:dataTable value="#{transactionBean.getUserTransactions(userBean.currentUser.id)}"
                          var="transaction"
@@ -61,8 +76,8 @@
                 </p:column>
             </p:dataTable>
             <p:link outcome="transactions" value="View All Transactions" 
-                    style="display: block; text-align: right; margin-top: 10px;"/>
-        </p:card>
+                    style="display: block; text-align: right; margin-top: 1rem;"/>
+        </div>
     </div>
 </h:body>
 </html>
