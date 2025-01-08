@@ -37,7 +37,9 @@ public class DatabasePrint {
                                    ", Two Factor Enabled: " + usersResult.getBoolean("two_factor_enabled") +
                                    ", Balance: " + usersResult.getDouble("balance") +
                                    ", Budget: " + usersResult.getDouble("budget") +
-                                   ", Piggy Bank: " + usersResult.getDouble("piggy_bank"));
+                                   ", Piggy Bank: " + usersResult.getDouble("piggy_bank") +
+                                   ", IBAN: " + usersResult.getString("iban") +
+                                   ", Variable Symbol: " + usersResult.getString("variable_symbol"));
             }
 
             ResultSet transactionsResult = statement.executeQuery("SELECT * FROM transactions");
