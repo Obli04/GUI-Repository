@@ -37,9 +37,13 @@ public class BankApiSimulator {
             return Response.ok()
                           .entity("{\"status\":\"success\",\"message\":\"Payment processed successfully\"}")
                           .build();
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                           .entity("{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}")
+                          .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                          .entity("{\"status\":\"error\",\"message\":\"Internal server error: " + e.getMessage() + "\"}")
                           .build();
         }
     }

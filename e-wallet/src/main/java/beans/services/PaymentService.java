@@ -1,10 +1,11 @@
 package beans.services;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+
+import javax.imageio.ImageIO;
 
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -16,99 +17,85 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import beans.entities.Transaction;
 import beans.entities.User;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
-/**
- * Service handling payment processing and validation
- */
-@Named
 @ApplicationScoped
 public class PaymentService {
+    
+    private static final String BANK_IBAN = "CZ6550400000001234567890";
     
     @PersistenceContext
     private EntityManager em;
     
-    // Store processed payment IDs to prevent duplicates
-    private Set<String> processedPayments = ConcurrentHashMap.newKeySet();
-    
-    /**
-     * Generates QR code for payment
-     * @param spayd SPD string containing payment information
-     * @return StreamedContent containing QR code image
-     */
-    public StreamedContent generateQRCode(String spayd) {
-        try {
-            QRCodeWriter qrCodeWriter = new QRCodeWriter();
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            MatrixToImageWriter.writeToStream(
-                qrCodeWriter.encode(spayd, BarcodeFormat.QR_CODE, 300, 300),
-                "PNG",
-                outputStream
-            );
-            
-            return DefaultStreamedContent.builder()
-                .contentType("image/png")
-                .stream(() -> new ByteArrayInputStream(outputStream.toByteArray()))
-                .build();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to generate QR code", e);
+    public boolean isValidPayment(PaymentInfo payment) throws IllegalArgumentException {
+        // First check if the payment is sent to our bank account
+        if (!BANK_IBAN.equals(payment.getReceiverAccount())) {
+            throw new IllegalArgumentException("Invalid receiver IBAN: " + payment.getReceiverAccount());
         }
+        
+        // Then check if the variable symbol exists
+        User user = em.createQuery("SELECT u FROM User u WHERE u.variableSymbol = :vs", User.class)
+                     .setParameter("vs", payment.getVariableSymbol())
+                     .getResultList()
+                     .stream()
+                     .findFirst()
+                     .orElse(null);
+                     
+        if (user == null) {
+            throw new IllegalArgumentException("Variable symbol not found: " + payment.getVariableSymbol());
+        }
+        
+        return true;
     }
     
-    /**
-     * Validates incoming payment
-     * @param payment Payment information from bank API
-     * @return true if payment is valid and not processed before
-     */
-    public boolean isValidPayment(PaymentInfo payment) {
-        String paymentId = generatePaymentId(payment);
-        return !processedPayments.contains(paymentId);
-    }
-    
-    /**
-     * Processes incoming payment
-     * @param payment Payment information
-     * @return Created transaction or null if failed
-     */
     @Transactional
     public Transaction processPayment(PaymentInfo payment) {
-        String paymentId = generatePaymentId(payment);
-        
-        if (processedPayments.add(paymentId)) {
-            User receiver = em.createQuery(
-                "SELECT u FROM User u WHERE u.iban = :iban", User.class)
-                .setParameter("iban", payment.getReceiverAccount())
-                .getSingleResult();
+        try {
+            // Find user by variable symbol
+            User user = em.createQuery("SELECT u FROM User u WHERE u.variableSymbol = :vs", User.class)
+                         .setParameter("vs", payment.getVariableSymbol())
+                         .getSingleResult();
             
-            if (receiver != null) {
-                Transaction transaction = new Transaction();
-                transaction.setNameOfSender(payment.getSenderAccount());
-                transaction.setReceiver(receiver);
-                transaction.setValue(payment.getAmount());
-                transaction.setType("Deposit");
-                transaction.setTransactionDate(LocalDateTime.now());
-                transaction.setCategory("Deposit");
-                
-                // Update user's balance
-                receiver.setBalance(receiver.getBalance() + payment.getAmount());
-                
-                em.persist(transaction);
-                em.merge(receiver);
-                
-                return transaction;
-            }
+            // Create and save transaction
+            Transaction transaction = new Transaction();
+            transaction.setReceiver(user);
+            transaction.setNameOfSender(payment.getSenderAccount());
+            transaction.setValue(payment.getAmount());
+            transaction.setType("Deposit");
+            transaction.setTransactionDate(LocalDateTime.now());
+            
+            // Update user balance
+            user.setBalance(user.getBalance() + payment.getAmount());
+            
+            // Persist changes
+            em.persist(transaction);
+            em.merge(user);
+            
+            return transaction;
+        } catch (Exception e) {
+            System.err.println("Error processing payment: " + e.getMessage());
+            return null;
         }
-        return null;
     }
     
-    private String generatePaymentId(PaymentInfo payment) {
-        return payment.getSenderAccount() + 
-               payment.getReceiverAccount() + 
-               payment.getAmount() + 
-               payment.getDate() + 
-               payment.getVariableSymbol();
+    public StreamedContent generateQRCode(String spaydString) {
+        try {
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BufferedImage qrCode = MatrixToImageWriter.toBufferedImage(
+                qrCodeWriter.encode(spaydString, BarcodeFormat.QR_CODE, 200, 200)
+            );
+            
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            ImageIO.write(qrCode, "png", os);
+            return DefaultStreamedContent.builder()
+                                      .contentType("image/png")
+                                      .stream(() -> new ByteArrayInputStream(os.toByteArray()))
+                                      .build();
+        } catch (Exception e) {
+            System.err.println("Error generating QR code: " + e.getMessage());
+            return null;
+        }
     }
 } 

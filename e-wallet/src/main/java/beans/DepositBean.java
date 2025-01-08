@@ -1,7 +1,6 @@
 package beans;
 
 import java.io.Serializable;
-import java.util.Random;
 
 import org.primefaces.model.StreamedContent;
 
@@ -23,6 +22,8 @@ import jakarta.inject.Named;
 @SessionScoped
 public class DepositBean implements Serializable {
     
+    private static final String BANK_IBAN = "CZ6550400000001234567890"; // Central bank account for all deposits
+    
     @Inject
     private UserBean userBean;
     
@@ -32,7 +33,6 @@ public class DepositBean implements Serializable {
     @Inject @Push
     private PushContext paymentChannel;
     
-    private String variableSymbol;
     private StreamedContent qrCode;
     private String spaydString;
     private double amount = 0.0;
@@ -42,17 +42,8 @@ public class DepositBean implements Serializable {
      * Called after successful login
      */
     public void initializeDeposit() {
-        generateVariableSymbol();
         generateSpayd();
         generateQRCode();
-    }
-    
-    /**
-     * Generates a random 10-digit variable symbol
-     */
-    private void generateVariableSymbol() {
-        Random random = new Random();
-        variableSymbol = String.format("%010d", random.nextInt(1000000000));
     }
     
     /**
@@ -61,9 +52,9 @@ public class DepositBean implements Serializable {
     private void generateSpayd() {
         User currentUser = userBean.getCurrentUser();
         spaydString = String.format("SPD*1.0*ACC:%s*AM:%.2f*CC:CZK*MSG:Deposit to CashHive*X-VS:%s",
-            currentUser.getIban(),
+            BANK_IBAN,
             amount,
-            variableSymbol);
+            currentUser.getVariableSymbol());
     }
     
     /**
@@ -77,15 +68,16 @@ public class DepositBean implements Serializable {
      * Handles incoming payment notification from bank API
      * @param payment The payment information received
      */
-    public void handlePaymentNotification(PaymentInfo payment) {
+    public void handlePaymentNotification(PaymentInfo payment) throws IllegalArgumentException {
+        // First validate the payment
         if (paymentService.isValidPayment(payment)) {
-            // Process the payment and update user's balance
+            // Only process if validation passes
             Transaction transaction = paymentService.processPayment(payment);
             if (transaction != null) {
-                // Notify the UI about the new payment
                 paymentChannel.send("Payment received: " + payment.getAmount() + " CZK");
-                // Refresh user data
                 userBean.refreshUserData();
+            } else {
+                throw new IllegalArgumentException("Failed to process payment");
             }
         }
     }
@@ -100,7 +92,7 @@ public class DepositBean implements Serializable {
     
     // Getters and setters
     public String getVariableSymbol() {
-        return variableSymbol;
+        return userBean.getCurrentUser().getVariableSymbol();
     }
     
     public StreamedContent getQrCode() {
@@ -112,7 +104,7 @@ public class DepositBean implements Serializable {
     }
     
     public String getBankAccount() {
-        return userBean.getCurrentUser().getIban();
+        return BANK_IBAN;
     }
     
     public double getAmount() {

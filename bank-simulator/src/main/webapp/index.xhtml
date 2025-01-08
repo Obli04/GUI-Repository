@@ -29,11 +29,22 @@
             
             <h:form id="form" styleClass="form-container">
                 <p:panelGrid columns="2" styleClass="ui-noborder">
-                    <p:outputLabel for="receiverAccount" value="To Account (IBAN):"/>
+                    <p:outputLabel for="senderAccount" value="Your IBAN:"/>
+                    <h:outputText id="senderAccount" 
+                                 value="#{paymentBean.myBankIban}"
+                                 styleClass="highlight"/>
+                    
+                    <p:outputLabel for="receiverAccount" value="Receiver IBAN:"/>
                     <p:inputText id="receiverAccount" 
                                value="#{paymentBean.receiverAccount}"
                                required="true"
-                               placeholder="Enter recipient's IBAN"/>
+                               placeholder="Enter receiver's IBAN"/>
+                    
+                    <p:outputLabel for="variableSymbol" value="Variable Symbol:"/>
+                    <p:inputText id="variableSymbol" 
+                               value="#{paymentBean.variableSymbol}"
+                               required="true"
+                               placeholder="Enter variable symbol"/>
                     
                     <p:outputLabel for="amount" value="Amount:"/>
                     <p:inputNumber id="amount" 
@@ -43,17 +54,7 @@
                                  maxValue="#{paymentBean.budget}"
                                  decimalPlaces="2"
                                  symbol=" CZK"
-                                 symbolPosition="s">
-                        <p:ajax event="change" 
-                                listener="#{paymentBean.validateAmount}"
-                                update="@form"/>
-                    </p:inputNumber>
-                    
-                    <p:outputLabel for="variableSymbol" value="Variable Symbol:"/>
-                    <p:inputText id="variableSymbol" 
-                               value="#{paymentBean.variableSymbol}"
-                               required="true"
-                               placeholder="Enter variable symbol"/>
+                                 symbolPosition="s"/>
                 </p:panelGrid>
                 
                 <div class="button-container">
