@@ -38,7 +38,7 @@ public class Transaction {
     private String category; // e.g., Payments, Utilities, Food, Travel, Shopping
 
     @Column(name="id_receiver", nullable=true)
-    private Long id_receiver;
+    private User id_receiver;
     
     // Getters and setters
     public Long getId() {
@@ -64,15 +64,6 @@ public class Transaction {
     public void setNameOfSender(String nameOfSender) {
         this.nameOfSender = nameOfSender;
     }
-
-    public User getReceiver() {
-        return receiver;
-    }
-
-    public void setReceiver(User receiver) {
-        this.receiver = receiver;
-    }
-
     public double getValue() {
         return value;
     }
@@ -105,11 +96,11 @@ public class Transaction {
         this.category = category;
     }
 
-    public Long getId_receiver() {
+    public User getReceiver() {
         return id_receiver;
     }
 
-    public void setId_receiver(Long id_receiver) {
-        this.id_receiver = id_receiver;
+    public void setReceiver(User receiver) {
+        this.id_receiver = receiver;
     }
 } 
