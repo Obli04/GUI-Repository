@@ -40,9 +40,6 @@ public class AuthService {
        System.out.println("AuthService initialized with GoogleAuthenticator");
    }
 
-   private static final String PASSWORD_PATTERN = 
-       "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
-
    public void validatePassword(String password) throws jakarta.validation.ValidationException {
        if (password == null || password.trim().isEmpty()) {
            throw new jakarta.validation.ValidationException("Password cannot be empty");
@@ -122,6 +119,7 @@ public class AuthService {
            user.setIsVerified(false);
            user.setTwoFactorEnabled(false);
            user.setTwoFactorSecret(null);  // Don't generate secret at registration
+           user.setVariableSymbol(generateVariableSymbol());
            
            // Generate verification token
            String token = UUID.randomUUID().toString();
@@ -167,15 +165,11 @@ public class AuthService {
        }
    }
 
-   private boolean isEntityManagerActive() {
-       try {
-           // Try to access the EntityManager
-           em.isOpen();
-           return true;
-       } catch (Exception e) {
-           System.err.println("EntityManager check failed: " + e.getMessage());
-           return false;
-       }
+   @Transactional
+   public String getVariableSymbol(Long id){
+    return em.createQuery("SELECT u.variable_symbol FROM User u WHERE u.id = :id", String.class)
+             .setParameter("id", id)
+             .getSingleResult();
    }
 
    @Transactional
@@ -407,5 +401,23 @@ public class AuthService {
 
    public void sendPasswordResetEmail(String email, String token) throws Exception {
        emailService.sendPasswordResetEmail(email, token);
+   }
+
+   private String generateVariableSymbol() {
+       String variableSymbol;
+       boolean isUnique;
+
+       do {
+           // Generate a random number and format it to be 10 characters long
+           long randomNumber = (long) (Math.random() * 1_000_000_000L);
+           variableSymbol = String.format("%010d", randomNumber);
+
+           // Check if the generated symbol already exists in the database
+           isUnique = em.createQuery("SELECT COUNT(u) FROM User u WHERE u.variableSymbol = :variableSymbol", Long.class)
+                        .setParameter("variableSymbol", variableSymbol)
+                        .getSingleResult() == 0;
+       } while (!isUnique);
+
+       return variableSymbol;
    }
 }

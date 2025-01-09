@@ -51,6 +51,12 @@ public class DatabasePrint {
                                    ", Value: " + transactionsResult.getDouble("value") +
                                    ", Type: " + transactionsResult.getString("type"));
             }
+            ResultSet maxConnectionsResult = statement.executeQuery("SELECT * FROM pg_settings WHERE name IN ('max_connections', 'superuser_reserved_connections');");
+            System.out.println("\nMax Connections:");
+            while (maxConnectionsResult.next()) {
+                System.out.println("Max Connections: " + maxConnectionsResult.getString("setting") +
+                                   ", Value: " + maxConnectionsResult.getString("unit"));
+            }
 
             // Close resources
             usersResult.close();
