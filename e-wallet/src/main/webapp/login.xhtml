@@ -7,6 +7,7 @@
     
     <f:metadata>
         <f:event type="preRenderView" listener="#{userBean.checkRegistrationMessage}"/>
+        <f:event type="preRenderView" listener="#{userBean.checkResetMessage}"/>
     </f:metadata>
 
     <h:head>
@@ -20,7 +21,7 @@
     <h:body>
         <div class="header">
             <h:link outcome="index" styleClass="logo-container">
-                <h:graphicImage library="images" name="cash-hive-logo.png" alt="CashHive Logo"/>
+                <h:graphicImage library="images" name="cash-hive-logo.png" alt="CashHive Logo" style="width: 175px; height: 50px;"/>
             </h:link>
             <div class="auth-buttons">
                 <h:link outcome="login" styleClass="auth-button login-btn" value="Login"/>
@@ -40,6 +41,7 @@
                         <p:outputPanel id="loginPanel" rendered="#{!userBean.showTwoFactorInput}">
                             <div class="form-group">
                                 <div class="input-field">
+                                    <p:outputLabel for="email" value="E-mail" styleClass="field-label"/>
                                     <p:inputText id="email" 
                                                value="#{userBean.email}" 
                                                placeholder="Email"
@@ -48,6 +50,7 @@
                                 </div>
                                 
                                 <div class="input-field">
+                                    <p:outputLabel for="password" value="Password" styleClass="field-label"/>
                                     <p:password id="password"
                                               value="#{userBean.password}" 
                                               placeholder="Password"
@@ -68,6 +71,7 @@
                         <p:outputPanel id="twoFactorPanel" rendered="#{userBean.showTwoFactorInput}">
                             <div class="form-group">
                                 <div class="input-field">
+                                    <p:outputLabel for="twoFactorCode" value="2FA Code" styleClass="field-label"/>
                                     <p:inputText id="twoFactorCode" 
                                                value="#{userBean.twoFactorCode}" 
                                                placeholder="Enter 2FA Code"

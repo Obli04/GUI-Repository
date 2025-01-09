@@ -105,7 +105,11 @@ public class EmailService {
     }
 
     public void sendPasswordResetEmail(String toEmail, String token) throws Exception {
-        System.out.println("Attempting to send password reset email to: " + toEmail);
+        System.out.println("\n=== Email Service: Sending Verification Email ===");
+        System.out.println("Recipient: " + toEmail);
+        System.out.println("SMTP Host: " + SMTP_HOST);
+        System.out.println("SMTP Port: " + SMTP_PORT);
+        System.out.println("From Email: " + FROM_EMAIL);
         
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
@@ -113,6 +117,9 @@ public class EmailService {
         props.put("mail.smtp.host", SMTP_HOST);
         props.put("mail.smtp.port", SMTP_PORT);
         props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        props.put("mail.smtp.ssl.trust", SMTP_HOST);
+        props.put("mail.debug", "true");
+        props.put("mail.debug.auth", "true");
 
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
@@ -154,4 +161,3 @@ public class EmailService {
         }
     }
 }
-   
