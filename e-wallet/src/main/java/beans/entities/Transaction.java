@@ -37,8 +37,9 @@ public class Transaction {
     @Column(name="category", nullable=true)
     private String category; // e.g., Payments, Utilities, Food, Travel, Shopping
 
-    @Column(name="id_receiver", nullable=true)
-    private User id_receiver;
+    @ManyToOne
+    @JoinColumn(name="id_receiver", nullable=true)
+    private User receiver;
     
     // Getters and setters
     public Long getId() {
@@ -97,10 +98,10 @@ public class Transaction {
     }
 
     public User getReceiver() {
-        return id_receiver;
+        return receiver;
     }
 
     public void setReceiver(User receiver) {
-        this.id_receiver = receiver;
+        this.receiver = receiver;
     }
 } 
