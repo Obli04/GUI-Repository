@@ -16,24 +16,48 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * Bean handling payment functionality for the bank simulator.
+ * Manages payment processing and communication with the e-wallet API.
+ *
+ * @author Danilo Spera
+ */
 @Named
 @SessionScoped
 public class PaymentBean implements Serializable {
     
+    /** API endpoint for e-wallet payment simulation */
     private static final String E_WALLET_API = "http://localhost:8080/e-wallet/api/bank-api/simulate-payment";
-    private static final String MY_BANK_IBAN = "CZ1234567890"; // Fixed sender IBAN
     
+    /** Fixed sender IBAN */
+    private static final String MY_BANK_IBAN = "CZ1234567890";
+    
+    /** Amount to be transferred */
     private double amount;
+    
+    /** Variable symbol */
     private String variableSymbol;
+    
+    /** Available budget for transfers , every time the application is deployed, the budget is reset to 1000.0*/
     private double budget = 1000.0;
+    
+    /** Receiver's bank account IBAN */
     private String receiverAccount;
     
+    /**
+     * Initializes the bean with default values.
+     * Called after bean construction.
+     */
     @PostConstruct
     public void init() {
         budget = 1000.0;
         receiverAccount = "";
     }
     
+    /**
+     * Processes and sends a payment to the e-wallet system.
+     * Validates input, creates payment object, and handles the API response.
+     */
     public void sendPayment() {
         try {
             // Validate input
@@ -59,7 +83,7 @@ public class PaymentBean implements Serializable {
             payment.setVariableSymbol(variableSymbol);
             payment.setRemainingBudget(budget - amount);
             
-            // Send request
+            // Send request to API
             Client client = ClientBuilder.newClient();
             Response response = client.target(E_WALLET_API)
                 .request(MediaType.APPLICATION_JSON)
@@ -68,7 +92,7 @@ public class PaymentBean implements Serializable {
             String responseBody = response.readEntity(String.class);
             
             if (response.getStatus() == Response.Status.OK.getStatusCode()) {
-                // Only update budget and reset amount on successful payment
+                // Update budget and reset amount on successful payment
                 budget -= amount;
                 amount = 0.0;
                 
@@ -84,7 +108,6 @@ public class PaymentBean implements Serializable {
                 // Parse and display the error message from the response
                 String errorMessage;
                 try {
-                    // Try to extract the error message from JSON response
                     errorMessage = responseBody.contains("message") ? 
                         responseBody.split("message\":\"")[1].split("\"")[0] : 
                         "Payment failed";
@@ -103,9 +126,18 @@ public class PaymentBean implements Serializable {
                     "Failed to send payment: " + e.getMessage()));
         }
     }
+
     
-    // Getters and setters
+    /**
+     * Gets the payment amount.
+     * @return The current payment amount
+     */
     public double getAmount() { return amount; }
+    
+    /**
+     * Sets the payment amount and validates against available budget.
+     * @param amount The amount to set
+     */
     public void setAmount(double amount) { 
         if (amount > budget) {
             this.amount = 0.0;
@@ -117,14 +149,45 @@ public class PaymentBean implements Serializable {
         }
     }
     
+    /**
+     * Gets the variable symbol.
+     * @return The current variable symbol
+     */
     public String getVariableSymbol() { return variableSymbol; }
+    
+    /**
+     * Sets the variable symbol for payment identification.
+     * @param variableSymbol The variable symbol to set
+     */
     public void setVariableSymbol(String variableSymbol) { this.variableSymbol = variableSymbol; }
     
+    /**
+     * Gets the available budget.
+     * @return The current budget
+     */
     public double getBudget() { return budget; }
+    
+    /**
+     * Sets the available budget.
+     * @param budget The budget to set
+     */
     public void setBudget(double budget) { this.budget = budget; }
     
+    /**
+     * Gets the receiver's account IBAN.
+     * @return The receiver's IBAN
+     */
     public String getReceiverAccount() { return receiverAccount; }
+    
+    /**
+     * Sets the receiver's account IBAN.
+     * @param receiverAccount The receiver's IBAN to set
+     */
     public void setReceiverAccount(String receiverAccount) { this.receiverAccount = receiverAccount; }
     
+    /**
+     * Gets the bank's fixed IBAN.
+     * @return The bank's IBAN
+     */
     public String getMyBankIban() { return MY_BANK_IBAN; }
 } 
