@@ -61,7 +61,8 @@ public class PaymentService {
             // Create and save transaction
             Transaction transaction = new Transaction();
             transaction.setReceiver(user);
-            transaction.setNameOfSender(payment.getSenderAccount());
+            //transaction.setNameOfSender(payment.getSenderAccount());
+            transaction.setNameOfSender("Test Name of sender");
             transaction.setValue(payment.getAmount());
             transaction.setType("Deposit");
             transaction.setTransactionDate(LocalDateTime.now());
