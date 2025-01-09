@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Base64;
 
 import javax.imageio.ImageIO;
@@ -68,6 +70,8 @@ public class UserBean implements Serializable {
     private User tempUser; // Store user temporarily during 2FA
 
     private String currentQRSecret; // Add this field
+
+    private String resetToken;
 
     // Login method
     public String login() {
@@ -580,4 +584,93 @@ public class UserBean implements Serializable {
             return null;
         }
     }
+
+    public String requestPasswordReset() {
+        try {
+            User user = authService.findUserByEmail(email);
+            if (user == null) {
+                addErrorMessage("Reset Failed", "No account found with this email address.");
+                return null;
+            }
+
+            // Generate a reset token
+            String token = generateNewToken();
+            user.setVerificationToken(token);
+            user.setTokenExpiry(LocalDateTime.now().plusHours(1)); // 1 hour from now
+            authService.updateUser(user);
+
+            // Send reset email
+            authService.sendPasswordResetEmail(user.getEmail(), token);
+
+            // Store success message in session
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("resetMessage", 
+                "If an account exists with this email, you will receive password reset instructions.");
+
+            return "login?faces-redirect=true";
+        } catch (Exception e) {
+            addErrorMessage("Reset Failed", "An error occurred while processing your request.");
+            return null;
+        }
+    }
+
+    public String resetPassword() {
+        try {
+            if (resetToken == null || resetToken.trim().isEmpty()) {
+                addErrorMessage("Reset Failed", "Invalid reset token");
+                return null;
+            }
+
+            if (newPassword == null || newPassword.trim().isEmpty()) {
+                addErrorMessage("Reset Failed", "Password cannot be empty");
+                return null;
+            }
+
+            if (!newPassword.equals(confirmPassword)) {
+                addErrorMessage("Reset Failed", "Passwords do not match");
+                return null;
+            }
+
+            User user = authService.findUserByResetToken(resetToken);
+            if (user == null) {
+                addErrorMessage("Reset Failed", "Invalid or expired reset token");
+                return null;
+            }
+
+            // Check if token is expired
+            Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+            if (user.getTokenExpiry() == null || 
+                user.getTokenExpiry().isBefore(currentTime.toLocalDateTime())) {
+                addErrorMessage("Reset Failed", "Reset token has expired");
+                return null;
+            }
+
+            // Update password and clear reset token
+            authService.updatePassword(user, newPassword);
+            user.setVerificationToken(null);
+            user.setTokenExpiry(null);
+            authService.updateUser(user);
+
+            // Store success message in session
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("resetMessage", 
+                "Your password has been reset successfully. Please log in with your new password.");
+
+            return "login?faces-redirect=true";
+        } catch (Exception e) {
+            addErrorMessage("Reset Failed", e.getMessage());
+            return null;
+        }
+    }
+
+    // Method to check and display messages after redirect
+    public void checkResetMessage() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        String message = (String) context.getExternalContext().getSessionMap().get("resetMessage");
+        if (message != null) {
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", message));
+            context.getExternalContext().getSessionMap().remove("resetMessage");
+        }
+    }
+
+    public String getResetToken() { return resetToken; }
+    public void setResetToken(String resetToken) { this.resetToken = resetToken; }
 }

@@ -1,4 +1,5 @@
 package beans.services;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -296,7 +297,7 @@ public class AuthService {
        if (user != null) {
            String token = UUID.randomUUID().toString();
            user.setVerificationToken(token);
-           user.setTokenExpiry(LocalDateTime.now().plusHours(1));
+           user.setTokenExpiry(LocalDateTime.now().plusHours(1)); // 1 hour from now
            em.merge(user);
            try {
                emailService.sendPasswordResetEmail(email, token);
@@ -310,19 +311,20 @@ public class AuthService {
    public boolean resetPassword(String token, String newPassword) {
        try {
            validatePassword(newPassword);
-           User user = em.createQuery("SELECT u FROM User u WHERE u.verificationToken = :token", User.class)
-                        .setParameter("token", token)
-                        .getSingleResult();
+           User user = findUserByResetToken(token);
 
-           if (user != null && LocalDateTime.now().isBefore(user.getTokenExpiry())) {
-               user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
-               user.setVerificationToken(null);
-               user.setTokenExpiry(null);
-               em.merge(user);
-               return true;
+           if (user != null) {
+               Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+               if (user.getTokenExpiry() != null && user.getTokenExpiry().isAfter(currentTime.toLocalDateTime())) {
+                   user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+                   user.setVerificationToken(null);
+                   user.setTokenExpiry(null);
+                   em.merge(user);
+                   return true;
+               }
            }
        } catch (Exception e) {
-           // Log error
+           System.err.println("Error resetting password: " + e.getMessage());
        }
        return false;
    }
@@ -391,5 +393,19 @@ public class AuthService {
        String secret = key.getKey();
        System.out.println("Generated new 2FA secret: " + secret);
        return secret;
+   }
+
+   public User findUserByResetToken(String token) {
+       try {
+           return em.createQuery("SELECT u FROM User u WHERE u.verificationToken = :token", User.class)
+                    .setParameter("token", token)
+                    .getSingleResult();
+       } catch (Exception e) {
+           return null;
+       }
+   }
+
+   public void sendPasswordResetEmail(String email, String token) throws Exception {
+       emailService.sendPasswordResetEmail(email, token);
    }
 }

@@ -14,7 +14,7 @@
 <h:body>
     <div class="header">
         <h:link outcome="index" styleClass="logo-container">
-            <h:graphicImage library="images" name="cash-hive-logo.png" alt="CashHive Logo"/>
+            <h:graphicImage library="images" name="cash-hive-logo.png" alt="CashHive Logo" style="width: 175px; height: 50px;"/>
         </h:link>
         <div class="auth-buttons">
             <h:link outcome="login" styleClass="auth-button login-btn" value="Login"/>
@@ -22,49 +22,64 @@
         </div>
     </div>
 
-    <div class="p-d-flex p-jc-center p-ai-center" style="height: 100vh; display: flex; align-items: center; justify-content: center;">
-        <p:card styleClass="p-shadow-4 register-card">
+    <div class="p-d-flex p-jc-center p-ai-center" style="height: 100vh; width: 700px; display: flex; align-items: center; justify-content: center;">
+        <p:card styleClass="p-shadow-4 register-card" style="width: 100%;">
             <h1 class="p-text-center" style="color: black;">Create Account</h1>
             <h:form styleClass="register-form">
                 <div class="form-container">
-                    <p:inputText value="#{userBean.firstName}" 
-                                placeholder="First Name"
-                                required="true"
-                                styleClass="form-input"/>
-                                
-                    <p:inputText value="#{userBean.secondName}" 
-                                placeholder="Last Name"
-                                required="true"
-                                styleClass="form-input"/>
-                                
-                    <p:inputText value="#{userBean.email}" 
-                                placeholder="Email"
-                                required="true"
-                                validatorMessage="Please enter a valid email address"
-                                styleClass="form-input">
-                        <f:validateRegex pattern="^[A-Za-z0-9+_.-]+@(.+)$"/>
-                    </p:inputText>
-                    
-                    <p:password value="#{userBean.password}" 
-                                placeholder="Password"
-                                required="true"
-                                feedback="true"
-                                promptLabel="Enter password"
-                                weakLabel="Weak password"
-                                goodLabel="Good password"
-                                strongLabel="Strong password"
-                                toggleMask="true"
-                                styleClass="form-input"/>
-                                
-                    <small class="password-hint">Password must be at least 8 characters long with uppercase, lowercase, numbers and special characters (@# $%^&amp;+=!)</small>
-                    
+                    <!-- First Row -->
+                    <div class="row">
+                        <div class="input-field">
+                            <p:outputLabel for="firstName" value="First Name" styleClass="field-label"/>
+                            <p:inputText id="firstName" value="#{userBean.firstName}" 
+                                        placeholder="First Name"
+                                        required="true"
+                                        styleClass="form-input"
+                                        style="width: 100%;"/>
+                        </div>
+                        <div class="input-field">
+                            <p:outputLabel for="lastName" value="Last Name" styleClass="field-label"/>
+                            <p:inputText id="lastName" value="#{userBean.secondName}" 
+                                        placeholder="Last Name"
+                                        required="true"
+                                        styleClass="form-input"
+                                        style="width: 100%;"/>
+                        </div>
+                    </div>
+                    <!-- Second Row -->
+                    <div class="row">
+                        <div class="input-field">
+                            <p:outputLabel for="email" value="Email" styleClass="field-label"/>
+                            <p:inputText id="email" value="#{userBean.email}" 
+                                        placeholder="Email"
+                                        required="true"
+                                        validatorMessage="Please enter a valid email address"
+                                        styleClass="form-input"
+                                        style="width: 100%;">
+                                <f:validateRegex pattern="^[A-Za-z0-9+_.-]+@(.+)$"/>
+                            </p:inputText>
+                        </div>
+                        <div class="input-field">
+                            <p:outputLabel for="password" value="Password" styleClass="field-label"/>
+                            <p:password id="password" value="#{userBean.password}" 
+                                        placeholder="Password"
+                                        required="true"
+                                        feedback="true"
+                                        promptLabel="Enter password"
+                                        weakLabel="Weak password"
+                                        goodLabel="Good password"
+                                        strongLabel="Strong password"
+                                        toggleMask="true"
+                                        styleClass="form-input"
+                                        style="width: 100%;"/>
+                        </div>
+                    </div>
+                    <small class="password-hint" style="font-size: 0.75rem; margin: 0; padding: 0;">Password must be at least 8 characters long with uppercase, lowercase, numbers and special characters (@# $%^&amp;+=!)</small>
                     <p:messages id="messages" showDetail="true" closable="true"/>
-                    
                     <p:commandButton value="Create Account" 
                                     action="#{userBean.register}"
                                     update="@form messages"
                                     styleClass="submit-button"/>
-                                    
                     <p:link outcome="login" 
                             value="Already have an account? Login"
                             styleClass="p-link"/>
