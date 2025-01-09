@@ -10,6 +10,7 @@ import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -21,6 +22,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
+import beans.entities.Transaction;
 import beans.entities.User;
 import beans.services.AuthService;
 import beans.services.RegistrationResult;
@@ -29,6 +31,8 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpSession;
 
 @Named
@@ -72,6 +76,9 @@ public class UserBean implements Serializable {
     private String currentQRSecret; // Add this field
 
     private String resetToken;
+
+    @PersistenceContext(unitName = "e-walletPU")
+    private EntityManager em;
 
     // Login method
     public String login() {
@@ -673,4 +680,10 @@ public class UserBean implements Serializable {
 
     public String getResetToken() { return resetToken; }
     public void setResetToken(String resetToken) { this.resetToken = resetToken; }
+
+    public List<Transaction> getUserTransactions(Long userId) {
+        return em.createQuery("SELECT t FROM Transaction t WHERE (t.sender.id = :userId OR t.receiver.id = :userId OR (t.sender IS NULL AND t.receiver.id = :userId)) ORDER BY t.transactionDate DESC", Transaction.class)
+                 .setParameter("userId", userId)
+                 .getResultList();
+    }
 }
