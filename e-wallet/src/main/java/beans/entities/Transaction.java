@@ -41,8 +41,8 @@ public class Transaction {
     @Column(name="category", nullable=true)
     private String category; // e.g., Payments, Utilities, Food, Travel, Shopping
 
-    @Column(name="iban_receiver", nullable=true)
-    private String iban_receiver;
+    @Column(name="id_receiver", nullable=true)
+    private Long id_receiver;
     
     // Getters and setters
     public Long getId() {
@@ -109,11 +109,11 @@ public class Transaction {
         this.category = category;
     }
 
-    public String getIban_receiver() {
-        return iban_receiver;
+    public Long getId_receiver() {
+        return id_receiver;
     }
 
-    public void setIban_receiver(String iban_receiver) {
-        this.iban_receiver = iban_receiver;
+    public void setId_receiver(Long id_receiver) {
+        this.id_receiver = id_receiver;
     }
 } 
