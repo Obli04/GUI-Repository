@@ -25,10 +25,6 @@ public class Transaction {
     @Column(name = "name_of_sender", nullable = true)
     private String nameOfSender;
 
-    @ManyToOne
-    @JoinColumn(name = "id_receiver", nullable = false)
-    private User receiver;
-
     @Column(name="value", nullable = false)
     private double value;
 
