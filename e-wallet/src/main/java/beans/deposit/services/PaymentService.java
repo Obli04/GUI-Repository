@@ -1,4 +1,4 @@
-package beans.services;
+package beans.deposit.services;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;

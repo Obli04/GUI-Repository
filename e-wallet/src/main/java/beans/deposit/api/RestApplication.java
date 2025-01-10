@@ -1,4 +1,4 @@
-package beans.api;
+package beans.deposit.api;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +12,6 @@ public class RestApplication extends Application {
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = new HashSet<>();
         classes.add(BankApiSimulator.class);
-        // Add any other REST resource classes here
         return classes;
     }
 } 

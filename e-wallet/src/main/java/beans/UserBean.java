@@ -22,6 +22,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
+import beans.deposit.DepositBean;
 import beans.entities.Transaction;
 import beans.entities.User;
 import beans.services.AuthService;

@@ -55,7 +55,7 @@
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>jakarta.ws.rs.Application</param-name>
-            <param-value>beans.api.RestApplication</param-value>
+            <param-value>beans.deposit.api.RestApplication</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>

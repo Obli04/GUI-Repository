@@ -1,4 +1,4 @@
-package beans.api;
+package beans.deposit.api;
 
 public class SimulatedPayment {
     private String senderAccount;
