@@ -38,20 +38,20 @@
                     <p:inputText id="receiverAccount" 
                                value="#{paymentBean.receiverAccount}"
                                required="true"
+                               requiredMessage="Receiver IBAN is required"
                                placeholder="Enter receiver's IBAN"/>
                     
                     <p:outputLabel for="variableSymbol" value="Variable Symbol:"/>
                     <p:inputText id="variableSymbol" 
                                value="#{paymentBean.variableSymbol}"
                                required="true"
+                               requiredMessage="Variable Symbol is required"
                                placeholder="Enter variable symbol"/>
                     
                     <p:outputLabel for="amount" value="Amount:"/>
                     <p:inputNumber id="amount" 
                                  value="#{paymentBean.amount}"
                                  required="true"
-                                 minValue="0.01"
-                                 maxValue="#{paymentBean.budget}"
                                  decimalPlaces="2"
                                  symbol=" CZK"
                                  symbolPosition="s"/>

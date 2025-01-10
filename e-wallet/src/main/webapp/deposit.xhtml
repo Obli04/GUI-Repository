@@ -8,10 +8,11 @@
 <h:head>
     <title>Deposit - CashHive</title>
     <h:outputStylesheet library="styles" name="dashboard.css"/>
+    <h:outputStylesheet library="styles" name="deposit.css"/>
     <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/favicon.ico"/>
 </h:head>
 <h:body>
-    <h:form>
+    <h:form onsubmit="return false;">
         <f:websocket channel="payment" onmessage="handlePayment" />
         <ui:include src="navbar.xhtml"/>
     </h:form>
@@ -36,30 +37,34 @@
                                  minValue="0.01"
                                  decimalPlaces="2"
                                  symbol=" CZK"
-                                 symbolPosition="s">
+                                 symbolPosition="s"
+                                 onkeypress="if(event.keyCode === 13) { event.preventDefault(); return false; }">
                         <p:ajax event="change" 
                                listener="#{depositBean.onAmountChange}" 
                                update="qrCode"/>
+                        <p:ajax event="keyup" 
+                               listener="#{depositBean.onAmountChange}" 
+                               update="qrCode"
+                               process="@this"
+                               onstart="if (event.keyCode !== 13) return false;"/>
                     </p:inputNumber>
                 </h:form>
             </p:panelGrid>
             
-            <div class="qr-section">
-                <h3>Scan QR Code for Payment</h3>
-                <p:graphicImage id="qrCode" value="#{depositBean.qrCode}" cache="false"/>
-            </div>
-            
-            <p:divider/>
-            
-            <div class="instructions">
-                <h3>Instructions:</h3>
-                <ol>
-                    <li>Enter the amount you wish to deposit</li>
-                    <li>Use your bank's mobile app to scan the QR code, or</li>
-                    <li>Manually enter the account number and variable symbol in your bank's transfer form</li>
-                    <li>Confirm the transfer in your bank's app</li>
-                    <li>The deposit will be credited to your account automatically once processed</li>
-                </ol>
+            <div class="qr-instructions-container">
+                <div class="qr-section">
+                    <h3>Scan QR Code for Payment</h3>
+                    <p:graphicImage id="qrCode" value="#{depositBean.qrCode}" cache="false"/>
+                </div>
+                
+                <div class="instructions">
+                    <h3>Instructions:</h3>
+                    <p>Enter the amount you wish to deposit</p>
+                    <p>Use your bank's mobile app to scan the QR code, or</p>
+                    <p>Manually enter the account number and variable symbol in your bank's transfer form</p>
+                    <p>Confirm the transfer in your bank's app</p>
+                    <p>The deposit will be credited to your account automatically once processed</p>
+                </div>
             </div>
         </p:card>
         
