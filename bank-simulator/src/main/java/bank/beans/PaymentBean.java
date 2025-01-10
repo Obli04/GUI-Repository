@@ -2,8 +2,6 @@ package bank.beans;
 
 import java.io.Serializable;
 
-import org.primefaces.PrimeFaces;
-
 import bank.models.Payment;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
@@ -58,23 +56,34 @@ public class PaymentBean implements Serializable {
      * Processes and sends a payment to the e-wallet system.
      * Validates input, creates payment object, and handles the API response.
      */
-    public void sendPayment() {
+    public String sendPayment() {
         try {
-            // Validate input
+            // Add validation for zero or negative amount
+            if (amount == 0) {
+                FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Invalid Amount", 
+                        "Payment amount cannot be zero"));
+                return null;
+            }
+            
+            if (amount < 0) {
+                FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Invalid Amount", 
+                        "Payment amount cannot be negative"));
+                return null;
+            }
+
+            // Rest of the existing sendPayment logic
             if (amount > budget) {
                 FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
-                        "Insufficient funds. Your budget is " + String.format("%.2f", budget) + " CZK"));
-                return;
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Insufficient Funds", 
+                        "You don't have enough funds for this payment"));
+                return null;
             }
-            
-            if (receiverAccount == null || receiverAccount.trim().isEmpty()) {
-                FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
-                        "Please enter receiver's IBAN"));
-                return;
-            }
-            
+
             // Create payment object
             Payment payment = new Payment();
             payment.setSenderAccount(MY_BANK_IBAN);
@@ -82,48 +91,40 @@ public class PaymentBean implements Serializable {
             payment.setAmount(amount);
             payment.setVariableSymbol(variableSymbol);
             payment.setRemainingBudget(budget - amount);
-            
-            // Send request to API
+
+            // Update budget
+            budget -= amount;
+
+            // Send payment to e-wallet
             Client client = ClientBuilder.newClient();
             Response response = client.target(E_WALLET_API)
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(payment, MediaType.APPLICATION_JSON));
-            
-            String responseBody = response.readEntity(String.class);
-            
+
             if (response.getStatus() == Response.Status.OK.getStatusCode()) {
-                // Update budget and reset amount on successful payment
-                budget -= amount;
-                amount = 0.0;
-                
-                // Show success message
                 FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", 
-                        String.format("Payment of %.2f CZK has been sent. Remaining budget: %.2f CZK", 
-                            payment.getAmount(), budget)));
-                
-                // Update UI components
-                PrimeFaces.current().ajax().update("form:budget-display", "form:amount");
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, 
+                        "Success", 
+                        "Payment sent successfully"));
             } else {
-                // Parse and display the error message from the response
-                String errorMessage;
-                try {
-                    errorMessage = responseBody.contains("message") ? 
-                        responseBody.split("message\":\"")[1].split("\"")[0] : 
-                        "Payment failed";
-                } catch (Exception e) {
-                    errorMessage = "Payment failed: " + responseBody;
-                }
-                
-                FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Payment Failed", errorMessage));
+                FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Error", 
+                        "Failed to send payment: " + response.readEntity(String.class)));
             }
-            
+
+            // Reset form
+            amount = 0;
+            receiverAccount = "";
+            variableSymbol = "";
+
+            return null;
         } catch (Exception e) {
-            // Show error message for unexpected errors
             FacesContext.getCurrentInstance().addMessage(null, 
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
-                    "Failed to send payment: " + e.getMessage()));
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                    "Error", 
+                    "An error occurred while processing the payment: " + e.getMessage()));
+            return null;
         }
     }
 
