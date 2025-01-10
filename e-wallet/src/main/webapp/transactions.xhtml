@@ -9,6 +9,7 @@
     <title>Transaction History - CashHive</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
     <h:outputStylesheet library="styles" name="dashboard.css"/>
+    <h:outputStylesheet library="styles" name="transaction.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </h:head>
 <h:body>
@@ -32,17 +33,18 @@
                          paginatorPosition="bottom">
                 
                 <p:column headerText="Date">
-                    <h:outputText value="#{transaction.transactionDate}">
-                        <f:convertDateTime type="localDateTime" pattern="yyyy-MM-dd HH:mm:ss" />
+                    <h:outputText value="#{transaction.transactionDate}" styleClass="transaction-date">
+                        <f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm:ss" />
                     </h:outputText>
                 </p:column>
                 
                 <p:column headerText="Type">
-                    <h:outputText value="#{transaction.type}" />
+                    <h:outputText value="#{transaction.type}" 
+                                  styleClass="transaction-type type-#{transaction.type.toLowerCase()}" />
                 </p:column>
                 
                 <p:column headerText="Category">
-                    <h:outputText value="#{transaction.category}" />
+                    <h:outputText value="#{transaction.category}" styleClass="transaction-category" />
                 </p:column>
                 
                 <p:column headerText="Amount">
@@ -55,12 +57,48 @@
                     </h:outputText>
                 </p:column>
                 
-                <p:column headerText="Details">
-                    <h:outputText value="#{transaction.sender.id eq userBean.currentUser.id ? 'To: '.concat(transaction.receiver.email) : 'From: '.concat(transaction.sender.email)}" 
-                                rendered="#{transaction.type eq 'Send' or transaction.type eq 'Receive'}" />
-                    <h:outputText value="#{transaction.nameOfSender}" 
-                                rendered="#{transaction.type eq 'Deposit'}" />
+                <p:column headerText="Sender">
+                    <h:outputText value="#{transaction.nameOfSender != null ? 
+                                        transaction.nameOfSender : 
+                                        transaction.receiver.firstName.concat(' ').concat(transaction.receiver.secondName)}" 
+                                  />
                 </p:column>
+                
+
+
+
+
+
+
+
+
+                <!-- <p:column headerText="Details">
+                    <p:panelGrid columns="2" styleClass="ui-noborder">
+                        <h:outputText value="ID:" />
+                        <h:outputText value="#{transaction.id}" />
+
+                        <h:outputText value="Sender ID:" rendered="#{transaction.sender != null}"/>
+                        <h:outputText value="#{transaction.sender.id}" 
+                                      rendered="#{transaction.sender != null}"/>
+                        
+                        <h:outputText value="Sender:" rendered="#{transaction.sender != null}"/>
+                        <h:outputText value="#{transaction.sender.firstName} #{transaction.sender.secondName}" 
+                                      rendered="#{transaction.sender != null}"/>
+                        
+                        <h:outputText value="Name of Sender:" rendered="#{transaction.nameOfSender != null}"/>
+                        <h:outputText value="#{transaction.nameOfSender}" 
+                                      rendered="#{transaction.nameOfSender != null}"/>
+                        
+                        <h:outputText value="Receiver:" rendered="#{transaction.receiver != null}"/>
+                        <h:outputText value="#{transaction.receiver.firstName} #{transaction.receiver.secondName}" 
+                                      rendered="#{transaction.receiver != null}"/>
+                        
+                        <h:outputText value="Category:" rendered="#{transaction.category != null}"/>
+                        <h:outputText value="#{transaction.category}" 
+                                      rendered="#{transaction.category != null}"/>
+                    </p:panelGrid>
+                </p:column> -->
+                
             </p:dataTable>
         </h:form>
     </div>
