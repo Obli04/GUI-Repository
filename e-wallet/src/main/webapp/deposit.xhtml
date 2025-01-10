@@ -12,7 +12,7 @@
     <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/favicon.ico"/>
 </h:head>
 <h:body>
-    <h:form>
+    <h:form onsubmit="return false;">
         <f:websocket channel="payment" onmessage="handlePayment" />
         <ui:include src="navbar.xhtml"/>
     </h:form>
@@ -37,10 +37,16 @@
                                  minValue="0.01"
                                  decimalPlaces="2"
                                  symbol=" CZK"
-                                 symbolPosition="s">
+                                 symbolPosition="s"
+                                 onkeypress="if(event.keyCode === 13) { event.preventDefault(); return false; }">
                         <p:ajax event="change" 
                                listener="#{depositBean.onAmountChange}" 
                                update="qrCode"/>
+                        <p:ajax event="keyup" 
+                               listener="#{depositBean.onAmountChange}" 
+                               update="qrCode"
+                               process="@this"
+                               onstart="if (event.keyCode !== 13) return false;"/>
                     </p:inputNumber>
                 </h:form>
             </p:panelGrid>
