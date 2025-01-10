@@ -61,9 +61,10 @@ public class PaymentService {
             // Create and save transaction
             Transaction transaction = new Transaction();
             transaction.setReceiver(user);
-            transaction.setNameOfSender("Bank Simulator");
+            transaction.setNameOfSender("Bank Simulator, IBAN:"+payment.getSenderAccount());
             transaction.setValue(payment.getAmount());
             transaction.setType("Deposit");
+            transaction.setCategory("Bank Transfer");
             transaction.setTransactionDate(LocalDateTime.now());
             
             // Update user balance
