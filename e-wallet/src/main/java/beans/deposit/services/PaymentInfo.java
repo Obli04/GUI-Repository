@@ -1,4 +1,4 @@
-package beans.services;
+package beans.deposit.services;
 
 import java.time.LocalDateTime;
 

@@ -1,9 +1,9 @@
-package beans.api;
+package beans.deposit.api;
 
 import java.time.LocalDateTime;
 
-import beans.DepositBean;
-import beans.services.PaymentInfo;
+import beans.deposit.DepositBean;
+import beans.deposit.services.PaymentInfo;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;

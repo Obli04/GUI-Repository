@@ -1,13 +1,14 @@
-package beans;
+package beans.deposit;
 
 import java.io.Serializable;
 
 import org.primefaces.model.StreamedContent;
 
+import beans.UserBean;
 import beans.entities.Transaction;
 import beans.entities.User;
-import beans.services.PaymentInfo;
-import beans.services.PaymentService;
+import beans.deposit.services.PaymentInfo;
+import beans.deposit.services.PaymentService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.push.Push;
 import jakarta.faces.push.PushContext;
