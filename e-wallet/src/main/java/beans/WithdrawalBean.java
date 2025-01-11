@@ -26,38 +26,21 @@ public class WithdrawalBean implements Serializable {
     private UserBean userBean;
     
     private double amount;
-    private String category = "Withdrawal";
-    private String recipientBank;
-    private String recipientIBAN;
-    private String note;
-    private String countryCode;
     
     @Transactional
     public String withdraw() {
         User currentUser = userBean.getCurrentUser();
         
         try {
-            // Combine country code with IBAN number
-            String fullIBAN = countryCode + recipientIBAN;
-            
-            if (fullIBAN.length() < 15) {
-                addMessage(FacesMessage.SEVERITY_ERROR, "Invalid IBAN", 
-                    "IBAN must be at least 15 characters long");
-                return null;
-            }
-
-            // Store the full IBAN
-            this.recipientIBAN = fullIBAN;
-            
-            if (recipientBank == null || recipientIBAN == null || 
-                recipientBank.trim().isEmpty() || recipientIBAN.trim().isEmpty()) {
-                addMessage(FacesMessage.SEVERITY_ERROR, "Invalid details", 
-                    "Please provide valid bank and IBAN details");
+            if (currentUser.getIban() == null || currentUser.getIban().trim().isEmpty()) {
+                addMessage(FacesMessage.SEVERITY_ERROR, "No IBAN configured", 
+                    "Please set up your IBAN in Account Settings before making a withdrawal");
                 return null;
             }
 
             if (amount <= 0) {
-                addMessage(FacesMessage.SEVERITY_ERROR, "Invalid amount", "Please enter a positive amount");
+                addMessage(FacesMessage.SEVERITY_ERROR, "Invalid amount", 
+                    "Please enter a positive amount");
                 return null;
             }
             
@@ -72,8 +55,7 @@ public class WithdrawalBean implements Serializable {
             withdrawal.setReceiver(currentUser);
             withdrawal.setValue(amount);
             withdrawal.setType("Withdraw");
-            withdrawal.setCategory(String.format("%s - Bank: %s, IBAN: %s", 
-                                              category, recipientBank, recipientIBAN));
+            withdrawal.setCategory("Bank Withdrawal - " + currentUser.getIban());
             withdrawal.setTransactionDate(LocalDateTime.now());
             
             // Update user balance
@@ -84,11 +66,10 @@ public class WithdrawalBean implements Serializable {
             em.merge(currentUser);
             
             addMessage(FacesMessage.SEVERITY_INFO, "Success", 
-                String.format("Withdrawal of %.2f CZK to %s (IBAN: %s) completed successfully", 
-                            amount, recipientBank, recipientIBAN));
+                String.format("Withdrawal of %.2f CZK completed successfully", amount));
             
             // Reset form
-            resetForm();
+            amount = 0;
             
             return "dashboard?faces-redirect=true";
             
@@ -97,13 +78,6 @@ public class WithdrawalBean implements Serializable {
                 "An error occurred during withdrawal: " + e.getMessage());
             return null;
         }
-    }
-    
-    private void resetForm() {
-        amount = 0;
-        recipientBank = null;
-        recipientIBAN = null;
-        note = null;
     }
     
     private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
@@ -118,53 +92,5 @@ public class WithdrawalBean implements Serializable {
     
     public void setAmount(double amount) {
         this.amount = amount;
-    }
-    
-    public String getCategory() {
-        return category;
-    }
-    
-    public void setCategory(String category) {
-        this.category = category;
-    }
-    
-    public String getRecipientBank() {
-        return recipientBank;
-    }
-    
-    public void setRecipientBank(String recipientBank) {
-        this.recipientBank = recipientBank;
-    }
-    
-    public String getRecipientIBAN() {
-        return recipientIBAN;
-    }
-    
-    public void setRecipientIBAN(String recipientIBAN) {
-        this.recipientIBAN = recipientIBAN;
-    }
-    
-    public String getNote() {
-        return note;
-    }
-    
-    public void setNote(String note) {
-        this.note = note;
-    }
-    
-    public String getCountryCode() {
-        return countryCode;
-    }
-    
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
-    
-    public void updateIBANPrefix() {
-        if (countryCode != null && !countryCode.isEmpty()) {
-            if (recipientIBAN == null || recipientIBAN.length() < 2 || !recipientIBAN.startsWith(countryCode)) {
-                recipientIBAN = countryCode + (recipientIBAN != null ? recipientIBAN.substring(2) : "");
-            }
-        }
     }
 }
