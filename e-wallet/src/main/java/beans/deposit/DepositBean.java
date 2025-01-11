@@ -1,9 +1,3 @@
-/**
- * Bean handling deposit functionality.
- * Manages payment information display and processing of incoming payments.
- * 
- * @author Danilo Spera
- */
 package beans.deposit;
 
 import java.io.Serializable;
@@ -22,8 +16,10 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 /**
- * Bean handling deposit functionality
+ * Bean handling deposit functionality.
  * Manages payment information display and processing of incoming payments.
+ * 
+ * @author Danilo Spera
  */
 @Named
 @SessionScoped

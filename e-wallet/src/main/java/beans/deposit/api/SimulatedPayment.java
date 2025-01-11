@@ -1,9 +1,22 @@
 package beans.deposit.api;
 
+/**
+ * Data Transfer Object (DTO) for receiving payment information from bank simulator.
+ * Maps JSON payment data to Java object for processing.
+ *
+ * @author Danilo Spera
+ */
 public class SimulatedPayment {
+    /** The bank account IBAN sending the payment */
     private String senderAccount;
+    
+    /** The target bank account IBAN */
     private String receiverAccount;
+    
+    /** The payment amount in CZK */
     private double amount;
+    
+    /** The variable symbol for identifying the receiving user */
     private String variableSymbol;
     
     // Getters and setters
