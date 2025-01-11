@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>Request Money - CashHive</title>
+    <h:outputStylesheet library="styles" name="dashboard.css"/>
+    <h:outputStylesheet library="styles" name="request.css"/>
+    <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/favicon.ico"/>
+</h:head>
+<h:body>
+    <h:form>
+        <ui:include src="navbar.xhtml"/>
+    </h:form>
+
+    <div class="content">
+        <h1>Request Money</h1>
+        
+        <p:card styleClass="request-form">
+            <h:form>
+                <p:panelGrid columns="2" styleClass="ui-noborder">
+                    <p:outputLabel for="recipient" value="Recipient Email or Variable Symbol:"/>
+                    <p:inputText id="recipient" 
+                               value="#{requestBean.recipientIdentifier}"
+                               required="true"
+                               requiredMessage="Please enter recipient's email or variable symbol"/>
+                    
+                    <p:outputLabel for="amount" value="Amount (CZK):"/>
+                    <p:inputNumber id="amount" 
+                                 value="#{requestBean.amount}"
+                                 required="true"
+                                 minValue="0.01"
+                                 decimalPlaces="2"
+                                 symbol=" CZK"
+                                 symbolPosition="s"/>
+                    
+                    <p:outputLabel for="description" value="Description:"/>
+                    <p:inputTextarea id="description"
+                                   value="#{requestBean.description}"
+                                   rows="3"
+                                   placeholder="Enter a description for your request"/>
+                </p:panelGrid>
+                
+                <div class="button-container">
+                    <p:commandButton value="Send Request"
+                                   action="#{requestBean.sendRequest}"
+                                   styleClass="p-button-success"
+                                   update="@form"/>
+                </div>
+                
+                <p:messages id="messages" showDetail="true" closable="true">
+                    <p:autoUpdate />
+                </p:messages>
+            </h:form>
+        </p:card>
+    </div>
+</h:body>
+</html>
