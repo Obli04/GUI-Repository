@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpSession;
 
 @WebFilter(filterName = "SecurityFilter", urlPatterns = {
     "/dashboard.xhtml", "/deposit.xhtml", "/withdraw.xhtml", 
-    "/budget.xhtml", "/account.xhtml", "/transactions.xhtml", "/transfer.xhtml", "/piggybank.xhtml"
+    "/budget.xhtml", "/account.xhtml", "/transactions.xhtml", "/transfer.xhtml", "/piggybank.xhtml", "/request.xhtml", "/send.xhtml"
 })
 public class SecurityFilter implements Filter {
     
