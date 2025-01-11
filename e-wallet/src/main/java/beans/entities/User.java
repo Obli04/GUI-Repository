@@ -189,6 +189,13 @@ public class User implements Serializable {
                ", firstName='" + firstName + '\'' +
                ", secondName='" + secondName + '\'' +
                ", isVerified=" + isVerified +
+               ", twoFactorEnabled=" + twoFactorEnabled +
+               ", twoFactorSecret='" + twoFactorSecret + '\'' +
+               ", balance=" + balance +
+               ", budget=" + budget +
+               ", piggyBank=" + piggyBank +
+               ", iban='" + iban + '\'' +
+               ", variableSymbol='" + variableSymbol + '\'' +
                '}';
     }
 

@@ -51,6 +51,7 @@ public class UserBean implements Serializable {
     private Double budget;
     private Double piggyBank;
     private String iban;
+    private String variableSymbol;
     
     // Session data
     private User currentUser;
@@ -117,7 +118,8 @@ public class UserBean implements Serializable {
                 this.balance = currentUser.getBalance();
                 this.budget = currentUser.getBudget();
                 this.piggyBank = currentUser.getPiggyBank();
-                
+                this.iban = currentUser.getIban();
+                this.variableSymbol = currentUser.getVariableSymbol();
                 // Store in session
                 FacesContext facesContext = FacesContext.getCurrentInstance();
                 HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(true);
@@ -279,6 +281,8 @@ public class UserBean implements Serializable {
                 this.balance = freshUser.getBalance();
                 this.budget = freshUser.getBudget();
                 this.piggyBank = freshUser.getPiggyBank();
+                this.iban = freshUser.getIban();
+                this.variableSymbol = freshUser.getVariableSymbol();
             } else {
                 addErrorMessage("Error", "Unable to refresh user data.");
             }
@@ -316,6 +320,8 @@ public class UserBean implements Serializable {
             this.balance = null;
             this.budget = null;
             this.piggyBank = null;
+            this.iban = null;
+            this.variableSymbol = null;
             
             // Invalidate session
             if (session != null) {

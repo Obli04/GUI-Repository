@@ -57,8 +57,27 @@ public class DatabasePrint {
                 System.out.println("Max Connections: " + maxConnectionsResult.getString("setting") +
                                    ", Value: " + maxConnectionsResult.getString("unit"));
             }
+            
+            ResultSet budgetsResult = statement.executeQuery("SELECT * FROM budgets");
+            System.out.println("\nBudgets Table:");
+            while (budgetsResult.next()) {
+                System.out.println("ID: " + budgetsResult.getInt("id") +
+                                   ", User ID: " + budgetsResult.getInt("id_user") +
+                                   ", Budget: " + budgetsResult.getDouble("budget") +
+                                   ", Budget Spent: " + budgetsResult.getDouble("budget_spent") +
+                                   ", Budget Category: " + budgetsResult.getString("budget_category"));
+            }
 
-            // Close resources
+            ResultSet requestMoneyResult = statement.executeQuery("SELECT * FROM request_money");
+            System.out.println("\nRequest Money Table:");
+            while (requestMoneyResult.next()) {
+                System.out.println("ID: " + requestMoneyResult.getInt("id") +
+                                   ", Sender ID: " + requestMoneyResult.getInt("id_sender") +
+                                   ", Receiver ID: " + requestMoneyResult.getInt("id_receiver") +
+                                   ", Value: " + requestMoneyResult.getDouble("value") +
+                                   ", Description: " + requestMoneyResult.getString("description"));
+            }
+            // Close resources  
             usersResult.close();
             transactionsResult.close();
             statement.close();

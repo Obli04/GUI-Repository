@@ -31,3 +31,22 @@ CREATE TABLE transactions (
     FOREIGN KEY (id_sender) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (id_receiver) REFERENCES users(id) ON DELETE CASCADE
 );
+
+CREATE TABLE budgets (
+    id SERIAL PRIMARY KEY,
+    id_user INTEGER,
+    budget DOUBLE PRECISION DEFAULT 0.0,
+    budget_spent DOUBLE PRECISION DEFAULT 0.0,
+    budget_category VARCHAR(100),
+    FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE request_money (
+    id SERIAL PRIMARY KEY,
+    id_sender INTEGER NOT NULL,
+    id_receiver INTEGER NOT NULL,
+    value DOUBLE PRECISION NOT NULL,
+    description VARCHAR(255) DEFAULT 'Request for money',
+    FOREIGN KEY (id_sender) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_receiver) REFERENCES users(id) ON DELETE CASCADE
+);
