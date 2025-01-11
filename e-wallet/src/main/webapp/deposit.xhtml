@@ -72,17 +72,5 @@
             <p:autoUpdate />
         </p:messages>
     </div>
-    
-    <h:outputScript>
-        function handlePayment(message) {
-            PF('growl').renderMessage({
-                "summary": "Payment Received",
-                "detail": message,
-                "severity": "info"
-            });
-        }
-    </h:outputScript>
-    
-    <p:growl id="growl" widgetVar="growl" showDetail="true" sticky="true"/>
 </h:body>
 </html>

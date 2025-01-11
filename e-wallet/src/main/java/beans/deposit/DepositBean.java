@@ -10,8 +10,6 @@ import beans.deposit.services.PaymentService;
 import beans.entities.Transaction;
 import beans.entities.User;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.push.Push;
-import jakarta.faces.push.PushContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
@@ -34,10 +32,7 @@ public class DepositBean implements Serializable {
     @Inject
     private PaymentService paymentService;
     
-    // WebSocket channel for real-time payment notifications
-    @Inject @Push
-    private PushContext paymentChannel;
-    
+    // Fields to store QR code and payment information
     private StreamedContent qrCode;
     private String spaydString;
     private double amount = 0.0;
@@ -83,8 +78,6 @@ public class DepositBean implements Serializable {
             // Process payment if validation passes
             Transaction transaction = paymentService.processPayment(payment);
             if (transaction != null) {
-                // Notify client through WebSocket
-                paymentChannel.send("Payment received: " + payment.getAmount() + " CZK");
                 // Refresh user data to show new balance
                 userBean.refreshUserData();
             } else {
