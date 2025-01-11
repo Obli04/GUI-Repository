@@ -41,12 +41,12 @@ public class DatabasePrint {
                     printTransactionsTable(transactionsResult);
                 }
 
-                try (ResultSet budgetsResult = statement.executeQuery("SELECT * FROM budgets")) { //Execute a query to get all the budgets from the database
+                try (ResultSet budgetsResult = statement.executeQuery("SELECT * FROM budget")) { //Execute a query to get all the budgets from the database
                     System.out.println("\nBudgets Table:");
                     printBudgetsTable(budgetsResult);
                 }
 
-                try (ResultSet requestMoneyResult = statement.executeQuery("SELECT * FROM request_money")) { //Execute a query to get all the request money from the database
+                try (ResultSet requestMoneyResult = statement.executeQuery("SELECT * FROM requestMoney")) { //Execute a query to get all the request money from the database
                     System.out.println("\nRequest Money Table:");
                     printRequestMoneyTable(requestMoneyResult);
                 }

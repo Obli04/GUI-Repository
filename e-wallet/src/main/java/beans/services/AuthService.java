@@ -389,4 +389,16 @@ public class AuthService {
 
        return variableSymbol;
    }
+
+   @Transactional
+   public double getLatestBalance(Long userId) {
+       try {
+           return em.createQuery("SELECT u.balance FROM User u WHERE u.id = :userId", Double.class)
+                    .setParameter("userId", userId)
+                    .getSingleResult();
+       } catch (Exception e) {
+           System.err.println("Error fetching latest balance: " + e.getMessage());
+           return 0.0; //Return a default value or handle the error appropriately
+       }
+   }
 }

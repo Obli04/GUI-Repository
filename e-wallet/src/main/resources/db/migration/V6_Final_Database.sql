@@ -32,7 +32,7 @@ CREATE TABLE transactions (
     FOREIGN KEY (id_receiver) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE budgets (
+CREATE TABLE budget (
     id SERIAL PRIMARY KEY,
     id_user INTEGER,
     budget DOUBLE PRECISION DEFAULT 0.0,
@@ -41,7 +41,7 @@ CREATE TABLE budgets (
     FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE request_money (
+CREATE TABLE requestMoney (
     id SERIAL PRIMARY KEY,
     id_sender INTEGER NOT NULL,
     id_receiver INTEGER NOT NULL,
