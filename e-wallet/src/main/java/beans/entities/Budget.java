@@ -8,6 +8,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
+/**
+ * Represents a budget entity associated with a user.
+ * Contains information about the budget, amount spent, and category.
+ * 
+ * @author Davide Scaccia
+ */
 @Entity
 public class Budget {
     @Id

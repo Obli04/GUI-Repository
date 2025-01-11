@@ -8,6 +8,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
+/**
+ * Represents a request for money between users.
+ * Contains information about the sender, receiver, value, and description.
+ * 
+ * @author Davide Scaccia
+ */
 @Entity
 public class RequestMoney {
 
@@ -57,7 +63,6 @@ public class RequestMoney {
     public void setValue(Double value) {
         this.value = value;
     }
-
 
     public void setDescription(String description) {
         this.description = description;

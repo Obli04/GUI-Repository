@@ -11,6 +11,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+/**
+ * Represents a transaction between users or deposit/withdraw.
+ * Contains information about the sender, receiver, value, type, and date.
+ * 
+ * @author Davide Scaccia
+ */
 @Entity
 @Table(name = "transactions")
 public class Transaction {
