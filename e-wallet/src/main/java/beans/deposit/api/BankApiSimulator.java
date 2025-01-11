@@ -12,12 +12,26 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * REST API endpoint that simulates a bank's payment notification system.
+ * Handles incoming payment requests from the bank simulator and processes them
+ *
+ * @author Danilo Spera
+ */
 @Path("/bank-api")
 public class BankApiSimulator {
     
+    /** Deposit bean for handling payment notifications */
     @Inject
     private DepositBean depositBean;
     
+    /**
+     * Processes a simulated payment request from the bank simulator.
+     * Converts the payment data and forwards it to the deposit system.
+     *
+     * @param payment The payment information received from bank simulator
+     * @return Response with success or error message in JSON format
+     */
     @POST
     @Path("/simulate-payment")
     @Consumes(MediaType.APPLICATION_JSON)
