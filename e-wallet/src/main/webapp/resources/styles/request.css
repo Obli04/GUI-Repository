@@ -1,0 +1,65 @@
+.content {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.content h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+}
+
+.request-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ui-panelgrid {
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.ui-panelgrid tr {
+    border: none !important;
+}
+
+.ui-panelgrid td {
+    padding: 1rem !important;
+}
+
+.ui-inputtext,
+.ui-inputnumber input,
+.ui-inputtextarea {
+    width: 100% !important;
+    padding: 0.5rem !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    font-size: 1rem !important;
+}
+
+.button-container {
+    text-align: right;
+    margin-top: 1rem;
+}
+
+.ui-button {
+    padding: 0.5rem 1.5rem !important;
+    font-size: 1.1rem !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ui-panelgrid-cell {
+        display: block !important;
+        width: 100% !important;
+        padding: 0.5rem !important;
+    }
+    
+    .button-container {
+        text-align: center;
+    }
+}
