@@ -3,6 +3,7 @@ package beans.deposit.services;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 import javax.imageio.ImageIO;
@@ -11,6 +12,7 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.qrcode.QRCodeWriter;
 
@@ -126,7 +128,7 @@ public class PaymentService {
                                       .contentType("image/png")
                                       .stream(() -> new ByteArrayInputStream(os.toByteArray()))
                                       .build();
-        } catch (Exception e) {
+        } catch (IOException | WriterException e) {
             System.err.println("Error generating QR code: " + e.getMessage());
             return null;
         }
