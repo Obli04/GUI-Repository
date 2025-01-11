@@ -13,6 +13,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </h:head>
 <h:body>
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{userBean.refreshBalance}"/>
+    </f:metadata>
     <h:form>
         <ui:include src="navbar.xhtml"/>
     </h:form>

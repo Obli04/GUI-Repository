@@ -278,7 +278,7 @@ public class UserBean implements Serializable {
                 this.firstName = freshUser.getFirstName();
                 this.secondName = freshUser.getSecondName();
                 this.email = freshUser.getEmail();
-                this.balance = freshUser.getBalance();
+                this.balance = authService.getLatestBalance(freshUser.getId());
                 this.budget = freshUser.getBudget();
                 this.piggyBank = freshUser.getPiggyBank();
                 this.iban = freshUser.getIban();
@@ -702,5 +702,13 @@ public class UserBean implements Serializable {
 
     public void setIban(String iban) {
         this.iban = iban;
+    }
+
+    public void refreshBalance() {
+        User currentUser = getCurrentUser();
+        if (currentUser != null) {
+            double latestBalance = authService.getLatestBalance(currentUser.getId());
+            currentUser.setBalance(latestBalance);
+        }
     }
 }
