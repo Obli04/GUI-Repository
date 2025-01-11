@@ -459,3 +459,80 @@ h1,
         opacity: 1;
     }
 }
+
+.money-requests-section {
+    margin: 2rem 0;
+}
+
+.request-panel {
+    margin-bottom: 1rem;
+}
+
+.request-table {
+    width: 100%;
+}
+
+.action-column {
+    width: 200px;
+    text-align: center;
+}
+
+.action-column .ui-button {
+    margin: 0 0.25rem;
+}
+
+.ui-panel-titlebar {
+    background: #f8f9fa !important;
+    color: #2c3e50 !important;
+    font-size: 1.2rem !important;
+}
+
+.request-table .ui-datatable-data td,
+.request-table .ui-datatable-data th {
+    text-align: left !important;
+    padding-left: 1rem !important;
+}
+
+.align-left {
+    text-align: left !important;
+}
+
+.ui-datatable thead th {
+    text-align: left !important;
+    padding-left: 1rem !important;
+}
+
+.ui-datatable tbody td {
+    text-align: left !important;
+}
+
+.action-column {
+    width: 200px;
+    text-align: center !important;
+}
+
+.action-column .ui-button {
+    margin: 0 0.25rem;
+    text-align: center !important;
+}
+
+.ui-growl {
+    right: 20px !important;
+    bottom: 20px !important;
+    top: auto !important;
+}
+
+.ui-growl-item {
+    background: rgba(255, 0, 0, 0.9) !important;
+    border-radius: 8px !important;
+}
+
+.ui-growl-message {
+    color: white !important;
+}
+
+.ui-growl-title {
+    font-size: 1.1em !important;
+    font-weight: bold !important;
+    color: white !important;
+}
