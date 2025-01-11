@@ -12,6 +12,12 @@ import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 
+/**
+ * Represents a user entity in the system.
+ * Contains personal information, account details, and security settings.
+ * 
+ * @author Davide Scaccia
+ */
 @Entity
 @Table(name = "users")
 @NamedQueries({
