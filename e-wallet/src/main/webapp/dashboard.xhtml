@@ -23,6 +23,10 @@
     </h:form>
 
     <div class="content">
+        <p:growl id="growl" showDetail="true" sticky="true" position="bottom-right">
+            <p:autoUpdate />
+        </p:growl>
+
         <h1>Hello, <span class="user-full-name">#{userBean.firstName} #{userBean.secondName}</span></h1>
         <p>Email: #{userBean.email}</p>
 
@@ -53,13 +57,81 @@
             </div>
         </div>
 
+        <div class="money-requests-section">
+            <!-- Received Requests -->
+            <p:panel id="receivedRequests" header="Money Requests Received" styleClass="request-panel" 
+                     rendered="#{not empty requestBean.receivedRequests}">
+                <p:dataTable value="#{requestBean.receivedRequests}" var="moneyRequest"
+                             styleClass="request-table" rows="3" paginator="false">
+                    <p:column headerText="From">
+                        <h:outputText value="#{moneyRequest.sender.email}" />
+                    </p:column>
+                    
+                    <p:column headerText="Amount">
+                        <h:outputText value="#{moneyRequest.value}">
+                            <f:convertNumber type="currency" currencySymbol="Kč"/>
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="Description">
+                        <h:outputText value="#{moneyRequest.description}" />
+                    </p:column>
+                    
+                    <p:column headerText="Actions" styleClass="action-column">
+                        <h:form>
+                            <p:commandButton value="Accept" 
+                                           action="#{requestBean.acceptRequest(moneyRequest)}"
+                                           styleClass="p-button-success"
+                                           update="@form :growl"/>
+                            
+                            <p:commandButton value="Decline"
+                                           action="#{requestBean.declineRequest(moneyRequest)}"
+                                           styleClass="p-button-danger"
+                                           update="@form :growl"/>
+                        </h:form>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+            
+            <!-- Sent Requests -->
+            <p:panel id="sentRequests" header="Money Requests Sent" styleClass="request-panel"
+                     rendered="#{not empty requestBean.sentRequests}">
+                <p:dataTable value="#{requestBean.sentRequests}" var="moneyRequest"
+                             styleClass="request-table" rows="3" paginator="false">
+                    <p:column headerText="To" styleClass="align-left">
+                        <h:outputText value="#{moneyRequest.receiver.email}" />
+                    </p:column>
+                    
+                    <p:column headerText="Amount" styleClass="align-left">
+                        <h:outputText value="#{moneyRequest.value}">
+                            <f:convertNumber type="currency" currencySymbol="Kč"/>
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="Description" styleClass="align-left">
+                        <h:outputText value="#{moneyRequest.description}" />
+                    </p:column>
+                    
+                    <p:column headerText="Actions" styleClass="action-column">
+                        <h:form>
+                            <p:commandButton value="Delete" 
+                                           action="#{requestBean.deleteRequest(moneyRequest)}"
+                                           styleClass="p-button-danger"
+                                           oncomplete="window.location.reload()"/>
+                        </h:form>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+        </div>
+
         <div class="transactions-card">
             <h3>Recent Transactions</h3>
-            <p:dataTable value="#{transactionBean.getUserTransactions(userBean.currentUser.id)}"
-                         var="transaction"
-                         styleClass="transaction-table"
-                         rows="5"
-                         paginator="false">
+            <p:dataTable id="transactionsTable"
+                        value="#{transactionBean.getUserTransactions(userBean.currentUser.id)}"
+                        var="transaction"
+                        styleClass="transaction-table"
+                        rows="5"
+                        paginator="false">
                 <p:column headerText="Date">
                     <h:outputText value="#{transaction.transactionDate}" styleClass="transaction-date">
                         <f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm:ss" />
