@@ -11,19 +11,19 @@ import java.time.LocalDateTime;
  */
 public class PaymentInfo {
     /** The IBAN of the account sending the payment */
-    private String senderAccount;
+    private final String senderAccount;
     
     /** The IBAN of the account receiving the payment */
-    private String receiverAccount;
+    private final String receiverAccount;
     
     /** The amount of money being transferred in CZK */
-    private double amount;
+    private final double amount;
     
     /** The timestamp when the payment was initiated */
-    private LocalDateTime date;
+    private final LocalDateTime date;
     
     /** The variable symbol used to identify the receiving user */
-    private String variableSymbol;
+    private final String variableSymbol;
     
     /**
      * Constructs a new PaymentInfo object with all necessary payment details.
