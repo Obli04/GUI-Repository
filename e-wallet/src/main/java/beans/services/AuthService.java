@@ -79,14 +79,8 @@ public class AuthService {
                e.printStackTrace();
                throw new Exception("Unable to connect to database: " + e.getMessage());
            }
-
-           // Validate inputs
-           if (user == null) {
-               throw new jakarta.validation.ValidationException("User data cannot be null");
-           }
            
            validatePassword(user.getPassword());
-           
            if (user.getEmail() == null || user.getFirstName() == null || user.getSecondName() == null) {
                throw new jakarta.validation.ValidationException("All fields are required");
            }
@@ -182,35 +176,10 @@ public class AuthService {
            user.setIsVerified(true);
            user.setVerificationToken(null);
            user.setTokenExpiry(null);
-           user.setIban(generateIban());
            em.merge(user);
            return true;
        }
        return false;
-   }
-
-   private String generateIban() {
-       String countryCode = "CZ";
-       String bankCode = "0800"; // Example bank code
-       String accountNumber = String.format("%010d", (int) (Math.random() * 1000000000));
-       String prefix = "000000"; // Example prefix
-
-       String bban = bankCode + prefix + accountNumber;
-       String checkDigits = calculateCheckDigits(countryCode, bban);
-
-       return countryCode + checkDigits + bban;
-   }
-
-   private String calculateCheckDigits(String countryCode, String bban) {
-       String numericCountryCode = countryCode.chars()
-               .mapToObj(c -> String.valueOf(c - 'A' + 10))
-               .reduce("", String::concat);
-
-       String checkString = bban + numericCountryCode + "00";
-       int checkValue = new java.math.BigInteger(checkString).mod(java.math.BigInteger.valueOf(97)).intValue();
-       int checkDigits = 98 - checkValue;
-
-       return String.format("%02d", checkDigits);
    }
 
    public boolean login(String email, String password, String twoFactorCode) {

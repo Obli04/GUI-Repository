@@ -45,6 +45,11 @@
                         <p:inputText id="email" value="#{userBean.email}" 
                                     placeholder="Email"
                                     required="true"/>
+                                    
+                        <p:outputLabel for="iban" value="IBAN" styleClass="field-label"/>
+                        <p:inputText id="iban" value="#{userBean.iban}" 
+                                    placeholder="IBAN"
+                                    required="true"/>
                         <p:commandButton value="Update Profile"
                                        action="#{userBean.updateProfile}"
                                        update="@form"

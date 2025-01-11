@@ -50,6 +50,7 @@ public class UserBean implements Serializable {
     private Double balance;
     private Double budget;
     private Double piggyBank;
+    private String iban;
     
     // Session data
     private User currentUser;
@@ -385,6 +386,7 @@ public class UserBean implements Serializable {
             User user = authService.findUserByEmail(currentUser.getEmail());
             user.setFirstName(firstName);
             user.setSecondName(secondName);
+            user.setIban(iban);
             
             // If email is changed, verify it's not already in use
             if (!user.getEmail().equals(email)) {
@@ -686,5 +688,13 @@ public class UserBean implements Serializable {
         return em.createQuery("SELECT t FROM Transaction t WHERE (t.sender.id = :userId OR t.receiver.id = :userId OR (t.sender IS NULL AND t.receiver.id = :userId)) ORDER BY t.transactionDate DESC", Transaction.class)
                  .setParameter("userId", userId)
                  .getResultList();
+    }
+
+    public String getIban() {
+        return iban;
+    }
+
+    public void setIban(String iban) {
+        this.iban = iban;
     }
 }
