@@ -38,6 +38,7 @@
                     </h:outputText>
                 </p:panelGrid>
             </p:card>
+            <p:poll interval="3" update="@form" />
         </h:form>
         
         <div class="budget-forms">
@@ -114,6 +115,16 @@
                             </p:column>
                             <p:column headerText="Budget">
                                 <h:outputText value="#{entry.value}">
+                                    <f:convertNumber type="currency" currencySymbol="Kč"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Spent">
+                                <h:outputText value="#{budgetBean.getCategorySpent(entry.key)}">
+                                    <f:convertNumber type="currency" currencySymbol="Kč"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Remaining">
+                                <h:outputText value="#{entry.value - budgetBean.getCategorySpent(entry.key)}">
                                     <f:convertNumber type="currency" currencySymbol="Kč"/>
                                 </h:outputText>
                             </p:column>

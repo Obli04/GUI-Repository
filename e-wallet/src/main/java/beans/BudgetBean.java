@@ -2,9 +2,12 @@ package beans;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import beans.entities.Budget;
 import beans.entities.User;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -61,8 +64,9 @@ public class BudgetBean implements Serializable {
         }
     }
     
-    /*@Transactional
+    @Transactional
     public String setCategoryBudget() {
+        User currentUser = userBean.getCurrentUser();
         try {
             if (categoryAmount <= 0) {
                 addMessage(FacesMessage.SEVERITY_ERROR, "Invalid amount", 
@@ -70,16 +74,35 @@ public class BudgetBean implements Serializable {
                 return null;
             }
             
-            double totalCategoryBudgets = categoryBudgets.values().stream()
-                .mapToDouble(Double::doubleValue)
-                .sum() + categoryAmount;
-                
-            if (totalCategoryBudgets > totalBudget) {
-                addMessage(FacesMessage.SEVERITY_ERROR, "Budget exceeded", 
-                    "Total category budgets cannot exceed total budget");
-                return null;
+            // Find existing budget for this category
+            TypedQuery<Budget> query = em.createQuery(
+                "SELECT b FROM Budget b WHERE b.user = :user AND b.budgetCategory = :category",
+                Budget.class);
+            query.setParameter("user", currentUser);
+            query.setParameter("category", selectedCategory);
+            
+            Budget categoryBudget;
+            try {
+                categoryBudget = query.getSingleResult();
+            } catch (Exception e) {
+                // Create new budget if none exists
+                categoryBudget = new Budget();
+                categoryBudget.setBudgetCategory(selectedCategory);
+                categoryBudget.setBudgetSpent(0.0);
+                categoryBudget.setUser(currentUser);
             }
             
+            // Update or set the budget
+            categoryBudget.setBudget(categoryAmount);
+            
+            // Persist changes
+            if (categoryBudget.getId() == null) {
+                em.persist(categoryBudget);
+            } else {
+                em.merge(categoryBudget);
+            }
+            
+            // Update the local map for display
             categoryBudgets.put(selectedCategory, categoryAmount);
             
             addMessage(FacesMessage.SEVERITY_INFO, "Success", 
@@ -96,7 +119,7 @@ public class BudgetBean implements Serializable {
                 "An error occurred while setting the category budget: " + e.getMessage());
             return null;
         }
-    }*/
+    }
     
     public double getRemainingBudget() {
         User currentUser = userBean.getCurrentUser();
@@ -108,19 +131,52 @@ public class BudgetBean implements Serializable {
         }
         return 0.0;
     }
-    
-    private double calculateTotalSpent() {
-        User currentUser = userBean.getCurrentUser();
-        if (currentUser == null) return 0.0;
 
-        TypedQuery<Double> query = em.createQuery(
-            "SELECT COALESCE(SUM(t.value), 0) FROM Transaction t " +
-            "WHERE t.sender.id = :userId " +
-            "AND t.type IN ('Withdraw', 'Send')", Double.class);
-        query.setParameter("userId", currentUser.getId());
-        
-        Double totalSpent = query.getSingleResult();
-        return totalSpent != null ? totalSpent : 0.0;
+    @Transactional
+    private double calculateTotalSpent() {
+        try {
+            User currentUser = userBean.getCurrentUser();
+            if (currentUser == null) return 0.0;
+
+            // Get all transactions for withdrawal sending money
+            TypedQuery<Object[]> query = em.createQuery(
+                "SELECT t.category, SUM(t.value) FROM Transaction t " +
+                "WHERE t.sender.id = :userId " +
+                "AND t.type IN ('Withdraw', 'Send') " +
+                "GROUP BY t.category", Object[].class);
+            query.setParameter("userId", currentUser.getId());
+            
+            // Calculate total spent
+            List<Object[]> results = query.getResultList();
+            double totalSpent = 0.0;
+            
+            // Update budget spent for each category
+            for (Object[] result : results) {
+                String category = (String) result[0];
+                Double value = ((Number) result[1]).doubleValue();
+                totalSpent += value;
+                
+                // Update budget_spent in the Budget entity
+                TypedQuery<Budget> budgetQuery = em.createQuery(
+                    "SELECT b FROM Budget b WHERE b.user = :user AND b.budgetCategory = :category",
+                    Budget.class);
+                budgetQuery.setParameter("user", currentUser);
+                budgetQuery.setParameter("category", category);
+                
+                try {
+                    Budget budget = budgetQuery.getSingleResult();
+                    budget.setBudgetSpent(value);
+                    em.merge(budget);
+                } catch (Exception e) {
+                    // No budget set for this category, can skip
+                }
+            }
+            
+            return totalSpent;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0.0;
+        }
     }
     
     private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
@@ -159,5 +215,36 @@ public class BudgetBean implements Serializable {
     
     public Map<String, Double> getCategoryBudgets() {
         return categoryBudgets;
+    }
+    
+    @PostConstruct
+    public void init() {
+        User currentUser = userBean.getCurrentUser();
+        if (currentUser != null) {
+            TypedQuery<Budget> query = em.createQuery(
+                "SELECT b FROM Budget b WHERE b.user = :user", Budget.class);
+            query.setParameter("user", currentUser);
+            
+            query.getResultList().forEach(budget -> 
+                categoryBudgets.put(budget.getBudgetCategory(), budget.getBudget()));
+        }
+    }
+    
+    public Double getCategorySpent(String category) {
+        User currentUser = userBean.getCurrentUser();
+        if (currentUser == null) return 0.0;
+        
+        TypedQuery<Budget> query = em.createQuery(
+            "SELECT b FROM Budget b WHERE b.user = :user AND b.budgetCategory = :category",
+            Budget.class);
+        query.setParameter("user", currentUser);
+        query.setParameter("category", category);
+        
+        try {
+            Budget budget = query.getSingleResult();
+            return budget.getBudgetSpent();
+        } catch (Exception e) {
+            return 0.0;
+        }
     }
 }
