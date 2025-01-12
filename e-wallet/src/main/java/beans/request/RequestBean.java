@@ -46,7 +46,12 @@ public class RequestBean implements Serializable {
             }
             
             // Validate amount
-            if (amount <= 0) {
+            if (amount == 0) {
+                addGrowlMessage(FacesMessage.SEVERITY_ERROR, "Invalid amount", 
+                    "Amount cannot be zero");
+                return null;
+            }
+            if (amount < 0) {
                 addGrowlMessage(FacesMessage.SEVERITY_ERROR, "Invalid amount", 
                     "Please enter a positive amount");
                 return null;
