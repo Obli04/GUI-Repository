@@ -35,8 +35,23 @@
                     #{userBean.showTwoFactorInput ? '2FA Verification' : 'Login'}
                 </h1>
                 
+                <h:form id="hiddenForm" style="display:none;">
+                    <p:commandButton id="resendVerification" 
+                                     action="#{userBean.resendVerificationEmail}" 
+                                     update="loginForm:messagePanel loginForm:messages"
+                                     process="@this" />
+                </h:form>
+
                 <h:form id="loginForm" styleClass="login-form">
                     <div class="form-container">
+                        <!-- Message Panel -->
+                        <p:outputPanel id="messagePanel" styleClass="message-panel">
+                            <h:outputText value="#{userBean.loginMessage}" 
+                                         escape="false" 
+                                         rendered="#{not empty userBean.loginMessage}"
+                                         styleClass="login-message" />
+                        </p:outputPanel>
+                        
                         <!-- Regular Login Panel -->
                         <p:outputPanel id="loginPanel" rendered="#{!userBean.showTwoFactorInput}">
                             <div class="form-group">
@@ -62,7 +77,7 @@
                                 
                                 <p:commandButton value="Login" 
                                                action="#{userBean.initiateLogin}"
-                                               update="@form messages"
+                                               update="@form messagePanel"
                                                styleClass="submit-button"/>
                             </div>
                         </p:outputPanel>
@@ -92,7 +107,7 @@
                             </div>
                         </p:outputPanel>
                         
-                        <p:messages id="messages" showDetail="true" closable="true"/>
+                        <p:messages id="messages" showDetail="true" closable="true" />
                         
                         <div class="links-container">
                             <p:link outcome="register" 

@@ -88,6 +88,8 @@ public class UserBean implements Serializable {
     @Inject
     private RateLimiterService rateLimiterService;
 
+    private String loginMessage;
+
     /**
      * Handles the registration process for the user.
      * 
@@ -422,44 +424,66 @@ public class UserBean implements Serializable {
      * @return navigation outcome string
      */
     public String initiateLogin() {
-        //If the user is not allowed to login (too many attempts)
-        if (!rateLimiterService.isAllowed(email)) { 
-            System.out.println("Too many failed attempts");
-            addErrorMessage("Login Failed", "Too many failed attempts. Please try again later."); //Show an error message
+        if (!rateLimiterService.isAllowed(email)) {
+            addErrorMessage("Login Failed", "Too many failed attempts. Please try again later.");
             return null;
         }
 
         try {
-            User user = authService.findUserByEmail(email); // Find the user by email
+            User user = authService.findUserByEmail(email);
 
-            // If the user is not found or the password is incorrect
             if (user == null || !authService.verifyPassword(email, password)) {
-                rateLimiterService.recordFailedAttempt(email); // Record failed attempt
-                addErrorMessage("Login Failed", "Invalid email or password."); // Show an error message
+                rateLimiterService.recordFailedAttempt(email);
+                addErrorMessage("Login Failed", "Invalid email or password.");
                 return null;
             }
 
-            // If the email is not verified show an error message
             if (!user.getIsVerified()) {
-                addErrorMessage("Login Failed", "Email not verified."); // Show an error message
+                addErrorMessageWithLink("Login Failed", "User is not verified. Click here to request a new verification email.", "resendVerificationEmail");
                 return null;
             }
 
-            // If 2FA is enabled, store the user temporarily and show the 2FA input
             if (user.isTwoFactorEnabled()) {
                 this.tempUser = user;
                 this.showTwoFactorInput = true;
                 return null;
             } else {
-                completeLogin(user); // If 2FA is disabled then complete the login
-                sessionTimeoutConfig.configureSessionTimeout(); // Configure session timeout
-                rateLimiterService.resetAttempts(email); // Reset attempts on successful login
-                return "dashboard.xhtml?faces-redirect=true"; // Redirect to the dashboard
+                completeLogin(user);
+                sessionTimeoutConfig.configureSessionTimeout();
+                rateLimiterService.resetAttempts(email);
+                return "dashboard.xhtml?faces-redirect=true";
             }
         } catch (Exception e) {
-            addErrorMessage("Login Error", e.getMessage()); // Show an error message
+            addErrorMessage("Login Error", e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Resend verification email
+     */
+    public void resendVerificationEmail() {
+        System.out.println("Attempting to resend verification email for: " + email);
+        try {
+            if (email == null || email.trim().isEmpty()) {
+                addErrorMessage("Error", "No email address provided");
+                return;
+            }
+            
+            authService.resendVerificationEmail(email);
+            loginMessage = "Verification email has been resent. Please check your inbox.";
+            // Also add a regular message for better visibility
+            addInfoMessage("Success", "Verification email has been resent");
+        } catch (Exception e) {
+            System.err.println("Failed to resend verification email: " + e.getMessage());
+            loginMessage = "Failed to resend verification email: " + e.getMessage();
+            addErrorMessage("Error", "Failed to resend verification email");
+        }
+    }
+
+    private void addErrorMessageWithLink(String summary, String detail, String actionMethod) {
+        String link = "<div class='error-message'>" + summary + " <a href='#' onclick=\"document.getElementById('hiddenForm:resendVerification').click(); return false;\">" + detail + "</a></div>";
+        this.loginMessage = link;
     }
 
     /**
@@ -697,4 +721,10 @@ public class UserBean implements Serializable {
     public void setResetToken(String resetToken) { this.resetToken = resetToken; }
     public String getIban() { return iban; }
     public void setIban(String iban) { this.iban = iban; }
+    public String getLoginMessage() {
+        return loginMessage;
+    }
+    public void clearLoginMessage() {
+        this.loginMessage = null;
+    }
 }
