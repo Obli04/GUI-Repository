@@ -240,6 +240,16 @@ public class RequestBean implements Serializable {
         }
     }
     
+    @Transactional
+    public List<RequestMoney> getAllRequests() {
+        User currentUser = userBean.getCurrentUser();
+        return em.createQuery(
+            "SELECT r FROM RequestMoney r WHERE r.receiver.id = :userId OR r.sender.id = :userId ORDER BY r.id DESC", 
+            RequestMoney.class)
+            .setParameter("userId", currentUser.getId())
+            .getResultList();
+    }
+    
     // Getters and setters
     public String getRecipientIdentifier() {
         return recipientIdentifier;

@@ -58,13 +58,17 @@
         </div>
 
         <div class="money-requests-section">
-            <!-- Received Requests -->
-            <p:panel id="receivedRequests" header="Money Requests Received" styleClass="request-panel" 
-                     rendered="#{not empty requestBean.receivedRequests}">
-                <p:dataTable value="#{requestBean.receivedRequests}" var="moneyRequest"
+            <p:panel id="allRequests" header="Money Requests" styleClass="request-panel" 
+                     rendered="#{not empty requestBean.receivedRequests or not empty requestBean.sentRequests}">
+                <p:dataTable value="#{requestBean.allRequests}" var="moneyRequest"
                              styleClass="request-table" rows="3" paginator="false">
-                    <p:column headerText="From">
-                        <h:outputText value="#{moneyRequest.sender.email}" />
+                    <p:column headerText="Type">
+                        <h:outputText value="#{moneyRequest.receiver.id eq userBean.currentUser.id ? 'Received' : 'Sent'}" 
+                                    styleClass="#{moneyRequest.receiver.id eq userBean.currentUser.id ? 'received-request' : 'sent-request'}"/>
+                    </p:column>
+                    
+                    <p:column headerText="From/To">
+                        <h:outputText value="#{moneyRequest.receiver.id eq userBean.currentUser.id ? moneyRequest.sender.email : moneyRequest.receiver.email}" />
                     </p:column>
                     
                     <p:column headerText="Amount">
@@ -79,45 +83,23 @@
                     
                     <p:column headerText="Actions" styleClass="action-column">
                         <h:form>
-                            <p:commandButton value="Accept" 
-                                           action="#{requestBean.acceptRequest(moneyRequest)}"
-                                           styleClass="p-button-success"
-                                           update="@form :growl"/>
-                            
-                            <p:commandButton value="Decline"
-                                           action="#{requestBean.declineRequest(moneyRequest)}"
-                                           styleClass="p-button-danger"
-                                           update="@form :growl"/>
-                        </h:form>
-                    </p:column>
-                </p:dataTable>
-            </p:panel>
-            
-            <!-- Sent Requests -->
-            <p:panel id="sentRequests" header="Money Requests Sent" styleClass="request-panel"
-                     rendered="#{not empty requestBean.sentRequests}">
-                <p:dataTable value="#{requestBean.sentRequests}" var="moneyRequest"
-                             styleClass="request-table" rows="3" paginator="false">
-                    <p:column headerText="To" styleClass="align-left">
-                        <h:outputText value="#{moneyRequest.receiver.email}" />
-                    </p:column>
-                    
-                    <p:column headerText="Amount" styleClass="align-left">
-                        <h:outputText value="#{moneyRequest.value}">
-                            <f:convertNumber type="currency" currencySymbol="Kč"/>
-                        </h:outputText>
-                    </p:column>
-                    
-                    <p:column headerText="Description" styleClass="align-left">
-                        <h:outputText value="#{moneyRequest.description}" />
-                    </p:column>
-                    
-                    <p:column headerText="Actions" styleClass="action-column">
-                        <h:form>
-                            <p:commandButton value="Delete" 
-                                           action="#{requestBean.deleteRequest(moneyRequest)}"
-                                           styleClass="p-button-danger"
-                                           oncomplete="window.location.reload()"/>
+                            <h:panelGroup rendered="#{moneyRequest.receiver.id eq userBean.currentUser.id}">
+                                <p:commandButton value="Accept" 
+                                               action="#{requestBean.acceptRequest(moneyRequest)}"
+                                               styleClass="p-button-success"
+                                               update="@form :growl"/>
+                                
+                                <p:commandButton value="Decline"
+                                               action="#{requestBean.declineRequest(moneyRequest)}"
+                                               styleClass="p-button-danger"
+                                               update="@form :growl"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{moneyRequest.sender.id eq userBean.currentUser.id}">
+                                <p:commandButton value="Delete" 
+                                               action="#{requestBean.deleteRequest(moneyRequest)}"
+                                               styleClass="p-button-danger"
+                                               oncomplete="window.location.reload()"/>
+                            </h:panelGroup>
                         </h:form>
                     </p:column>
                 </p:dataTable>
