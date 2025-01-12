@@ -2,12 +2,8 @@ package beans;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -16,25 +12,40 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Security filter for protecting sensitive pages by ensuring that the user is authenticated.
+ * This filter checks if a user is logged in before allowing access to certain pages.
+ * If the user is not logged in, they are redirected to the login page.
+ * 
+ * @author Davide Scaccia
+ */
 @WebFilter(filterName = "SecurityFilter", urlPatterns = {
     "/dashboard.xhtml", "/deposit.xhtml", "/withdraw.xhtml", 
     "/budget.xhtml", "/account.xhtml", "/transactions.xhtml", "/transfer.xhtml", "/piggybank.xhtml", "/request.xhtml", "/send.xhtml"
 })
 public class SecurityFilter implements Filter {
     
-    private static final Logger logger = LoggerFactory.getLogger(SecurityFilter.class);
     
+    /**
+     * Filters requests to ensure the user is authenticated.
+     * 
+     * @param request  the ServletRequest object
+     * @param response the ServletResponse object
+     * @param chain    the FilterChain object
+     * @throws IOException      if an I/O error occurs
+     * @throws ServletException if a servlet error occurs
+     */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
             throws IOException, ServletException {
         
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-        HttpSession session = httpRequest.getSession(false);
+        HttpServletRequest httpRequest = (HttpServletRequest) request; //Casting the request to an HttpServletRequest
+        HttpServletResponse httpResponse = (HttpServletResponse) response; //Casting the response to an HttpServletResponse
+        HttpSession session = httpRequest.getSession(false); //Getting the session from the request
         
-        String loginURL = httpRequest.getContextPath() + "/login.xhtml";
-        String indexURL = httpRequest.getContextPath() + "/index.xhtml";
-        String requestURI = httpRequest.getRequestURI();
+        String loginURL = httpRequest.getContextPath() + "/login.xhtml"; //Getting the login page URL
+        String indexURL = httpRequest.getContextPath() + "/index.xhtml"; //Getting the index page URL
+        String requestURI = httpRequest.getRequestURI(); //Getting the request URI
         
         boolean isLoggedIn = (session != null && session.getAttribute("userBean") != null);
         boolean isLoginPage = requestURI.equals(loginURL);
@@ -42,30 +53,9 @@ public class SecurityFilter implements Filter {
         boolean isResourceRequest = requestURI.contains("javax.faces.resource");
         boolean isVerificationPage = requestURI.contains("verify.xhtml");
         boolean isPasswordRecoveryPage = requestURI.contains("passwordRecovery.xhtml");
-        boolean is2FApage = requestURI.contains("2fa.xhtml");
         
-        logger.debug("Request URI: {}", requestURI);
-        logger.debug("Is Logged In: {}", isLoggedIn);
-        
-        if (isLoggedIn || isLoginPage || isIndexPage || isResourceRequest || 
-            isVerificationPage || isPasswordRecoveryPage || is2FApage) {
-            logger.debug("Access granted to: {}", requestURI);
-            chain.doFilter(request, response);
-        } else {
-            logger.warn("Access denied to: {}. Redirecting to login page.", requestURI);
-            httpResponse.sendRedirect(loginURL);
-        }
-    }
-    
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        // Initialization code if needed
-        logger.info("SecurityFilter initialized.");
-    }
-    
-    @Override
-    public void destroy() {
-        // Cleanup code if needed
-        logger.info("SecurityFilter destroyed.");
+        //If the user is logged in or in a page that doesn't require auth: allow the request
+        if (isLoggedIn || isLoginPage || isIndexPage || isResourceRequest || isVerificationPage || isPasswordRecoveryPage ) chain.doFilter(request, response);
+        else httpResponse.sendRedirect(loginURL); //If the user is not logged in and is accesing a page that requires auth,redirect to the login page
     }
 }

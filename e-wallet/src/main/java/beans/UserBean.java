@@ -3,7 +3,6 @@ package beans;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
@@ -26,6 +25,7 @@ import beans.deposit.DepositBean;
 import beans.entities.Transaction;
 import beans.entities.User;
 import beans.services.AuthService;
+import beans.services.RateLimiterService;
 import beans.services.RegistrationResult;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -36,6 +36,12 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Manages user-related operations such as login, 2FA, and password reset.
+ * Handles user session data and interactions with the authentication service.
+ * 
+ * @author Davide Scaccia
+ */
 @Named
 @SessionScoped
 public class UserBean implements Serializable {
@@ -47,12 +53,8 @@ public class UserBean implements Serializable {
     private String firstName;
     private String secondName;
     private String twoFactorCode;
-    private Double balance;
-    private Double budget;
-    private Double piggyBank;
     private String iban;
-    private String variableSymbol;
-    
+
     // Session data
     private User currentUser;
     private StreamedContent qrCodeImage;
@@ -64,9 +66,6 @@ public class UserBean implements Serializable {
     private String messageStyle;
     
     @Inject
-    private FacesContext facesContext;
-    
-    @Inject
     private DepositBean depositBean;
 
     private String currentPassword;
@@ -74,307 +73,208 @@ public class UserBean implements Serializable {
     private String confirmPassword;
 
     private boolean showTwoFactorInput = false;
-    private User tempUser; // Store user temporarily during 2FA
+    private User tempUser;
 
-    private String currentQRSecret; // Add this field
+    private String currentQRSecret;
 
     private String resetToken;
 
     @PersistenceContext(unitName = "e-walletPU")
     private EntityManager em;
 
-    // Login method
-    public String login() {
-        try {
-            System.out.println("Login attempt for email: " + email);
-            User user = authService.findUserByEmail(email);
-            System.out.println("User found: " + (user != null));
-            if (user != null) {
-                System.out.println("2FA enabled: " + user.isTwoFactorEnabled());
-            }
-            // First, find the user to check if 2FA is enabled
-            if (user == null) {
-                FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Login Failed", "Invalid email or password."));
-                return null;
-            }
+    @Inject
+    private SessionTimeoutConfig sessionTimeoutConfig;
 
-            // Check if 2FA is enabled for this user
-            boolean isAuthenticated;
-            if (user.isTwoFactorEnabled()) {
-                isAuthenticated = authService.login(email, password, twoFactorCode);
-            } else {
-                isAuthenticated = authService.login(email, password, null);
-            }
+    @Inject
+    private RateLimiterService rateLimiterService;
 
-            if (isAuthenticated) {
-                // Retrieve the authenticated user
-                currentUser = user;
-                
-                // Set user data
-                this.firstName = currentUser.getFirstName();
-                this.secondName = currentUser.getSecondName();
-                this.email = currentUser.getEmail();
-                this.balance = currentUser.getBalance();
-                this.budget = currentUser.getBudget();
-                this.piggyBank = currentUser.getPiggyBank();
-                this.iban = currentUser.getIban();
-                this.variableSymbol = currentUser.getVariableSymbol();
-                // Store in session
-                FacesContext facesContext = FacesContext.getCurrentInstance();
-                HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(true);
-                session.setAttribute("userBean", this);
-                
-                // Initialize deposit information
-                depositBean.initializeDeposit();
-                
-                return "dashboard.xhtml?faces-redirect=true";
-            } else {
-                FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Login Failed", 
-                        user.isTwoFactorEnabled() ? "Invalid credentials or 2FA code." : "Invalid email or password."));
-                return null;
-            }
-        } catch (SecurityException se) {
-            FacesContext.getCurrentInstance().addMessage(null, 
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Login Error", se.getMessage()));
-            return null;
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, 
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Login Error", "An unexpected error occurred."));
-            return null;
-        }
-    }
-
-    // Register method
+    /**
+     * Handles the registration process for the user.
+     * 
+     * @return the navigation outcome string, or null if registration fails
+     */
     public String register() {
         try {
-            System.out.println("\n=== Starting Registration Process ===");
-            System.out.println("Registering email: " + email);
             
-            if (!isValidEmail(email)) {
+            if (!isValidEmail(email)) { //If the email is not valid show an error message
                 addErrorMessage("Registration failed", "Please enter a valid email address");
                 return null;
             }
 
-            authService.validatePassword(password);
-           
-            User newUser = new User();
+            authService.validatePassword(password); //Validate the password
+            User newUser = new User(); //Create a new user with the provided data
             newUser.setEmail(email.trim().toLowerCase());
             newUser.setPassword(password);
             newUser.setFirstName(firstName.trim());
             newUser.setSecondName(secondName.trim());
             
-            // Check if user already exists
-            if (authService.findUserByEmail(newUser.getEmail()) != null) {
+            //Check if user already exists
+            if (authService.findUserByEmail(newUser.getEmail()) != null) { //If the user already exists show an error message
                 addErrorMessage("Registration failed", "An account with this email already exists");
                 return null;
             }
             
-            try {
-                RegistrationResult result = authService.register(newUser);
+            try { //Try to register the user
+                RegistrationResult result = authService.register(newUser); //Register the user
                 
-                // Store the result message in the session for display after redirect
+                //Store the result message in the session for display after redirect
                 FacesContext context = FacesContext.getCurrentInstance();
-                context.getExternalContext().getSessionMap().put("registrationMessage", result.getMessage());
-                context.getExternalContext().getSessionMap().put("emailSent", result.isEmailSent());
-                
-                System.out.println("Registration completed - Email sent: " + result.isEmailSent());
-                System.out.println("Message: " + result.getMessage());
-                System.out.println("=== End Registration Process ===\n");
-                
-                return "login.xhtml?faces-redirect=true";
+                context.getExternalContext().getSessionMap().put("registrationMessage", result.getMessage()); //Store the message in the session
+                context.getExternalContext().getSessionMap().put("emailSent", result.isEmailSent()); //Store the email sent status in the session
+                return "login.xhtml?faces-redirect=true"; //Redirect to the login page
             } catch (Exception e) {
-                System.err.println("Failed to save user: " + e.getMessage());
                 e.printStackTrace();
-                addErrorMessage("Registration failed", "Failed to save user to database: " + e.getMessage());
+                addErrorMessage("Registration failed", "Failed to save user to database: " + e.getMessage()); //Show an error message
                 return null;
             }
         } catch (Exception e) {
-            System.err.println("Registration failed with error: " + e.getMessage());
-            e.printStackTrace();
-            addErrorMessage("Registration failed", e.getMessage());
+            addErrorMessage("Registration failed", e.getMessage()); //Show an error message
             return null;
         }
     }
  
-    // Add this method to handle the registration message after redirect
+    /**
+     * Check registration message after redirecting
+     */
     public void checkRegistrationMessage() {
-        FacesContext context = FacesContext.getCurrentInstance();
-        String message = (String) context.getExternalContext().getSessionMap().get("registrationMessage");
-        Boolean emailSent = (Boolean) context.getExternalContext().getSessionMap().get("emailSent");
+        FacesContext context = FacesContext.getCurrentInstance(); //Get the current faces context
+        String message = (String) context.getExternalContext().getSessionMap().get("registrationMessage"); //Get the registration message from the session
+        Boolean emailSent = (Boolean) context.getExternalContext().getSessionMap().get("emailSent"); //Get the email sent status from the session
         
-        if (message != null) {
-            FacesMessage.Severity severity = emailSent ? 
-                FacesMessage.SEVERITY_INFO : FacesMessage.SEVERITY_WARN;
-            context.addMessage(null, new FacesMessage(severity, "Registration Status", message));
+        if (message != null) { //If we have a message
+            FacesMessage.Severity severity = emailSent ? FacesMessage.SEVERITY_INFO : FacesMessage.SEVERITY_WARN; //Set the severity of the message
+            context.addMessage(null, new FacesMessage(severity, "Registration Status", message)); //Add the message to the context
             
-            // Clear the session attributes
+            //Clear the session attributes
             context.getExternalContext().getSessionMap().remove("registrationMessage");
             context.getExternalContext().getSessionMap().remove("emailSent");
         }
     }
 
-    // 2FA verification
+    /**
+     * 2FA verification
+     * 
+     * @return the navigation outcome string, or null if verification fails
+     */
     public String verify2FA() {
         try {
-            if (authService.verify2FA(currentUser, twoFactorCode)) {
-                return "dashboard.xhtml?faces-redirect=true";
-            }
-            addErrorMessage("Verification failed", "Invalid code");
-            return null;
+            if (authService.verify2FA(currentUser, twoFactorCode)) return "dashboard.xhtml?faces-redirect=true"; //If the 2FA is verified redirect to the dashboard
+            else addErrorMessage("Verification failed", "Invalid code"); //If the 2FA is not verified show an error message
         } catch (Exception e) {
-            addErrorMessage("Error", e.getMessage());
-            return null;
+            addErrorMessage("Error", e.getMessage()); //Show an error message
         }
+        return null;
     }
 
-    // QR Code generation for 2FA
+    /**
+     * Generate QR code for 2FA
+     * 
+     * @return the QR code image
+     */
     public StreamedContent getQrCodeImage() {
-        // Only generate QR if user has a secret and it's different from current QR
-        if (currentUser != null && 
-            currentUser.getTwoFactorSecret() != null && 
-            (!currentUser.getTwoFactorSecret().equals(currentQRSecret) || qrCodeImage == null)) {
-            
+        //Only generate QR if user has a secret and it's different from current QR
+        if (currentUser != null && currentUser.getTwoFactorSecret() != null && (!currentUser.getTwoFactorSecret().equals(currentQRSecret) || qrCodeImage == null)){
             try {
-                String otpauthURL = String.format(
+                String otpauthURL = String.format( //Generate the OTP auth URL
                     "otpauth://totp/CashHive:%s?secret=%s&issuer=CashHive",
-                    URLEncoder.encode(currentUser.getEmail(), "UTF-8"),
-                    currentUser.getTwoFactorSecret()
+                    URLEncoder.encode(currentUser.getEmail(), "UTF-8"), //Encode the email
+                    currentUser.getTwoFactorSecret() //Get the secret
                 );
-
-                QRCodeWriter qrCodeWriter = new QRCodeWriter();
-                BitMatrix bitMatrix = qrCodeWriter.encode(
+                QRCodeWriter qrCodeWriter = new QRCodeWriter(); //Create a QR code writer
+                BitMatrix bitMatrix = qrCodeWriter.encode( //Encode the URL
                     otpauthURL, 
                     BarcodeFormat.QR_CODE, 
                     250, 
                     250
                 );
 
-                BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
-                ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
-                ImageIO.write(qrImage, "PNG", pngOutputStream);
+                BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix); //Convert the bit matrix to an image
+                ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream(); //Create a byte array output stream
+                ImageIO.write(qrImage, "PNG", pngOutputStream); //Write the image to the output stream
 
-                qrCodeImage = DefaultStreamedContent.builder()
-                    .contentType("image/png")
-                    .stream(() -> new ByteArrayInputStream(pngOutputStream.toByteArray()))
+                qrCodeImage = DefaultStreamedContent.builder() //Create a default streamed content  
+                    .contentType("image/png") //Set the content type
+                    .stream(() -> new ByteArrayInputStream(pngOutputStream.toByteArray())) //Set the stream
                     .build();
                 
-                // Store the secret used for this QR code
+                //Store the secret used for this QR code
                 currentQRSecret = currentUser.getTwoFactorSecret();
             } catch (Exception e) {
-                addErrorMessage("Error", "Failed to generate QR code");
+                addErrorMessage("Error", "Failed to generate QR code"); //Show an error message
             }
         }
-        return qrCodeImage;
+        return qrCodeImage; //Return the QR code image
     }
     
-    // Method to refresh user data from the database
+    /*Penso che questa funzione non serva più: Refresh user data from the database
     public void refreshUserData() {
-        if (currentUser != null && currentUser.getEmail() != null) {
-            User freshUser = authService.findUserByEmail(currentUser.getEmail());
-            if (freshUser != null) {
+        if (currentUser != null && currentUser.getEmail() != null) { //If the current user is not null and the email is not null
+            User freshUser = authService.findUserByEmail(currentUser.getEmail()); //Find the user by email
+            if (freshUser != null) { //If the user is found refresh all the data
                 this.currentUser = freshUser;
                 this.firstName = freshUser.getFirstName();
                 this.secondName = freshUser.getSecondName();
+                this.balance = freshUser.getBalance();
                 this.email = freshUser.getEmail();
-                this.balance = authService.getLatestBalance(freshUser.getId());
-                this.budget = freshUser.getBudget();
-                this.piggyBank = freshUser.getPiggyBank();
                 this.iban = freshUser.getIban();
-                this.variableSymbol = freshUser.getVariableSymbol();
+                this.variableSymbol = freshUser.getVariableSymbol();    
             } else {
-                addErrorMessage("Error", "Unable to refresh user data.");
+                addErrorMessage("Error", "Unable to refresh user data."); //Show an error message
             }
         }
-    }
+    }*/
 
-    // Helper methods for displaying messages
+    /**
+     * Helper methods for displaying messages
+     */
     private void addErrorMessage(String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null, 
             new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail));
     }
 
+    /**
+     * Add an info message
+     */
     private void addInfoMessage(String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null, 
             new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail));
     }
 
-    // Check if user is logged in
+    /**
+     * Check if user is logged in
+     */
     public boolean isLoggedIn() {
         return currentUser != null;
     }
 
-    // Logout method
+    /**
+     * Logout method, it will clear the user data and invalidate the session
+     * 
+     * @return the navigation outcome string, or null if logout fails
+     */
     public String logout() {
-        try {
-            FacesContext facesContext = FacesContext.getCurrentInstance();
-            HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
-            
-            // Clear user data
-            this.currentUser = null;
-            this.email = null;
-            this.password = null;
-            this.firstName = null;
-            this.secondName = null;
-            this.balance = null;
-            this.budget = null;
-            this.piggyBank = null;
-            this.iban = null;
-            this.variableSymbol = null;
-            
-            // Invalidate session
-            if (session != null) {
-                session.invalidate();
-            }
-            
-            // Perform redirect
-            facesContext.getExternalContext().redirect(
-                facesContext.getExternalContext().getRequestContextPath() + "/index.xhtml");
-            facesContext.responseComplete();
-            
-            return null;
-        } catch (IOException e) {
-            FacesContext.getCurrentInstance().addMessage(null, 
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Logout Error", "An error occurred during logout."));
-            return null;
-        }
+        FacesContext facesContext = FacesContext.getCurrentInstance(); //Get the current faces context
+        HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false); //Get the current session
+        
+        //Clear user data
+        this.currentUser = null;
+        this.email = null;
+        this.password = null;
+        this.firstName = null;
+        this.secondName = null;
+        this.iban = null;
+        
+        if (session != null) session.invalidate(); //Invalidate the session
+        facesContext.responseComplete(); //Complete the response
+        
+        return "index.xhtml?faces-redirect=true"; //Redirect to home page
     }
 
-    // Getters and Setters
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-    
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-    
-    public String getSecondName() { return secondName; }
-    public void setSecondName(String secondName) { this.secondName = secondName; }
-    
-    public String getTwoFactorCode() { return twoFactorCode; }
-    public void setTwoFactorCode(String twoFactorCode) { this.twoFactorCode = twoFactorCode; }
-    
-    public User getCurrentUser() { return currentUser; }
-    
-    public String getMessage() {
-        return message;
-    }
-    
-    public void setMessage(String message) {
-        this.message = message;
-    }
-    
-    public String getMessageStyle() {
-        return messageStyle;
-    }
-    
-    public void setMessageStyle(String messageStyle) {
-        this.messageStyle = messageStyle;
-    }
-
+    /**
+     * Generate a new token for password reset
+     * 
+     * @return the new token
+     */
     private String generateNewToken() {
         SecureRandom random = new SecureRandom();
         byte[] bytes = new byte[32];
@@ -382,11 +282,22 @@ public class UserBean implements Serializable {
         return Base64.getEncoder().encodeToString(bytes);
     }
 
+    /**
+     * Check if the email is valid
+     * 
+     * @param email the email to check
+     * @return true if the email is valid, false otherwise
+     */
     private boolean isValidEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
         return email != null && email.matches(emailRegex);
     }
 
+    /**
+     * Update the user's profile
+     * 
+     * @return the navigation outcome string, or null if update fails
+     */
     public String updateProfile() {
         try {
             User user = authService.findUserByEmail(currentUser.getEmail());
@@ -394,7 +305,7 @@ public class UserBean implements Serializable {
             user.setSecondName(secondName);
             user.setIban(iban);
             
-            // If email is changed, verify it's not already in use
+            //If email is changed, verify it's not already in use
             if (!user.getEmail().equals(email)) {
                 if (authService.findUserByEmail(email) != null) {
                     addErrorMessage("Update Failed", "Email already in use");
@@ -413,6 +324,11 @@ public class UserBean implements Serializable {
         }
     }
 
+    /**
+     * Change the user's password
+     * 
+     * @return the navigation outcome string, or null if change fails
+     */
     public String changePassword() {
         try {
             if (!newPassword.equals(confirmPassword)) {
@@ -438,6 +354,11 @@ public class UserBean implements Serializable {
         }
     }
 
+    /**
+     * Enable 2FA
+     * 
+     * @return the navigation outcome string, or null if enable fails
+     */
     public String enable2FA() {
         try {
             System.out.println("Attempting 2FA setup with:");
@@ -460,99 +381,113 @@ public class UserBean implements Serializable {
         }
     }
 
+    /**
+     * Disable 2FA
+     * 
+     * @return the navigation outcome string, or null if disable fails
+     */
     public String disable2FA() {
         try {
+            //If the 2FA code is not provided show an error message 
             if (twoFactorCode == null || twoFactorCode.trim().isEmpty()) {
                 addErrorMessage("Error", "Please enter your 2FA code");
                 return null;
             }
 
+            //If the 2FA code is correct disable 2FA
             if (authService.verify2FA(currentUser, twoFactorCode)) {
-                currentUser.setTwoFactorEnabled(false);
-                currentUser.setTwoFactorSecret(null);  // Clear the secret
-                authService.updateUser(currentUser);
+                currentUser.setTwoFactorEnabled(false); //Disable 2FA
+                currentUser.setTwoFactorSecret(null);  //Clear the secret
+                authService.updateUser(currentUser); //Update the user
                 
-                // Clear form data
+                //Clear form data
                 twoFactorCode = null;
                 qrCodeImage = null;
                 
-                addInfoMessage("Success", "Two-factor authentication disabled");
+                addInfoMessage("Success", "Two-factor authentication disabled"); //Show a success message
                 return null;
             } else {
-                addErrorMessage("Error", "Invalid verification code");
+                addErrorMessage("Error", "Invalid verification code"); //Show an error message
                 return null;
             }
         } catch (Exception e) {
-            System.err.println("Error disabling 2FA: " + e.getMessage());
-            e.printStackTrace();
-            addErrorMessage("Error", "Failed to disable 2FA");
+            addErrorMessage("Error", "Failed to disable 2FA"); //Show an error message
             return null;
         }
     }
 
-    public String getCurrentPassword() { return currentPassword; }
-    public void setCurrentPassword(String currentPassword) { this.currentPassword = currentPassword; }
-
-    public String getNewPassword() { return newPassword; }
-    public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
-
-    public String getConfirmPassword() { return confirmPassword; }
-    public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
-
-    public boolean isShowTwoFactorInput() {
-        return showTwoFactorInput;
-    }
-
-    // Split the login process into two steps
+    /**
+     * Initiates the login process, handling 2FA if enabled.
+     * 
+     * @return navigation outcome string
+     */
     public String initiateLogin() {
+        //If the user is not allowed to login (too many attempts)
+        if (!rateLimiterService.isAllowed(email)) { 
+            System.out.println("Too many failed attempts");
+            addErrorMessage("Login Failed", "Too many failed attempts. Please try again later."); //Show an error message
+            return null;
+        }
+
         try {
-            User user = authService.findUserByEmail(email);
+            User user = authService.findUserByEmail(email); // Find the user by email
+
+            // If the user is not found or the password is incorrect
             if (user == null || !authService.verifyPassword(email, password)) {
-                addErrorMessage("Login Failed", "Invalid email or password.");
+                rateLimiterService.recordFailedAttempt(email); // Record failed attempt
+                addErrorMessage("Login Failed", "Invalid email or password."); // Show an error message
                 return null;
             }
 
+            // If the email is not verified show an error message
             if (!user.getIsVerified()) {
-                addErrorMessage("Login Failed", "Email not verified.");
+                addErrorMessage("Login Failed", "Email not verified."); // Show an error message
                 return null;
             }
 
+            // If 2FA is enabled, store the user temporarily and show the 2FA input
             if (user.isTwoFactorEnabled()) {
-                // Store user temporarily and show 2FA input
                 this.tempUser = user;
                 this.showTwoFactorInput = true;
                 return null;
             } else {
-                // Complete login immediately if 2FA is not enabled
-                completeLogin(user);
-                return "dashboard.xhtml?faces-redirect=true";
+                completeLogin(user); // If 2FA is disabled then complete the login
+                sessionTimeoutConfig.configureSessionTimeout(); // Configure session timeout
+                rateLimiterService.resetAttempts(email); // Reset attempts on successful login
+                return "dashboard.xhtml?faces-redirect=true"; // Redirect to the dashboard
             }
         } catch (Exception e) {
-            addErrorMessage("Login Error", "An unexpected error occurred.");
+            addErrorMessage("Login Error", e.getMessage()); // Show an error message
             return null;
         }
     }
 
+    /**
+     * Completes the login process after 2FA verification.
+     * 
+     * @return the navigation outcome string, or null if login fails
+     */
     public String completeTwoFactorLogin() {
-        try {
+        try { //Try to complete the login
+            //If the user is not null and the 2FA code is correct
             if (tempUser != null && authService.verify2FA(tempUser, twoFactorCode)) {
-                completeLogin(tempUser);
-                resetLoginForm();
-                return "dashboard.xhtml?faces-redirect=true";
+                completeLogin(tempUser); //If the 2FA code is correct complete the login
+                resetLoginForm(); //Reset the login form
+                return "dashboard.xhtml?faces-redirect=true"; //Redirect to the dashboard
+            } 
+            else {
+                addErrorMessage("Verification Failed", "Invalid 2FA code"); //Show an error message
+                return null;
             }
-            addErrorMessage("Verification Failed", "Invalid 2FA code");
-            return null;
         } catch (Exception e) {
-            addErrorMessage("Login Error", e.getMessage());
+            addErrorMessage("Login Error", e.getMessage()); //Show an error message
             return null;
         }
     }
 
-    public String resetLogin() {
-        resetLoginForm();
-        return null;
-    }
-
+    /**
+     * Resets the login form data.
+     */
     private void resetLoginForm() {
         this.showTwoFactorInput = false;
         this.tempUser = null;
@@ -560,65 +495,73 @@ public class UserBean implements Serializable {
         this.password = null;
     }
 
+    /**
+     * Completes the login by setting user session data.
+     * 
+     * @param user the user to log in
+     */
     private void completeLogin(User user) {
+        //Set the user data
         currentUser = user;
         this.firstName = user.getFirstName();
         this.secondName = user.getSecondName();
         this.email = user.getEmail();
-        this.balance = user.getBalance();
-        this.budget = user.getBudget();
-        this.piggyBank = user.getPiggyBank();
+        this.iban = user.getIban();
         
-        // Store in session
+        //Store in session
         FacesContext facesContext = FacesContext.getCurrentInstance();
         HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(true);
         session.setAttribute("userBean", this);
-        
-        // Initialize deposit information
-        depositBean.initializeDeposit();
+
+        depositBean.initializeDeposit(); //Initialize the deposit information
     }
 
     public String initiate2FASetup() {
         try {
-            // Generate new secret
+            //Generate new secret
             String secret = authService.generateNewTwoFactorSecret();
             
-            // Update user with new secret
+            //Update the user with the new secret
             currentUser.setTwoFactorSecret(secret);
             currentUser.setTwoFactorEnabled(false);
             authService.updateUser(currentUser);
             
-            // Clear existing code field and QR code
+            //Clear the existing code field and QR code
             twoFactorCode = null;
             qrCodeImage = null;
-            currentQRSecret = null; // Reset the QR secret tracker
+            currentQRSecret = null; //Reset the QR secret tracker
             
-            addInfoMessage("2FA Setup", "Scan the QR code with your authenticator app");
+            addInfoMessage("2FA Setup", "Scan the QR code with your authenticator app"); //Show a success message   
             return null;
         } catch (Exception e) {
-            addErrorMessage("Error", "Failed to initiate 2FA setup");
+            addErrorMessage("Error", "Failed to initiate 2FA setup"); //Show an error message
             return null;
         }
     }
 
+    /**
+     * Request a password reset
+     * 
+     * @return the navigation outcome string, or null if reset fails
+     */
     public String requestPasswordReset() {
         try {
-            User user = authService.findUserByEmail(email);
+            User user = authService.findUserByEmail(email); //Find the user by email
             if (user == null) {
-                addErrorMessage("Reset Failed", "No account found with this email address.");
+                addErrorMessage("Reset Failed", "No account found with this email address."); //Show an error message
                 return null;
             }
 
-            // Generate a reset token
+            //Generate a reset token
             String token = generateNewToken();
             user.setVerificationToken(token);
-            user.setTokenExpiry(LocalDateTime.now().plusHours(1)); // 1 hour from now
+            user.setTokenExpiry(LocalDateTime.now().plusHours(1)); //1 hour from now
             authService.updateUser(user);
 
-            // Send reset email
+            //Send reset email
             authService.sendPasswordResetEmail(user.getEmail(), token);
 
-            // Store success message in session
+            //Store success message in session
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("resetMessage", 
                 "If an account exists with this email, you will receive password reset instructions.");
 
@@ -629,46 +572,54 @@ public class UserBean implements Serializable {
         }
     }
 
+    /**
+     * Reset the user's password
+     * 
+     * @return the navigation outcome string, or null if reset fails
+     */
     public String resetPassword() {
         try {
+            //If the reset token is null or empty show an error message 
             if (resetToken == null || resetToken.trim().isEmpty()) {
-                addErrorMessage("Reset Failed", "Invalid reset token");
+                addErrorMessage("Reset Failed", "Invalid reset token"); //Show an error message
                 return null;
             }
 
+            //If the new password is null or empty show an error message
             if (newPassword == null || newPassword.trim().isEmpty()) {
-                addErrorMessage("Reset Failed", "Password cannot be empty");
+                addErrorMessage("Reset Failed", "Password cannot be empty"); //Show an error message
                 return null;
             }
 
+            //If the new password and the confirm password do not match show an error message
             if (!newPassword.equals(confirmPassword)) {
-                addErrorMessage("Reset Failed", "Passwords do not match");
+                addErrorMessage("Reset Failed", "Passwords do not match"); //Show an error message
                 return null;
             }
 
-            User user = authService.findUserByResetToken(resetToken);
+            User user = authService.findUserByResetToken(resetToken); //Find the user by the reset token
             if (user == null) {
-                addErrorMessage("Reset Failed", "Invalid or expired reset token");
+                addErrorMessage("Reset Failed", "Invalid or expired reset token"); //Show an error message
                 return null;
             }
 
-            // Check if token is expired
+            //Check if the token is expired
             Timestamp currentTime = new Timestamp(System.currentTimeMillis());
             if (user.getTokenExpiry() == null || 
                 user.getTokenExpiry().isBefore(currentTime.toLocalDateTime())) {
-                addErrorMessage("Reset Failed", "Reset token has expired");
+                addErrorMessage("Reset Failed", "Reset token has expired"); //Show an error message
                 return null;
             }
 
-            // Update password and clear reset token
+            //Update password and clear reset token
             authService.updatePassword(user, newPassword);
             user.setVerificationToken(null);
             user.setTokenExpiry(null);
             authService.updateUser(user);
 
-            // Store success message in session
+            //Store success message in session
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("resetMessage", 
-                "Your password has been reset successfully. Please log in with your new password.");
+                "Your password has been reset successfully. Please log in with your new password."); //Show a success message
 
             return "login?faces-redirect=true";
         } catch (Exception e) {
@@ -677,33 +628,36 @@ public class UserBean implements Serializable {
         }
     }
 
-    // Method to check and display messages after redirect
+    /**
+     * Check and display messages after redirect
+     */
     public void checkResetMessage() {
+        //Get the current faces context
         FacesContext context = FacesContext.getCurrentInstance();
         String message = (String) context.getExternalContext().getSessionMap().get("resetMessage");
+        //If the message is not null add it to the context  
         if (message != null) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", message));
             context.getExternalContext().getSessionMap().remove("resetMessage");
         }
     }
 
-    public String getResetToken() { return resetToken; }
-    public void setResetToken(String resetToken) { this.resetToken = resetToken; }
-
+    /**
+     * Get the user's transactions
+     * 
+     * @param userId the user's id
+     * @return the user's transactions
+     */
     public List<Transaction> getUserTransactions(Long userId) {
         return em.createQuery("SELECT t FROM Transaction t WHERE (t.sender.id = :userId OR t.receiver.id = :userId OR (t.sender IS NULL AND t.receiver.id = :userId)) ORDER BY t.transactionDate DESC", Transaction.class)
                  .setParameter("userId", userId)
                  .getResultList();
     }
 
-    public String getIban() {
-        return iban;
-    }
 
-    public void setIban(String iban) {
-        this.iban = iban;
-    }
-
+    /**
+     * Refreshes the user's balance from the database.
+     */
     public void refreshBalance() {
         User currentUser = getCurrentUser();
         if (currentUser != null) {
@@ -711,4 +665,36 @@ public class UserBean implements Serializable {
             currentUser.setBalance(latestBalance);
         }
     }
+    
+
+    /**
+     * Getters and Setters
+     */
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public String getSecondName() { return secondName; }
+    public void setSecondName(String secondName) { this.secondName = secondName; }
+    public String getTwoFactorCode() { return twoFactorCode; }
+    public void setTwoFactorCode(String twoFactorCode) { this.twoFactorCode = twoFactorCode; }
+    public User getCurrentUser() { return currentUser; }
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
+    public String getMessageStyle() { return messageStyle; }
+    public void setMessageStyle(String messageStyle) { this.messageStyle = messageStyle; }  
+    public String getCurrentPassword() { return currentPassword; }
+    public void setCurrentPassword(String currentPassword) { this.currentPassword = currentPassword; }
+    public String getNewPassword() { return newPassword; }
+    public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
+    public String getConfirmPassword() { return confirmPassword; }
+    public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
+    public boolean isShowTwoFactorInput() { return showTwoFactorInput; }
+    public void setShowTwoFactorInput(boolean showTwoFactorInput) { this.showTwoFactorInput = showTwoFactorInput; }
+    public String getResetToken() { return resetToken; }
+    public void setResetToken(String resetToken) { this.resetToken = resetToken; }
+    public String getIban() { return iban; }
+    public void setIban(String iban) { this.iban = iban; }
 }
