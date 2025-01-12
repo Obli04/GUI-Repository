@@ -1,0 +1,158 @@
+body {
+    background-image: url('../resources/images/bg.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    color: #f0f0f0;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    padding-top: 60px;
+}
+
+.content {
+    position: relative;
+    z-index: 1;
+    padding-top: 20px;
+    text-align: center;
+}
+
+.container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 0;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.balance-header {
+    background-color: #4CAF50;
+    padding: 1.5rem;
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.balance-text {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: white;
+}
+
+.send-info {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ui-panelgrid {
+    width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+.ui-panelgrid td {
+    padding: 0.75rem;
+    vertical-align: middle;
+}
+
+.ui-panelgrid label {
+    color: #2c3e50;
+    font-weight: 500;
+    font-size: 1.1em;
+    margin-bottom: 0.5rem;
+}
+
+
+.button-container {
+    padding: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.p-button-success {
+    background-color: #4CAF50;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.p-button-success:hover {
+    background-color: #45a049;
+    transform: translateY(-1px);
+}
+
+.p-button-secondary {
+    background-color: #9e9e9e;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ui-inputtext,
+.ui-inputnumber input,
+.ui-inputtextarea {
+    width: 100% !important;
+    padding: 0.5rem !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    font-size: 1rem !important;
+}
+
+.p-button-secondary:hover {
+    background-color: #757575;
+    transform: translateY(-1px);
+}
+
+.ui-messages {
+    margin: 1rem;
+    border-radius: 8px;
+}
+
+.ui-message {
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+}
+
+.ui-outputlabel-rfi {
+    color: #f44336;
+    margin-left: 4px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin: 1rem;
+        border-radius: 10px;
+    }
+    
+    .ui-panelgrid td {
+        display: block;
+        width: 100%;
+    }
+
+    .button-container {
+        flex-direction: column;
+    }
+
+    .p-button-success,
+    .p-button-secondary {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+} 

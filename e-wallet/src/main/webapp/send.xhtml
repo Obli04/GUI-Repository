@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>Send Money - CashHive</title>
+    <h:outputStylesheet library="styles" name="dashboard.css"/>
+    <h:outputStylesheet library="styles" name="send.css"/>
+    <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/favicon.ico"/>
+</h:head>
+<h:body>
+    <h:form>
+        <ui:include src="navbar.xhtml"/>
+    </h:form>
+
+    <div class="content">
+        <p:card styleClass="container">
+            <div class="balance-header">
+                <span>Current Balance</span>
+                <h:outputText value="#{userBean.currentUser.balance}" styleClass="balance-text">
+                    <f:convertNumber type="currency" currencySymbol="Kč"/>
+                </h:outputText>
+            </div>
+
+            <div class="send-info">
+                <h:form>
+                    <p:panelGrid columns="1" styleClass="ui-noborder">
+                        <p:outputLabel for="recipient" value="Your withdrawal account - email or variable symbol:"/>
+                        <p:inputText id="recipient" 
+                                   value="#{sendBean.recipientIdentifier}"
+                                   required="true"
+                                   styleClass="send-input"
+                                   requiredMessage="Please enter recipient's email or variable symbol"/>
+                        
+                        <p:outputLabel for="amount" value="Withdrawal Amount:"/>
+                        <p:inputNumber id="amount" 
+                                     value="#{sendBean.amount}"
+                                     required="true"
+                                     minValue="0.01"
+                                     decimalPlaces="2"
+                                     symbol=" Kč"
+                                     styleClass="send-input"
+                                     symbolPosition="s"
+                                     validatorMessage="Amount must be greater than 0 CZK"/>
+                    </p:panelGrid>
+                    
+                    <div class="button-container">
+                        <p:commandButton value="Withdraw"
+                                       action="#{sendBean.sendMoney}"
+                                       styleClass="p-button-success"
+                                       update="@form"/>
+                        <p:button value="Cancel"
+                                 outcome="transfer"
+                                 styleClass="p-button-secondary"/>
+                    </div>
+                    
+                    <p:messages id="messages" showDetail="true" closable="true">
+                        <p:autoUpdate />
+                    </p:messages>
+                </h:form>
+            </div>
+        </p:card>
+    </div>
+</h:body>
+</html>
