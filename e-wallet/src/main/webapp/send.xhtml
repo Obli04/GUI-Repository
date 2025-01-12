@@ -28,14 +28,14 @@
             <div class="send-info">
                 <h:form>
                     <p:panelGrid columns="1" styleClass="ui-noborder">
-                        <p:outputLabel for="recipient" value="Your withdrawal account - email or variable symbol:"/>
+                        <p:outputLabel for="recipient" value="Recipient account - email or variable symbol:"/>
                         <p:inputText id="recipient" 
                                    value="#{sendBean.recipientIdentifier}"
                                    required="true"
                                    styleClass="send-input"
                                    requiredMessage="Please enter recipient's email or variable symbol"/>
                         
-                        <p:outputLabel for="amount" value="Withdrawal Amount:"/>
+                        <p:outputLabel for="amount" value="Amount to send:"/>
                         <p:inputNumber id="amount" 
                                      value="#{sendBean.amount}"
                                      required="true"
@@ -46,9 +46,9 @@
                                      symbolPosition="s"
                                      validatorMessage="Amount must be greater than 0 CZK"/>
                     </p:panelGrid>
-                    
+                        
                     <div class="button-container">
-                        <p:commandButton value="Withdraw"
+                        <p:commandButton value="Send"
                                        action="#{sendBean.sendMoney}"
                                        styleClass="p-button-success"
                                        update="@form"/>
