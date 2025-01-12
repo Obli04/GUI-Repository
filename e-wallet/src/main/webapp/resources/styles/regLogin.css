@@ -601,3 +601,31 @@ small {
     background: rgba(255, 255, 255, 0.9) !important;
     color: #000000 !important;
 }
+
+.message-panel {
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border-radius: 0.25rem;
+}
+
+.error-message a {
+    color: #721c24;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.error-message a:hover {
+    color: #491217;
+}
+
+.login-message {
+    display: block;
+    margin-bottom: 1rem;
+}

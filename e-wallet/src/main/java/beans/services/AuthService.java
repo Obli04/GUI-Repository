@@ -292,21 +292,37 @@ public class AuthService {
        return false;
    }
 
-   public void resendVerificationEmail(User user) throws Exception {
-       // Generate new verification token
-       String token = UUID.randomUUID().toString();
-       user.setVerificationToken(token);
-       user.setTokenExpiry(LocalDateTime.now().plusHours(24));
+   @Transactional
+   public void resendVerificationEmail(String email) throws Exception {
+       System.out.println("AuthService: Attempting to resend verification email for: " + email);
        
        try {
+           User user = findUserByEmail(email);
+           if (user == null) {
+               throw new Exception("No account found with this email address.");
+           }
+           
+           if (user.getIsVerified()) {
+               throw new Exception("This account is already verified.");
+           }
+
+           // Generate new verification token
+           String token = UUID.randomUUID().toString();
+           user.setVerificationToken(token);
+           user.setTokenExpiry(LocalDateTime.now().plusHours(24));
+           
+           // Update user in database
            em.merge(user);
            em.flush();
+           
+           // Send verification email
            emailService.sendVerificationEmail(user.getEmail(), token);
-           System.out.println("Verification email resent successfully to: " + user.getEmail());
+           System.out.println("AuthService: Verification email sent successfully");
+           
        } catch (Exception e) {
-           System.err.println("Failed to resend verification email: " + e.getMessage());
+           System.err.println("AuthService ERROR: Failed to resend verification email: " + e.getMessage());
            e.printStackTrace();
-           throw new Exception("Failed to resend verification email: " + e.getMessage());
+           throw e;
        }
    }
 
