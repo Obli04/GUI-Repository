@@ -10,10 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
     <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/favicon.ico"/>
     <h:outputStylesheet library="styles" name="dashboard.css"/>
+    <h:outputStylesheet library="styles" name="budget.css"/>
 </h:head>
 <h:body>
     <f:metadata>
-        <f:event type="preRenderView" listener="#{userBean.refreshUserData}"/>
+        <f:event type="preRenderView" listener="#{userBean.refreshBalance}"/>
     </f:metadata>
     <h:form>
         <f:websocket channel="payment" onmessage="handlePayment" />
@@ -21,39 +22,53 @@
     </h:form>
 
     <div class="content">
-        <h2>Budget Management</h2>
+        <h2 class="page-title">Budget Management</h2>
         
         <h:form id="budget-overview">
-            <p:card styleClass="p-shadow-4">
-                <h3>Current Budget Overview</h3>
-                <p:panelGrid columns="2" styleClass="p-fluid">
-                    <p:outputLabel value="Total Budget:"/>
-                    <h:outputText value="#{userBean.currentUser.budget}">
-                        <f:convertNumber type="currency" currencySymbol="Kč"/>
-                    </h:outputText>
-                    
-                    <p:outputLabel value="Remaining Budget:"/>
-                    <h:outputText value="#{budgetBean.remainingBudget}">
-                        <f:convertNumber type="currency" currencySymbol="Kč"/>
-                    </h:outputText>
-                </p:panelGrid>
-            </p:card>
+            <div class="budget-cards">
+                <p:card styleClass="budget-card total">
+                    <div class="card-title">Total Budget</div>
+                    <div class="card-value">
+                        <h:outputText value="#{userBean.currentUser.budget}">
+                            <f:convertNumber type="currency" currencySymbol="Kč"/>
+                        </h:outputText>
+                    </div>
+                </p:card>
+                
+                <p:card styleClass="budget-card spent">
+                    <div class="card-title">Total Spent</div>
+                    <div class="card-value">
+                        <h:outputText value="#{budgetBean.totalSpent}">
+                            <f:convertNumber type="currency" currencySymbol="Kč"/>
+                        </h:outputText>
+                    </div>
+                </p:card>
+                
+                <p:card styleClass="budget-card remaining">
+                    <div class="card-title">Remaining Budget</div>
+                    <div class="card-value">
+                        <h:outputText value="#{budgetBean.remainingBudget}">
+                            <f:convertNumber type="currency" currencySymbol="Kč"/>
+                        </h:outputText>
+                    </div>
+                </p:card>
+            </div>
             <p:poll interval="3" update="@form" />
         </h:form>
         
-        <div class="budget-forms">
-            <p:tabView>
+        <div class="budget-forms p-mt-4">
+            <p:tabView styleClass="budget-tabs">
                 <p:tab title="Set Total Budget">
                     <h:form id="totalBudgetForm">
-                        <p:panel>
+                        <p:panel styleClass="form-panel">
                             <h:panelGrid columns="2" cellpadding="5">
                                 <p:outputLabel for="totalBudget" value="Total Budget:"/>
                                 <p:inputNumber id="totalBudget" 
-                                             value="#{budgetBean.totalBudget}"
-                                             symbol="Kč"
-                                             decimalPlaces="2"
-                                             required="true"
-                                             minValue="0"/>
+                                        value="#{budgetBean.totalBudget}"
+                                        symbol="Kč"
+                                        decimalPlaces="2"
+                                        required="true"
+                                        minValue="0"/>
                             </h:panelGrid>
                             
                             <p:messages showDetail="true" closable="true">
@@ -72,7 +87,7 @@
                 
                 <p:tab title="Category Budgets">
                     <h:form id="categoryBudgetForm">
-                        <p:panel>
+                        <p:panel styleClass="form-panel">
                             <h:panelGrid columns="2" cellpadding="5">
                                 <p:outputLabel for="category" value="Category:"/>
                                 <p:selectOneMenu id="category" 
@@ -109,7 +124,7 @@
                         <p:dataTable id="categoryBudgetsTable"
                                    value="#{budgetBean.categoryBudgets.entrySet()}"
                                    var="entry"
-                                   styleClass="p-mt-3">
+                                   styleClass="p-mt-3 category-table">
                             <p:column headerText="Category">
                                 <h:outputText value="#{entry.key}"/>
                             </p:column>
