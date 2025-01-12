@@ -15,7 +15,7 @@
 </h:head>
 <h:body>
     <f:metadata>
-        <f:event type="preRenderView" listener="#{userBean.refreshUserData}"/>
+        <!-- <f:event type="preRenderView" listener="#{userBean.refreshUserData}"/> -->
         <f:event type="preRenderView" listener="#{userBean.refreshBalance}"/>
     </f:metadata>
     <h:form>
@@ -27,7 +27,6 @@
         <p:growl id="growl" showDetail="true" sticky="true" position="bottom-right">
             <p:autoUpdate />
         </p:growl>
-
         <h1>Hello, <span class="user-full-name">#{userBean.firstName} #{userBean.secondName}</span></h1>
         <p>Email: #{userBean.email}</p>
 

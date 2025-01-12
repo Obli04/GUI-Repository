@@ -73,14 +73,7 @@ public class EmailService {
                 verificationLink, verificationLink); //Setting the content
 
             message.setContent(htmlContent, "text/html; charset=utf-8"); //Setting the content type
-            Transport transport = session.getTransport("smtp"); //Transport for the SMTP server
-            try {
-                transport.connect(SMTP_HOST, FROM_EMAIL, EMAIL_PASSWORD); //Connecting to the SMTP server
-                transport.sendMessage(message, message.getAllRecipients()); //Sending the message
-            } finally {
-                transport.close(); //Closing the transport
-            }
-            
+            Transport.send(message); //Sending the message
         } catch (Exception e) {
             e.printStackTrace(System.err); //Printing the stack trace
             throw new Exception("Failed to send verification email: " + e.getMessage(), e); //Throwing an exception
@@ -95,7 +88,8 @@ public class EmailService {
      * @throws Exception if an error occurs while sending the email
      */
     public void sendPasswordResetEmail(String toEmail, String token) throws Exception {
-        Properties props = new Properties(); // Properties for the SMTP server
+        
+        Properties props = new Properties(); //Properties for the SMTP server
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", SMTP_HOST);
@@ -113,10 +107,10 @@ public class EmailService {
                 }
             });
 
-            Message message = new MimeMessage(session); // Message to be sent
-            message.setFrom(new InternetAddress(FROM_EMAIL)); // Setting the sender
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail)); // Setting the recipient
-            message.setSubject("Reset your CashHive password"); // Setting the subject
+            Message message = new MimeMessage(session); //Message to be sent
+            message.setFrom(new InternetAddress(FROM_EMAIL)); //Setting the sender
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail)); //Setting the recipient
+            message.setSubject("Reset your CashHive password"); //Setting the subject
 
             String resetLink = "http://localhost:8080/e-wallet/reset-password.xhtml?token=" + token;
             String htmlContent = String.format(
@@ -132,12 +126,10 @@ public class EmailService {
                 "<p>Best regards,<br>The CashHive Team</p>" +
                 "</body>" +
                 "</html>",
-                resetLink, resetLink);
+                resetLink, resetLink); //Setting the content
 
-            message.setContent(htmlContent, "text/html; charset=utf-8");
-
-            Transport.send(message);
-            System.out.println("Password reset email sent successfully to: " + toEmail);
+            message.setContent(htmlContent, "text/html; charset=utf-8"); //Setting the content type
+            Transport.send(message); //Sending the message
         } catch (Exception e) {
             e.printStackTrace(System.err);
             throw new Exception("Failed to send password reset email: " + e.getMessage());

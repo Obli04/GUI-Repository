@@ -14,9 +14,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </h:head>
 <h:body>
-    <f:metadata>
-        <f:event type="preRenderView" listener="#{userBean.refreshUserData}"/>
-    </f:metadata>
     <h:form>
         <f:websocket channel="payment" onmessage="handlePayment" />
         <ui:include src="navbar.xhtml"/>

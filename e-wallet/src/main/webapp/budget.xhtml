@@ -12,9 +12,6 @@
     <h:outputStylesheet library="styles" name="dashboard.css"/>
 </h:head>
 <h:body>
-    <f:metadata>
-        <f:event type="preRenderView" listener="#{userBean.refreshUserData}"/>
-    </f:metadata>
     <h:form>
         <f:websocket channel="payment" onmessage="handlePayment" />
         <ui:include src="navbar.xhtml"/>
