@@ -461,59 +461,97 @@ h1,
 }
 
 .money-requests-section {
-    margin: 2rem 0;
+    margin: 2rem auto;
+    max-width: 1200px;
 }
 
 .request-panel {
     margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 15px !important;
+    padding: 1.5rem !important;
 }
 
 .request-table {
     width: 100%;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.action-column {
-    width: 200px;
-    text-align: center;
+.request-panel .ui-panel-titlebar {
+    background: transparent !important;
+    color: #2c3e50 !important;
+    font-size: 1.4rem !important;
+    font-weight: 600;
+    border: none;
+    padding: 0 0 1rem 0;
 }
 
-.action-column .ui-button {
-    margin: 0 0.25rem;
-}
-
-.ui-panel-titlebar {
+.request-table thead th {
     background: #f8f9fa !important;
     color: #2c3e50 !important;
-    font-size: 1.2rem !important;
-}
-
-.request-table .ui-datatable-data td,
-.request-table .ui-datatable-data th {
-    text-align: left !important;
-    padding-left: 1rem !important;
-}
-
-.align-left {
+    padding: 1rem !important;
+    border: none !important;
+    font-weight: 600 !important;
     text-align: left !important;
 }
 
-.ui-datatable thead th {
+.request-table tbody td {
+    padding: 1rem !important;
+    border: none !important;
+    border-bottom: 1px solid #eee !important;
+    color: #2c3e50;
     text-align: left !important;
-    padding-left: 1rem !important;
 }
 
-.ui-datatable tbody td {
-    text-align: left !important;
+.request-table tbody tr:hover {
+    background: #f8f9fa !important;
 }
 
 .action-column {
     width: 200px;
-    text-align: center !important;
+    text-align: left !important;
+    padding-left: 1rem !important;
 }
 
 .action-column .ui-button {
-    margin: 0 0.25rem;
-    text-align: center !important;
+    margin: 0 0.5rem 0 0;
+    padding: 0.4rem 0 !important;
+    font-size: 0.9rem !important;
+    width: 80px !important;
+    height: 32px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 5px !important;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.request-table .ui-button.p-button-success {
+    background: #4CAF50 !important;
+    border-color: #4CAF50 !important;
+    color: #fff !important;
+}
+
+.request-table .ui-button.p-button-danger {
+    background: #f44336 !important;
+    border-color: #f44336 !important;
+    color: #fff !important;
+}
+
+.request-table .ui-button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.request-table .ui-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.request-table .ui-button:active {
+    transform: translateY(0);
+    box-shadow: none;
 }
 
 .ui-growl {
