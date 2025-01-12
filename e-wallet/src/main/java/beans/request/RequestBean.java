@@ -155,7 +155,6 @@ public class RequestBean implements Serializable {
             RequestMoney managedRequest = em.find(RequestMoney.class, request.getId());
             if (managedRequest != null && managedRequest.getSender().getId().equals(userBean.getCurrentUser().getId())) {
                 em.remove(managedRequest);
-                addGrowlMessage(FacesMessage.SEVERITY_INFO, "Success", "Request deleted successfully");
             }
         } catch (Exception e) {
             addGrowlMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to delete request");
