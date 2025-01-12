@@ -54,7 +54,7 @@ public class UserBean implements Serializable {
     private String secondName;
     private String twoFactorCode;
     private String iban;
-
+    
     // Session data
     private User currentUser;
     private StreamedContent qrCodeImage;
@@ -116,9 +116,9 @@ public class UserBean implements Serializable {
             
             try { //Try to register the user
                 RegistrationResult result = authService.register(newUser); //Register the user
-                
+            
                 //Store the result message in the session for display after redirect
-                FacesContext context = FacesContext.getCurrentInstance();
+            FacesContext context = FacesContext.getCurrentInstance();
                 context.getExternalContext().getSessionMap().put("registrationMessage", result.getMessage()); //Store the message in the session
                 context.getExternalContext().getSessionMap().put("emailSent", result.isEmailSent()); //Store the email sent status in the session
                 return "login.xhtml?faces-redirect=true"; //Redirect to the login page
