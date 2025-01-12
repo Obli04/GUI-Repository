@@ -61,7 +61,7 @@
             <p:panel id="allRequests" header="Money Requests" styleClass="request-panel" 
                      rendered="#{not empty requestBean.receivedRequests or not empty requestBean.sentRequests}">
                 <p:dataTable value="#{requestBean.allRequests}" var="moneyRequest"
-                             styleClass="request-table" rows="3" paginator="false">
+                             styleClass="request-table" paginator="false">
                     <p:column headerText="Type">
                         <h:outputText value="#{moneyRequest.receiver.id eq userBean.currentUser.id ? 'Received' : 'Sent'}" 
                                     styleClass="#{moneyRequest.receiver.id eq userBean.currentUser.id ? 'received-request' : 'sent-request'}"/>
