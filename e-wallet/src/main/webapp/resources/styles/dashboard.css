@@ -138,13 +138,11 @@ body {
     margin-bottom: 1.5rem !important;
 }
 
-/* Required field asterisk */
 .ui-outputlabel-rfi {
     color: #ff9800 !important;
     margin-left: 4px !important;
 }
 
-/* Messages styling */
 .ui-messages {
     margin: 1.5rem 0 !important;
     border: none !important;
@@ -395,7 +393,6 @@ h1,
 .budget .financial-card-amount { color: #2ecc71; }
 .piggy .financial-card-amount { color: #9b59b6; }
 
-/* Transactions Table Styling */
 .transactions-card {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 15px;
