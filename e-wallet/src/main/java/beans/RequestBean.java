@@ -1,4 +1,4 @@
-package beans.request;
+package beans;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

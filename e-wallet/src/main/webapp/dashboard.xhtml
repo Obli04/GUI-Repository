@@ -11,6 +11,7 @@
     <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/favicon.ico"/>
     <h:outputStylesheet library="styles" name="dashboard.css"/>
     <h:outputStylesheet library="styles" name="transaction.css"/>
+    <h:outputStylesheet library="styles" name="transfer.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </h:head>
 <h:body>
@@ -23,7 +24,7 @@
         <ui:include src="navbar.xhtml"/>
     </h:form>
 
-    <div class="content">
+    <div class="content" style="margin-top: 150px">
         <p:growl id="growl" showDetail="true" sticky="true" position="bottom-right">
             <p:autoUpdate />
         </p:growl>
@@ -55,6 +56,24 @@
                 </div>
                 <div class="financial-card-amount">#{userBean.currentUser.piggyBank} CZK</div>
             </div>
+        </div>
+
+        <div class="transfer-options">
+            <h:link outcome="send" styleClass="transfer-card send-money">
+                <div class="card-content">
+                    <i class="pi pi-send"></i>
+                    <h2>Send Money</h2>
+                    <p>Transfer money to another CashHive user</p>
+                </div>
+            </h:link>
+
+            <h:link outcome="request" styleClass="transfer-card request-money">
+                <div class="card-content">
+                    <i class="pi pi-dollar"></i>
+                    <h2>Request Money</h2>
+                    <p>Request money from another CashHive user</p>
+                </div>
+            </h:link>
         </div>
 
         <div class="money-requests-section">

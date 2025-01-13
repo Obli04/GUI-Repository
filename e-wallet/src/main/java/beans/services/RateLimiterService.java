@@ -60,7 +60,7 @@ public class RateLimiterService {
         }
     }
 
-    /**
+    /** 
      * Resets the attempt count and lockout time for the user identified by their email.
      * 
      * @param email the email of the user
