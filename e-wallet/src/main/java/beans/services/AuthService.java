@@ -16,12 +16,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.UserTransaction;
+import jakarta.validation.ValidationException;
 
 /**
  * AuthService provides authentication-related services such as login, email verification,
  * password reset, and two-factor authentication.
  * 
- * <p>Author: Davide Scaccia</p>
+ * @author Davide Scaccia
  */
 @ApplicationScoped
 public class AuthService {
@@ -42,8 +43,6 @@ public class AuthService {
    @PostConstruct
    public void init() {
        this.gAuth = new GoogleAuthenticator();
-       // Default window size is 3, which allows for ±1 time steps (30 seconds each)
-       System.out.println("AuthService initialized with GoogleAuthenticator");
    }
 
    public void validatePassword(String password) throws jakarta.validation.ValidationException {
@@ -74,15 +73,11 @@ public class AuthService {
 
    @Transactional
    public RegistrationResult register(User user) throws Exception {
-       System.out.println("AuthService: Starting registration for user: " + user.getEmail());
        try {
            // Debug database connection
            try {
                em.createNativeQuery("SELECT 1").getSingleResult();
-               System.out.println("AuthService: Database connection test successful");
            } catch (Exception e) {
-               System.err.println("AuthService ERROR: Database connection test failed: " + e.getMessage());
-               e.printStackTrace();
                throw new Exception("Unable to connect to database: " + e.getMessage());
            }
            
@@ -91,7 +86,6 @@ public class AuthService {
                throw new jakarta.validation.ValidationException("All fields are required");
            }
            
-           System.out.println("Starting registration for email: " + user.getEmail());
            
            // Check for existing user
            try {
@@ -99,8 +93,7 @@ public class AuthService {
                if (existingUser != null) {
                    throw new jakarta.validation.ValidationException("Email already registered");
                }
-           } catch (Exception e) {
-               System.err.println("Error checking existing user: " + e.getMessage());
+           } catch (ValidationException e) {
                if (!(e instanceof jakarta.validation.ValidationException)) {
                    throw new Exception("Database error while checking existing user");
                }
@@ -111,7 +104,6 @@ public class AuthService {
            try {
                user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
            } catch (Exception e) {
-               System.err.println("Error hashing password: " + e.getMessage());
                throw new Exception("Error processing password");
            }
            
@@ -128,39 +120,28 @@ public class AuthService {
            
            // Save user
            try {
-               System.out.println("Attempting to persist user");
                em.persist(user);
                em.flush();
-               System.out.println("User persisted successfully");
            } catch (Exception e) {
-               System.err.println("Error persisting user: " + e.getMessage());
-               e.printStackTrace();
                throw new Exception("Failed to save user to database: " + e.getMessage());
            }
            
            boolean emailSent = false;
            String emailStatus = "";
-           
            // Send verification email
            try {
-               System.out.println("AuthService: Attempting to send verification email...");
                emailService.sendVerificationEmail(user.getEmail(), token);
                emailSent = true;
                emailStatus = "Account created and verification email sent to: " + user.getEmail() + 
                            ". Please check your inbox and spam folder.";
-               System.out.println("AuthService: " + emailStatus);
            } catch (Exception e) {
                emailStatus = "Account created successfully, but we couldn't send the verification email. " +
                            "Please try requesting a new verification email after logging in.";
-               System.err.println("AuthService ERROR: Failed to send verification email: " + e.getMessage());
-               e.printStackTrace();
            }
            
            return new RegistrationResult(true, emailSent, emailStatus);
            
        } catch (Exception e) {
-           System.err.println("AuthService ERROR: Registration failed: " + e.getMessage());
-           e.printStackTrace();
            throw e;
        }
    }
@@ -236,7 +217,7 @@ public class AuthService {
            }
            rateLimiter.recordFailedAttempt(email);
            return false;
-       } catch (Exception e) {
+       } catch (NumberFormatException | SecurityException e) {
            rateLimiter.recordFailedAttempt(email);
            throw e;
        }
@@ -269,27 +250,19 @@ public class AuthService {
    public boolean verify2FA(User user, String code) {
        try {
            if (user == null || code == null || user.getTwoFactorSecret() == null) {
-               System.out.println("2FA verification failed: null check failed");
                return false;
            }
            
            String cleanCode = code.trim().replaceAll("[^0-9]", "");
-           System.out.println("Verifying 2FA code: " + cleanCode);
-           System.out.println("User secret: " + user.getTwoFactorSecret());
            
            if (cleanCode.length() != 6) {
-               System.out.println("2FA verification failed: invalid code length");
                return false;
            }
 
            int codeInt = Integer.parseInt(cleanCode);
            boolean isValid = gAuth.authorize(user.getTwoFactorSecret(), codeInt);
-           
-           System.out.println("2FA verification result: " + isValid);
-           return isValid;
-       } catch (Exception e) {
-           System.err.println("2FA verification error: " + e.getMessage());
-           e.printStackTrace();
+                      return isValid;
+       } catch (NumberFormatException e) {
            return false;
        }
    }
@@ -310,7 +283,6 @@ public class AuthService {
            try {
                emailService.sendPasswordResetEmail(email, token);
            } catch (Exception e) {
-               System.err.println("Failed to send password reset email: " + e.getMessage());
            }
        }
    }
@@ -338,8 +310,8 @@ public class AuthService {
                    return true;
                }
            }
-       } catch (Exception e) {
-           System.err.println("Error resetting password: " + e.getMessage());
+       } catch (ValidationException e) {
+        return false;
        }
        return false;
    }
@@ -352,8 +324,6 @@ public class AuthService {
     */
    @Transactional
    public void resendVerificationEmail(String email) throws Exception {
-       System.out.println("AuthService: Attempting to resend verification email for: " + email);
-       
        try {
            User user = findUserByEmail(email);
            if (user == null) {
@@ -375,11 +345,8 @@ public class AuthService {
            
            // Send verification email
            emailService.sendVerificationEmail(user.getEmail(), token);
-           System.out.println("AuthService: Verification email sent successfully");
            
        } catch (Exception e) {
-           System.err.println("AuthService ERROR: Failed to resend verification email: " + e.getMessage());
-           e.printStackTrace();
            throw e;
        }
    }
@@ -403,7 +370,6 @@ public class AuthService {
            em.merge(user);
            em.flush();
        } catch (Exception e) {
-           System.err.println("Error updating user: " + e.getMessage());
            throw new Exception("Failed to update user: " + e.getMessage());
        }
    }
@@ -422,8 +388,7 @@ public class AuthService {
            user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
            em.merge(user);
            em.flush();
-       } catch (Exception e) {
-           System.err.println("Error updating password: " + e.getMessage());
+       } catch (ValidationException e) {
            throw new Exception("Failed to update password: " + e.getMessage());
        }
    }
@@ -453,7 +418,6 @@ public class AuthService {
        GoogleAuthenticator gAuth = new GoogleAuthenticator();
        GoogleAuthenticatorKey key = gAuth.createCredentials();
        String secret = key.getKey();
-       System.out.println("Generated new 2FA secret: " + secret);
        return secret;
    }
 
@@ -520,8 +484,7 @@ public class AuthService {
                     .setParameter("userId", userId)
                     .getSingleResult();
        } catch (Exception e) {
-           System.err.println("Error fetching latest balance: " + e.getMessage());
-           return 0.0; // Return a default value or handle the error appropriately
+           return 0.0;
        }
    }
 }
