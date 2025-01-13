@@ -35,7 +35,7 @@ public class DepositBean implements Serializable {
     // Fields to store QR code and payment information
     private StreamedContent qrCode;
     private String spaydString;
-    private double amount = 0.0;
+    private double amount = 1.0;
     
     /**
      * Initializes or reinitializes deposit information.

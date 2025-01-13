@@ -440,7 +440,7 @@ h1,
 .user-full-name {
     color: #ff9800;
     font-weight: 600;
-    background: -webkit-linear-gradient(45deg, #ff9800, #ff5722);
+    background: -webkit-linear-gradient(45deg, #ffb74d, #ff7043);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

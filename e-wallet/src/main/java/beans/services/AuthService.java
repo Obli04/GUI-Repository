@@ -17,6 +17,12 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.UserTransaction;
 
+/**
+ * AuthService provides authentication-related services such as login, email verification,
+ * password reset, and two-factor authentication.
+ * 
+ * <p>Author: Davide Scaccia</p>
+ */
 @ApplicationScoped
 public class AuthService {
    @PersistenceContext(unitName = "e-walletPU")
@@ -159,13 +165,25 @@ public class AuthService {
        }
    }
 
+   /**
+    * Retrieves the variable symbol for a user by their ID.
+    *
+    * @param id the ID of the user
+    * @return the variable symbol of the user
+    */
    @Transactional
-   public String getVariableSymbol(Long id){
-    return em.createQuery("SELECT u.variable_symbol FROM User u WHERE u.id = :id", String.class)
-             .setParameter("id", id)
-             .getSingleResult();
+   public String getVariableSymbol(Long id) {
+       return em.createQuery("SELECT u.variable_symbol FROM User u WHERE u.id = :id", String.class)
+                .setParameter("id", id)
+                .getSingleResult();
    }
 
+   /**
+    * Verifies a user's email using a token.
+    *
+    * @param token the verification token
+    * @return true if the email is successfully verified, false otherwise
+    */
    @Transactional
    public boolean verifyEmail(String token) {
        User user = em.createQuery("SELECT u FROM User u WHERE u.verificationToken = :token", User.class)
@@ -182,6 +200,15 @@ public class AuthService {
        return false;
    }
 
+   /**
+    * Attempts to log in a user with email, password, and two-factor authentication code.
+    *
+    * @param email the user's email
+    * @param password the user's password
+    * @param twoFactorCode the two-factor authentication code
+    * @return true if login is successful, false otherwise
+    * @throws SecurityException if the account is locked or email is not verified
+    */
    public boolean login(String email, String password, String twoFactorCode) {
        if (!rateLimiter.isAllowed(email)) {
            LocalDateTime lockoutEnd = rateLimiter.getLockoutEndTime(email);
@@ -215,6 +242,12 @@ public class AuthService {
        }
    }
 
+   /**
+    * Finds a user by their email.
+    *
+    * @param email the user's email
+    * @return the User object if found, null otherwise
+    */
    public User findUserByEmail(String email) {
        try {
            return em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
@@ -225,6 +258,13 @@ public class AuthService {
        }
    }
 
+   /**
+    * Verifies a user's two-factor authentication code.
+    *
+    * @param user the user to verify
+    * @param code the two-factor authentication code
+    * @return true if the code is valid, false otherwise
+    */
    @Transactional
    public boolean verify2FA(User user, String code) {
        try {
@@ -254,6 +294,11 @@ public class AuthService {
        }
    }
 
+   /**
+    * Requests a password reset for a user by email.
+    *
+    * @param email the user's email
+    */
    @Transactional
    public void requestPasswordReset(String email) {
        User user = findUserByEmail(email);
@@ -270,6 +315,13 @@ public class AuthService {
        }
    }
 
+   /**
+    * Resets a user's password using a token and a new password.
+    *
+    * @param token the reset token
+    * @param newPassword the new password
+    * @return true if the password is successfully reset, false otherwise
+    */
    @Transactional
    public boolean resetPassword(String token, String newPassword) {
        try {
@@ -292,6 +344,12 @@ public class AuthService {
        return false;
    }
 
+   /**
+    * Resends a verification email to a user.
+    *
+    * @param email the user's email
+    * @throws Exception if the user is not found or already verified
+    */
    @Transactional
    public void resendVerificationEmail(String email) throws Exception {
        System.out.println("AuthService: Attempting to resend verification email for: " + email);
@@ -326,6 +384,12 @@ public class AuthService {
        }
    }
 
+   /**
+    * Updates a user's information.
+    *
+    * @param user the user to update
+    * @throws Exception if the user is not found or update fails
+    */
    @Transactional
    public void updateUser(User user) throws Exception {
        try {
@@ -344,6 +408,13 @@ public class AuthService {
        }
    }
 
+   /**
+    * Updates a user's password.
+    *
+    * @param user the user whose password is to be updated
+    * @param newPassword the new password
+    * @throws Exception if the password validation or update fails
+    */
    @Transactional
    public void updatePassword(User user, String newPassword) throws Exception {
        try {
@@ -357,6 +428,13 @@ public class AuthService {
        }
    }
 
+   /**
+    * Verifies a user's password.
+    *
+    * @param email the user's email
+    * @param password the password to verify
+    * @return true if the password is correct, false otherwise
+    */
    public boolean verifyPassword(String email, String password) {
        try {
            User user = findUserByEmail(email);
@@ -366,6 +444,11 @@ public class AuthService {
        }
    }
 
+   /**
+    * Generates a new two-factor authentication secret.
+    *
+    * @return the new two-factor authentication secret
+    */
    public String generateNewTwoFactorSecret() {
        GoogleAuthenticator gAuth = new GoogleAuthenticator();
        GoogleAuthenticatorKey key = gAuth.createCredentials();
@@ -374,6 +457,12 @@ public class AuthService {
        return secret;
    }
 
+   /**
+    * Finds a user by their reset token.
+    *
+    * @param token the reset token
+    * @return the User object if found, null otherwise
+    */
    public User findUserByResetToken(String token) {
        try {
            return em.createQuery("SELECT u FROM User u WHERE u.verificationToken = :token", User.class)
@@ -384,10 +473,22 @@ public class AuthService {
        }
    }
 
+   /**
+    * Sends a password reset email to a user.
+    *
+    * @param email the user's email
+    * @param token the reset token
+    * @throws Exception if sending the email fails
+    */
    public void sendPasswordResetEmail(String email, String token) throws Exception {
        emailService.sendPasswordResetEmail(email, token);
    }
 
+   /**
+    * Generates a unique variable symbol.
+    *
+    * @return a unique variable symbol
+    */
    private String generateVariableSymbol() {
        String variableSymbol;
        boolean isUnique;
@@ -406,6 +507,12 @@ public class AuthService {
        return variableSymbol;
    }
 
+   /**
+    * Retrieves the latest balance for a user.
+    *
+    * @param userId the ID of the user
+    * @return the latest balance of the user
+    */
    @Transactional
    public double getLatestBalance(Long userId) {
        try {
@@ -414,7 +521,7 @@ public class AuthService {
                     .getSingleResult();
        } catch (Exception e) {
            System.err.println("Error fetching latest balance: " + e.getMessage());
-           return 0.0; //Return a default value or handle the error appropriately
+           return 0.0; // Return a default value or handle the error appropriately
        }
    }
 }
