@@ -98,7 +98,7 @@ public class RequestBean implements Serializable {
                 "Money request sent successfully");
             resetForm();
             
-            return "dashboard?faces-redirect=true";
+            return null;
             
         } catch (Exception e) {
             addGrowlMessage(FacesMessage.SEVERITY_ERROR, "Error", 
