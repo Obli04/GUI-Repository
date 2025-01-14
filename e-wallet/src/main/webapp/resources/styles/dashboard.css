@@ -138,13 +138,11 @@ body {
     margin-bottom: 1.5rem !important;
 }
 
-/* Required field asterisk */
 .ui-outputlabel-rfi {
     color: #ff9800 !important;
     margin-left: 4px !important;
 }
 
-/* Messages styling */
 .ui-messages {
     margin: 1.5rem 0 !important;
     border: none !important;
@@ -395,7 +393,6 @@ h1,
 .budget .financial-card-amount { color: #2ecc71; }
 .piggy .financial-card-amount { color: #9b59b6; }
 
-/* Transactions Table Styling */
 .transactions-card {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 15px;
@@ -443,7 +440,7 @@ h1,
 .user-full-name {
     color: #ff9800;
     font-weight: 600;
-    background: -webkit-linear-gradient(45deg, #ff9800, #ff5722);
+    background: -webkit-linear-gradient(45deg, #ffb74d, #ff7043);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -461,59 +458,111 @@ h1,
 }
 
 .money-requests-section {
-    margin: 2rem 0;
+    margin: 2rem auto;
+    max-width: 1200px;
 }
 
 .request-panel {
     margin-bottom: 1rem;
+    background: #ffffff !important;
+    border-radius: 15px !important;
+    padding: 1rem !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24) !important;
 }
 
 .request-table {
     width: 100%;
+    border: none !important;
+    background: #ffffff !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    box-shadow: none !important;
 }
 
-.action-column {
-    width: 200px;
-    text-align: center;
-}
-
-.action-column .ui-button {
-    margin: 0 0.25rem;
-}
-
-.ui-panel-titlebar {
-    background: #f8f9fa !important;
+.request-panel .ui-panel-titlebar {
+    background: transparent !important;
     color: #2c3e50 !important;
     font-size: 1.2rem !important;
+    font-weight: 600;
+    border: none;
+    padding: 0.5rem 1rem !important;
+    margin-bottom: 0.5rem !important;
 }
 
-.request-table .ui-datatable-data td,
-.request-table .ui-datatable-data th {
+.request-table thead th {
+    background: #ffffff !important;
+    color: #2c3e50 !important;
+    padding: 0.75rem 1rem !important;
+    border: none !important;
+    font-weight: 600 !important;
     text-align: left !important;
-    padding-left: 1rem !important;
+    font-size: 0.9rem !important;
+    text-transform: uppercase !important;
+    color: #666 !important;
+    border-bottom: 1px solid rgba(0,0,0,0.05) !important;
 }
 
-.align-left {
+.request-table tbody td {
+    padding: 0.75rem 1rem !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(0,0,0,0.03) !important;
+    color: #2c3e50;
     text-align: left !important;
+    font-size: 0.95rem !important;
 }
 
-.ui-datatable thead th {
-    text-align: left !important;
-    padding-left: 1rem !important;
-}
-
-.ui-datatable tbody td {
-    text-align: left !important;
+.request-table tbody tr:hover {
+    background: #fafafa !important;
 }
 
 .action-column {
     width: 200px;
-    text-align: center !important;
+    text-align: left !important;
+    padding-left: 1rem !important;
 }
 
 .action-column .ui-button {
-    margin: 0 0.25rem;
-    text-align: center !important;
+    margin: 0 0.5rem 0 0;
+    padding: 0.4rem 0 !important;
+    font-size: 0.9rem !important;
+    width: 80px !important;
+    height: 32px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 4px !important;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-transform: uppercase !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+}
+
+.request-table .ui-button.p-button-success {
+    background: #2196F3 !important;
+    border-color: #2196F3 !important;
+    color: #fff !important;
+}
+
+.request-table .ui-button.p-button-danger {
+    background: #f44336 !important;
+    border-color: #f44336 !important;
+    color: #fff !important;
+}
+
+.request-table .ui-button:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.request-table .ui-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+.request-table .ui-button:active {
+    transform: translateY(0);
+    box-shadow: none;
 }
 
 .ui-growl {
@@ -535,4 +584,14 @@ h1,
     font-size: 1.1em !important;
     font-weight: bold !important;
     color: white !important;
+}
+
+.received-request {
+    color: #2196F3 !important;
+    font-weight: 500;
+}
+
+.sent-request {
+    color: #f44336 !important;
+    font-weight: 500;
 }

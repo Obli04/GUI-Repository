@@ -17,27 +17,34 @@
     </h:form>
 
     <div class="content">
+        <p:growl id="growl" showDetail="true" sticky="true" position="bottom-right">
+            <p:autoUpdate />
+        </p:growl>
+        
         <h1>Request Money</h1>
         
         <p:card styleClass="request-form">
             <h:form>
-                <p:panelGrid columns="2" styleClass="ui-noborder">
-                    <p:outputLabel for="recipient" value="Recipient Email or Variable Symbol:"/>
+                <p:panelGrid columns="1" styleClass="ui-noborder">
+                    <p:outputLabel for="recipient" value="Recipient Email or Variable Symbol"/>
                     <p:inputText id="recipient" 
                                value="#{requestBean.recipientIdentifier}"
                                required="true"
-                               requiredMessage="Please enter recipient's email or variable symbol"/>
+                               requiredMessage="Please enter recipient's email or variable symbol"
+                               placeholder="Enter email or variable symbol"/>
                     
-                    <p:outputLabel for="amount" value="Amount (CZK):"/>
+                    <p:outputLabel for="amount" value="Amount"/>
                     <p:inputNumber id="amount" 
                                  value="#{requestBean.amount}"
                                  required="true"
-                                 minValue="0.01"
+                                 minValue="0"
                                  decimalPlaces="2"
                                  symbol=" CZK"
-                                 symbolPosition="s"/>
+                                 symbolPosition="s"
+                                 placeholder="Enter amount"
+                                 emptyValue="0"/>
                     
-                    <p:outputLabel for="description" value="Description:"/>
+                    <p:outputLabel for="description" value="Description"/>
                     <p:inputTextarea id="description"
                                    value="#{requestBean.description}"
                                    rows="3"
@@ -48,12 +55,8 @@
                     <p:commandButton value="Send Request"
                                    action="#{requestBean.sendRequest}"
                                    styleClass="p-button-success"
-                                   update="@form"/>
+                                   update="@form :growl"/>
                 </div>
-                
-                <p:messages id="messages" showDetail="true" closable="true">
-                    <p:autoUpdate />
-                </p:messages>
             </h:form>
         </p:card>
     </div>
