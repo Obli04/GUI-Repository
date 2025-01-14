@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import beans.UserBean;
 import beans.entities.RequestMoney;
 import beans.entities.Transaction;
 import beans.entities.User;
@@ -42,7 +41,7 @@ public class RequestBean implements Serializable {
      * Processes a new money request from the current user to another user.
      * Validates the request details and creates a new RequestMoney entity if valid.
      *
-     * @return String navigation outcome, null if validation fails
+     * @return null if validation fails
      */
     @Transactional
     public String sendRequest() {
