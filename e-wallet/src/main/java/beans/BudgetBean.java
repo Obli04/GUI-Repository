@@ -137,11 +137,13 @@ public class BudgetBean implements Serializable {
             User currentUser = userBean.getCurrentUser();
             if (currentUser == null) return 0.0;
 
-            // Get total spent amount for withdrawals and sending money
+            // Get total spent amount for withdrawals and sending money for current month
             TypedQuery<Double> query = em.createQuery(
                 "SELECT COALESCE(SUM(t.value), 0) FROM Transaction t " +
                 "WHERE t.sender.id = :userId " +
-                "AND (t.type = 'Withdraw' OR t.category = 'User Transfer')", Double.class);
+                "AND (t.type = 'Withdraw' OR t.category = 'User Transfer') " +
+                "AND FUNCTION('YEAR', t.timestamp) = FUNCTION('YEAR', CURRENT_DATE) " +
+                "AND FUNCTION('MONTH', t.timestamp) = FUNCTION('MONTH', CURRENT_DATE)", Double.class);
             query.setParameter("userId", currentUser.getId());
             
             return query.getSingleResult();
@@ -208,12 +210,14 @@ public class BudgetBean implements Serializable {
         if (currentUser == null) return 0.0;
         
         try {
-            // Get spent amount for specific category
+            // Get spent amount for specific category for current month
             TypedQuery<Double> query = em.createQuery(
                 "SELECT COALESCE(SUM(t.value), 0) FROM Transaction t " +
                 "WHERE t.sender.id = :userId " +
                 "AND (t.type = 'WITHDRAW' OR t.type = 'SEND') " +
-                "AND t.category = :category", Double.class);
+                "AND t.category = :category " +
+                "AND FUNCTION('YEAR', t.timestamp) = FUNCTION('YEAR', CURRENT_DATE) " +
+                "AND FUNCTION('MONTH', t.timestamp) = FUNCTION('MONTH', CURRENT_DATE)", Double.class);
             query.setParameter("userId", currentUser.getId());
             query.setParameter("category", category);
             
