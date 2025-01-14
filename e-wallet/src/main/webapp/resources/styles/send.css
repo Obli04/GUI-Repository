@@ -21,7 +21,6 @@ body {
     max-width: 500px;
     margin: 2rem auto;
     padding: 0;
-    background-color: rgba(255, 255, 255, 0.95);
     border-radius: 15px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     overflow: hidden;
@@ -42,13 +41,14 @@ body {
     margin-top: 0.5rem;
     font-size: 2.2rem;
     font-weight: 700;
+    color: white;
 }
 
 .send-info {
-    padding: 1.5rem;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #eee;
-    text-align: left;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .ui-panelgrid {
@@ -68,22 +68,6 @@ body {
     margin-bottom: 0.5rem;
 }
 
-.modern-input, .ui-inputfield {
-    width: 100%;
-    padding: 1rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    background-color: white;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-    color: #333;
-}
-
-.modern-input:focus, .ui-inputfield:focus {
-    border-color: #4CAF50;
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
-    outline: none;
-}
 
 .button-container {
     padding: 1.5rem;
@@ -121,12 +105,21 @@ body {
     transition: all 0.3s ease;
 }
 
+.ui-inputtext,
+.ui-inputnumber input,
+.ui-inputtextarea {
+    width: 100% !important;
+    padding: 0.5rem !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    font-size: 1rem !important;
+}
+
 .p-button-secondary:hover {
     background-color: #757575;
     transform: translateY(-1px);
 }
 
-/* Messages styling */
 .ui-messages {
     margin: 1rem;
     border-radius: 8px;
@@ -137,7 +130,6 @@ body {
     margin-bottom: 0.5rem;
 }
 
-/* Required field asterisk */
 .ui-outputlabel-rfi {
     color: #f44336;
     margin-left: 4px;

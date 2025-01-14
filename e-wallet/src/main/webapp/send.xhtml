@@ -17,49 +17,51 @@
     </h:form>
 
     <div class="content">
-        <h1>Send Money</h1>
-        
-        <p:card styleClass="send-form">
-            <h:form>
-                <div class="balance-display">
-                    <span>Available Balance:</span>
-                    <h:outputText value="#{userBean.currentUser.balance}" styleClass="balance-amount">
-                        <f:convertNumber type="currency" currencySymbol="Kč"/>
-                    </h:outputText>
-                </div>
+        <p:card styleClass="container">
+            <div class="balance-header">
+                <span>Current Balance</span>
+                <h:outputText value="#{userBean.currentUser.balance}" styleClass="balance-text">
+                    <f:convertNumber type="currency" currencySymbol="Kč"/>
+                </h:outputText>
+            </div>
 
-                <p:panelGrid columns="2" styleClass="ui-noborder">
-                    <p:outputLabel for="recipient" value="Recipient Email or Variable Symbol:"/>
-                    <p:inputText id="recipient" 
-                               value="#{sendBean.recipientIdentifier}"
-                               required="true"
-                               requiredMessage="Please enter recipient's email or variable symbol"/>
+            <div class="send-info">
+                <h:form>
+                    <p:panelGrid columns="1" styleClass="ui-noborder">
+                        <p:outputLabel for="recipient" value="Recipient account - email or variable symbol:"/>
+                        <p:inputText id="recipient" 
+                                   value="#{sendBean.recipientIdentifier}"
+                                   required="true"
+                                   styleClass="send-input"
+                                   requiredMessage="Please enter recipient's email or variable symbol"/>
+                        
+                        <p:outputLabel for="amount" value="Amount to send:"/>
+                        <p:inputNumber id="amount" 
+                                     value="#{sendBean.amount}"
+                                     required="true"
+                                     minValue="0.01"
+                                     decimalPlaces="2"
+                                     symbol=" Kč"
+                                     styleClass="send-input"
+                                     symbolPosition="s"
+                                     validatorMessage="Amount must be greater than 0 CZK"/>
+                    </p:panelGrid>
+                        
+                    <div class="button-container">
+                        <p:commandButton value="Send"
+                                       action="#{sendBean.sendMoney}"
+                                       styleClass="p-button-success"
+                                       update="@form"/>
+                        <p:button value="Cancel"
+                                 outcome="transfer"
+                                 styleClass="p-button-secondary"/>
+                    </div>
                     
-                    <p:outputLabel for="amount" value="Amount (CZK):"/>
-                    <p:inputNumber id="amount" 
-                                 value="#{sendBean.amount}"
-                                 required="true"
-                                 minValue="0.01"
-                                 decimalPlaces="2"
-                                 symbol=" CZK"
-                                 symbolPosition="s"/>
-            
-                </p:panelGrid>
-                
-                <div class="button-container">
-                    <p:commandButton value="Send Money"
-                                   action="#{sendBean.sendMoney}"
-                                   styleClass="p-button-success"
-                                   update="@form"/>
-                    <p:button value="Cancel"
-                             outcome="transfer"
-                             styleClass="p-button-secondary"/>
-                </div>
-                
-                <p:messages id="messages" showDetail="true" closable="true">
-                    <p:autoUpdate />
-                </p:messages>
-            </h:form>
+                    <p:messages id="messages" showDetail="true" closable="true">
+                        <p:autoUpdate />
+                    </p:messages>
+                </h:form>
+            </div>
         </p:card>
     </div>
 </h:body>

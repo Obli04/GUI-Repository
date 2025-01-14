@@ -14,23 +14,31 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
+/**
+ * Bean for withdrawing money from user account to a bank account using IBAN set in user account page
+ * @author Arcangelo Mauro - xmauroa00
+ */
 @Named
 @SessionScoped
 public class WithdrawalBean implements Serializable {
     private static final long serialVersionUID = 1L;
     
+    // EntityManager for database operations
     @PersistenceContext
     private EntityManager em;
     
+    // UserBean for getting current user
     @Inject
     private UserBean userBean;
     
-    private double amount;
+    private double amount; // Amount to withdraw
     
+    // Transactional method for withdrawing money, returns null if error occurs
     @Transactional
     public String withdraw() {
         User currentUser = userBean.getCurrentUser();
         
+        // Check if the user has set up their IBAN in account page
         try {
             if (currentUser.getIban() == null || currentUser.getIban().trim().isEmpty()) {
                 addMessage(FacesMessage.SEVERITY_ERROR, "No IBAN configured", 
@@ -38,12 +46,14 @@ public class WithdrawalBean implements Serializable {
                 return null;
             }
 
+            // Check if amount entered by the user is greater than 0
             if (amount <= 0) {
                 addMessage(FacesMessage.SEVERITY_ERROR, "Invalid amount", 
                     "Please enter a positive amount");
                 return null;
             }
             
+            // Check the balance of the user to make sure they have enough money to withdraw
             if (currentUser.getBalance() < amount) {
                 addMessage(FacesMessage.SEVERITY_ERROR, "Insufficient funds", 
                     "Your balance is insufficient for this withdrawal");
@@ -65,12 +75,14 @@ public class WithdrawalBean implements Serializable {
             em.persist(withdrawal);
             em.merge(currentUser);
             
+            // Add success message
             addMessage(FacesMessage.SEVERITY_INFO, "Success", 
                 String.format("Withdrawal of %.2f CZK completed successfully", amount));
             
             // Reset form
             amount = 0;
             
+            // Redirect to dashboard
             return "dashboard?faces-redirect=true";
             
         } catch (Exception e) {
@@ -80,6 +92,7 @@ public class WithdrawalBean implements Serializable {
         }
     }
     
+    // Method for adding messages to the FacesContext
     private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null, 
             new FacesMessage(severity, summary, detail));

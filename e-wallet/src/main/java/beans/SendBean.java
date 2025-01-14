@@ -15,34 +15,39 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
+/**
+ * Bean for sending money to a user account to anoter one using email or variable symbol
+ * @author Arcangelo Mauro - xmauroa00
+ */
 @Named
 @SessionScoped
 public class SendBean implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+    // EntityManager for database operations
     @PersistenceContext
     private EntityManager em;
 
+    // UserBean for getting current user
     @Inject
     private UserBean userBean;
 
     private String recipientIdentifier; // Can be email or variable symbol
-    private double amount;
+    private double amount; // Amount to send
 
+    // Transactional method for sending money, returns null if error occurs
     @Transactional
     public String sendMoney() {
         User sender = userBean.getCurrentUser();
         User recipient;
 
         try {
-            // Validate amount
-            if (amount <= 0) {
+            // Check if amount is greater than 0 to send money
+            if (amount <= 0.01) {
                 addMessage(FacesMessage.SEVERITY_ERROR, "Invalid amount", 
-                    "Please enter a positive amount");
+                    "The transfer amount must be greater than 0 CZK");
                 return null;
             }
 
-            // Check sender's balance
+            // Check if sender has enough balance to send money
             if (sender.getBalance() < amount) {
                 addMessage(FacesMessage.SEVERITY_ERROR, "Insufficient funds", 
                     "Your balance is insufficient for this transfer");
@@ -86,11 +91,12 @@ public class SendBean implements Serializable {
             sender.setBalance(sender.getBalance() - amount);
             recipient.setBalance(recipient.getBalance() + amount);
 
-            // Persist changes
+            // Persist changes to database
             em.persist(transaction);
             em.merge(sender);
             em.merge(recipient);
 
+            // Show success message
             addMessage(FacesMessage.SEVERITY_INFO, "Success", 
                 String.format("Successfully sent %.2f CZK to %s", amount, 
                     recipient.getFirstName() + " " + recipient.getSecondName()));
@@ -98,6 +104,7 @@ public class SendBean implements Serializable {
             // Reset form
             resetForm();
 
+            // Redirect to dashboard
             return "dashboard?faces-redirect=true";
 
         } catch (Exception e) {
@@ -107,11 +114,13 @@ public class SendBean implements Serializable {
         }
     }
 
+    // Method for adding messages to the FacesContext
     private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null, 
             new FacesMessage(severity, summary, detail));
     }
 
+    // Method for resetting the form
     private void resetForm() {
         this.recipientIdentifier = null;
         this.amount = 0.0;
