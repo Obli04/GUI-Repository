@@ -3,8 +3,8 @@ package beans.databaseUtility;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -91,6 +91,7 @@ public class DatabasePrint {
             System.out.println("ID: " + transactionsResult.getInt("id") +
                                ", Sender ID: " + transactionsResult.getInt("id_sender") +
                                ", Receiver ID: " + transactionsResult.getInt("id_receiver") +
+                               ", Sender Name: " + transactionsResult.getString("name_of_sender") +
                                ", Value: " + transactionsResult.getDouble("value") +
                                ", Type: " + transactionsResult.getString("type"));
         }
