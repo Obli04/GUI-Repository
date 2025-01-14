@@ -100,9 +100,13 @@
 }
 .type-receive { 
     background: #e8f5e9; 
-    color: #2e7d32; 
+    color: #2e7d32;
 }
 .type-withdraw { 
+    background: #ffebee; 
+    color: #c62828; 
+}
+.type-declined {
     background: #ffebee; 
     color: #c62828; 
 }

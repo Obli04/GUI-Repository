@@ -27,7 +27,7 @@
                          var="transaction"
                          styleClass="transaction-table"
                          paginator="true"
-                         rows="10"
+                         rows="8"
                          paginatorPosition="bottom">
                 
                 <p:column headerText="Date">
@@ -38,7 +38,7 @@
                 
                 <p:column headerText="Type">
                     <h:outputText value="#{transaction.type}" 
-                                  styleClass="transaction-type type-#{transaction.type.toLowerCase()}" />
+                                  styleClass="transaction-type type-#{transaction.type eq 'Transfer' ? (userBean.currentUser.id eq transaction.sender.id ? 'send' : 'receive') : transaction.type.toLowerCase()}" />
                 </p:column>
                 
                 <p:column headerText="Category">
@@ -47,19 +47,20 @@
                 
                 <p:column headerText="Amount">
                     <h:outputText value="#{transaction.value}" 
-                                  styleClass="#{transaction.type eq 'Withdrawal' ? 'negative-amount' : 
-                                               transaction.type eq 'Deposit' ? 'positive-amount' : 
-                                               transaction.type eq 'Send' ? 'negative-amount' : 
-                                               transaction.type eq 'Receive' ? 'positive-amount' : 'negative-amount'}">
+                                  styleClass="#{transaction.type eq 'Withdraw' ? 'negative-amount' : 
+                                                transaction.type eq 'Deposit' ? 'positive-amount' : 
+                                                transaction.type eq 'Transfer' ? 
+                                                (userBean.currentUser.id eq transaction.sender.id ? 'negative-amount' : 'positive-amount') : 'negative-amount'}">
                         <f:convertNumber type="currency" currencySymbol="Kč"/>
                     </h:outputText>
                 </p:column>
                 
                 <p:column headerText="Sender">
-                    <h:outputText value="#{transaction.nameOfSender != null ? 
-                                        transaction.nameOfSender : 
-                                        transaction.receiver.firstName.concat(' ').concat(transaction.receiver.secondName)}" 
-                                  />
+                    <h:outputText value="#{transaction.sender.firstName != null ? 
+                                        transaction.sender.firstName.concat(' ').concat(transaction.sender.secondName) : 
+                                        transaction.receiver.firstName.concat(' ').concat(transaction.receiver.secondName)} 
+                                        #{transaction.nameOfSender != null ? transaction.nameOfSender : ' '}"
+                                rendered="#{transaction.type != 'Withdraw'}" />
                 </p:column>
                 
 
@@ -69,8 +70,8 @@
 
 
 
-
-                <!-- <p:column headerText="Details">
+<!-- 
+                <p:column headerText="Details">
                     <p:panelGrid columns="2" styleClass="ui-noborder">
                         <h:outputText value="ID:" />
                         <h:outputText value="#{transaction.id}" />
