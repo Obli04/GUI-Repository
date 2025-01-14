@@ -50,7 +50,7 @@
                                   styleClass="#{transaction.type eq 'Withdraw' ? 'negative-amount' : 
                                                 transaction.type eq 'Deposit' ? 'positive-amount' : 
                                                 transaction.type eq 'Transfer' ? 
-                                                (userBean.currentUser.id eq transaction.sender.id ? 'negative-amount' : 'positive-amount') : ''}">
+                                                (userBean.currentUser.id eq transaction.sender.id ? 'negative-amount' : 'positive-amount') : 'negative-amount'}">
                         <f:convertNumber type="currency" currencySymbol="Kč"/>
                     </h:outputText>
                 </p:column>
