@@ -141,14 +141,14 @@
                 </p:column>
                 <p:column headerText="Type">
                     <h:outputText value="#{transaction.type}" 
-                                  styleClass="transaction-type type-#{transaction.type eq 'Transfer' ? (transaction.category eq 'User Transfer' ? 'send' : 'receive') : transaction.type.toLowerCase()}" />
+                                  styleClass="transaction-type type-#{transaction.type eq 'Transfer' ? (userBean.currentUser.id eq transaction.sender.id ? 'send' : 'receive') : transaction.type.toLowerCase()}" />
                 </p:column>
                 <p:column headerText="Amount">
                     <h:outputText value="#{transaction.value}" 
-                                  styleClass="#{transaction.type eq 'Withdrawal' ? 'negative-amount' : 
-                                               transaction.type eq 'Deposit' ? 'positive-amount' : 
-                                               transaction.category eq 'User Transfer' ? 'negative-amount' : 
-                                               transaction.category eq 'Money Request' ? 'positive-amount' : 'negative-amount'}">
+                                  styleClass="#{transaction.type eq 'Withdraw' ? 'negative-amount' : 
+                                                transaction.type eq 'Deposit' ? 'positive-amount' : 
+                                                transaction.type eq 'Transfer' ? 
+                                                (userBean.currentUser.id eq transaction.sender.id ? 'negative-amount' : 'positive-amount') : 'negative-amount'}">
                         <f:convertNumber type="currency" currencySymbol="Kč"/>
                     </h:outputText>
                 </p:column>
