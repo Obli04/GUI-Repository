@@ -3,6 +3,7 @@ package beans;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
@@ -17,6 +18,7 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
@@ -35,6 +37,7 @@ import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ValidationException;
 
 /**
  * Manages user-related operations such as login, 2FA, and password reset.
@@ -125,11 +128,10 @@ public class UserBean implements Serializable {
                 context.getExternalContext().getSessionMap().put("emailSent", result.isEmailSent()); //Store the email sent status in the session
                 return "login.xhtml?faces-redirect=true"; //Redirect to the login page
             } catch (Exception e) {
-                e.printStackTrace();
                 addErrorMessage("Registration failed", "Failed to save user to database: " + e.getMessage()); //Show an error message
                 return null;
             }
-        } catch (Exception e) {
+        } catch (ValidationException e) {
             addErrorMessage("Registration failed", e.getMessage()); //Show an error message
             return null;
         }
@@ -140,7 +142,7 @@ public class UserBean implements Serializable {
      */
     public void checkRegistrationMessage() {
         FacesContext context = FacesContext.getCurrentInstance(); //Get the current faces context
-        String message = (String) context.getExternalContext().getSessionMap().get("registrationMessage"); //Get the registration message from the session
+        message = (String) context.getExternalContext().getSessionMap().get("registrationMessage"); //Get the registration message from the session
         Boolean emailSent = (Boolean) context.getExternalContext().getSessionMap().get("emailSent"); //Get the email sent status from the session
         
         if (message != null) { //If we have a message
@@ -201,7 +203,7 @@ public class UserBean implements Serializable {
                 
                 //Store the secret used for this QR code
                 currentQRSecret = currentUser.getTwoFactorSecret();
-            } catch (Exception e) {
+            } catch (WriterException | IOException e) {
                 addErrorMessage("Error", "Failed to generate QR code"); //Show an error message
             }
         }
@@ -482,7 +484,7 @@ public class UserBean implements Serializable {
     }
 
     private void addErrorMessageWithLink(String summary, String detail, String actionMethod) {
-        String link = "<div class='error-message'>" + summary + " <a href='#' onclick=\"document.getElementById('hiddenForm:resendVerification').click(); return false;\">" + detail + "</a></div>";
+        String link = "<div class='error-message'>" + summary + " <a href='#' onclick=\"document.getElementById('hiddenForm:" + actionMethod + "').click(); return false;\">" + detail + "</a></div>";
         this.loginMessage = link;
     }
 
@@ -658,7 +660,7 @@ public class UserBean implements Serializable {
     public void checkResetMessage() {
         //Get the current faces context
         FacesContext context = FacesContext.getCurrentInstance();
-        String message = (String) context.getExternalContext().getSessionMap().get("resetMessage");
+        message = (String) context.getExternalContext().getSessionMap().get("resetMessage");
         //If the message is not null add it to the context  
         if (message != null) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", message));
@@ -683,7 +685,7 @@ public class UserBean implements Serializable {
      * Refreshes the user's balance from the database.
      */
     public void refreshBalance() {
-        User currentUser = getCurrentUser();
+        currentUser = getCurrentUser();
         if (currentUser != null) {
             double latestBalance = authService.getLatestBalance(currentUser.getId());
             currentUser.setBalance(latestBalance);

@@ -28,7 +28,7 @@ public class BudgetBean implements Serializable {
     private UserBean userBean;
     
     private double totalBudget;
-    private Map<String, Double> categoryBudgets = new HashMap<>();
+    final private Map<String, Double> categoryBudgets = new HashMap<>();
     private String selectedCategory;
     private double categoryAmount;
     
@@ -148,7 +148,6 @@ public class BudgetBean implements Serializable {
             
             return query.getSingleResult();
         } catch (Exception e) {
-            e.printStackTrace();
             return 0.0;
         }
     }
@@ -250,7 +249,6 @@ public class BudgetBean implements Serializable {
             
             return spentAmount;
         } catch (Exception e) {
-            e.printStackTrace();
             return 0.0;
         }
     }
