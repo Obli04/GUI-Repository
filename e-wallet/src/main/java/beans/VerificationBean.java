@@ -1,12 +1,11 @@
 package beans;
 
+import beans.services.AuthService;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-
-import beans.services.AuthService;
 
 /**
  * Managed bean for handling email verification processes.

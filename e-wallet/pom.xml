@@ -9,7 +9,7 @@
   <version>1.0</version>
   <packaging>war</packaging>
 
-  <name>e-wallet Maven Webapp</name>
+  <name>e-wallet</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

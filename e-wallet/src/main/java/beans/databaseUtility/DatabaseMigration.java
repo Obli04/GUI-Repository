@@ -32,7 +32,7 @@ public class DatabaseMigration {
             Class.forName("org.postgresql.Driver"); //Load the PostgreSQL JDBC Driver
             Connection connection = DriverManager.getConnection(url, user, password); //Establish a connection to the database
             Statement statement = connection.createStatement(); //Create a statement object to execute SQL commands
-            String sql = new String(Files.readAllBytes(Paths.get("src/main/resources/db/migration/V8_Nothing.sql"))); //Read the SQL script from the file
+            String sql = new String(Files.readAllBytes(Paths.get("src/main/resources/db/migration/V7_Remove_User.sql"))); //Read the SQL script from the file
             statement.execute(sql); //Execute the SQL script
             System.out.println("Database tables updated successfully!"); //Print a message to the console
             statement.close(); //Close the statement object
