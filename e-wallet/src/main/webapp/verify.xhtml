@@ -27,7 +27,7 @@
         <f:event type="preRenderView" listener="#{verificationBean.verifyEmail}"/>
     </f:metadata>
     
-    <div class="p-d-flex p-jc-center p-ai-center" style="height: calc(100vh - 60px);">
+    <div class="p-d-flex p-jc-center p-ai-center" style="height: 100vh; display: flex; align-items: center; justify-content: center;">
         <p:card styleClass="p-shadow-4 verification-card">
             <h1 class="p-text-center verification-title" style="color:black;">Email Verification</h1>
             <div class="verification-content">
@@ -35,9 +35,8 @@
                     <p:autoUpdate />
                 </p:messages>
                 
-                <div class="p-text-center verification-actions">
-                    <p:link outcome="login" value="Return to Login" 
-                           styleClass="auth-button login-btn"/>
+                <div class="p-text-center submit-button">
+                    <p:link outcome="login" value="Return to Login"></p:link>
                 </div>
             </div>
         </p:card>
