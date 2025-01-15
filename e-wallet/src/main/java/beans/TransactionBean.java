@@ -10,6 +10,12 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 
+/** 
+ * TransactionBean is a managed bean responsible for managing user transactions, 
+ * particularly for fetching and returning all transactions done by a user.
+ * 
+ * @author xromang00
+ */
 @Named
 @SessionScoped
 public class TransactionBean implements Serializable {
@@ -19,6 +25,12 @@ public class TransactionBean implements Serializable {
     
     private List<Transaction> transactions;
     
+    /**
+     * Retrieves a list of transactions for a specific user.
+     * 
+     * @param userId the ID of the user whose transactions are to be retrieved.
+     * @return a list of transactions associated with the specified user.
+     */
     public List<Transaction> getUserTransactions(Long userId) {
         TypedQuery<Transaction> query = em.createQuery(
             "SELECT t FROM Transaction t WHERE " +
@@ -29,10 +41,20 @@ public class TransactionBean implements Serializable {
         return query.getResultList();
     }
     
+    /**
+     * Gets the list of transactions.
+     * 
+     * @return the list of transactions.
+     */
     public List<Transaction> getTransactions() {
         return transactions;
     }
     
+    /**
+     * Sets the list of transactions.
+     * 
+     * @param transactions the list of transactions to set.
+     */
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
     }
