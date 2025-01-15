@@ -79,7 +79,6 @@ public class DepositBean implements Serializable {
             Transaction transaction = paymentService.processPayment(payment);
             if (transaction != null) {
                 // Refresh user data to show new balance
-                //TODO: Davide ha levato questa parte di codice userBean.refreshUserData();
             } else {
                 throw new IllegalArgumentException("Failed to process payment");
             }
