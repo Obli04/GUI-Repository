@@ -24,27 +24,36 @@ import jakarta.validation.ValidationException;
  * 
  * @author Davide Scaccia
  */
-@ApplicationScoped
+@ApplicationScoped //Let the container instantiate this class
 public class AuthService {
-   @PersistenceContext(unitName = "e-walletPU")
+    
+   @PersistenceContext(unitName = "e-walletPU") //Inject the EntityManager
    private EntityManager em;
    
-   @Inject
+   @Inject //Inject the EmailService
    private EmailService emailService;
    
-   @Inject
+   @Inject //Inject the RateLimiterService
    private RateLimiterService rateLimiter;
    
    @jakarta.annotation.Resource
    private UserTransaction userTransaction;
    
    private GoogleAuthenticator gAuth;
-   
-   @PostConstruct
+
+   /*
+    * Initialize the GoogleAuthenticator
+    */
+    @PostConstruct
    public void init() {
        this.gAuth = new GoogleAuthenticator();
    }
 
+   /**
+    * Validate the password
+    * @param password the password to validate
+    * @throws jakarta.validation.ValidationException if the password is not valid
+    */
    public void validatePassword(String password) throws jakarta.validation.ValidationException {
        if (password == null || password.trim().isEmpty()) {
            throw new jakarta.validation.ValidationException("Password cannot be empty");
@@ -71,75 +80,72 @@ public class AuthService {
        }
    }
 
+   /**
+    * Register a new user
+    * @param user the user to register
+    * @return the registration result
+    * @throws Exception if the registration fails
+    */
    @Transactional
    public RegistrationResult register(User user) throws Exception {
        try {
-           // Debug database connection
-           try {
-               em.createNativeQuery("SELECT 1").getSingleResult();
-           } catch (Exception e) {
-               throw new Exception("Unable to connect to database: " + e.getMessage());
-           }
-           
-           validatePassword(user.getPassword());
-           if (user.getEmail() == null || user.getFirstName() == null || user.getSecondName() == null) {
+
+           validatePassword(user.getPassword()); //Validate the password
+           if (user.getEmail() == null || user.getFirstName() == null || user.getSecondName() == null) { //Verify that all fields have been entered
                throw new jakarta.validation.ValidationException("All fields are required");
            }
            
-           
-           // Check for existing user
+           //Check for existing user
            try {
-               User existingUser = findUserByEmail(user.getEmail());
+               User existingUser = findUserByEmail(user.getEmail()); //Search if the user's entered email is alredy in the database
                if (existingUser != null) {
-                   throw new jakarta.validation.ValidationException("Email already registered");
+                   throw new jakarta.validation.ValidationException("Email already registered"); //If we found a user throw an exception.
                }
            } catch (ValidationException e) {
                if (!(e instanceof jakarta.validation.ValidationException)) {
-                   throw new Exception("Database error while checking existing user");
+                   throw new Exception("Database error while checking existing user"); //Error in findUserByEmail: couldn't connect to database
                }
                throw e;
            }
            
-           // Hash password
+           //Hash password
            try {
-               user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
+               user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt())); //Set the hashed password
            } catch (Exception e) {
-               throw new Exception("Error processing password");
+               throw new Exception("Error processing password"); //Error with Encryption
            }
            
-           // Set default values
-           user.setIsVerified(false);
-           user.setTwoFactorEnabled(false);
-           user.setTwoFactorSecret(null);  // Don't generate secret at registration
-           user.setVariableSymbol(generateVariableSymbol());
+           //Set default values of user's account
+           user.setIsVerified(false); //Is not verified (email verification)
+           user.setTwoFactorEnabled(false); //2FA is not enabled
+           user.setTwoFactorSecret(null);  //2FA secret will not be generated until you press on Setup 2FA
+           user.setVariableSymbol(generateVariableSymbol()); //Generate the variable symbol for the user
            
-           // Generate verification token
-           String token = UUID.randomUUID().toString();
-           user.setVerificationToken(token);
-           user.setTokenExpiry(LocalDateTime.now().plusHours(24));
+           //Generate verification token
+           String token = UUID.randomUUID().toString(); //Generate a verification token to verify the user's email
+           user.setVerificationToken(token); //Set the verification token
+           user.setTokenExpiry(LocalDateTime.now().plusHours(24)); //Set expiration date in 1 day
            
-           // Save user
            try {
-               em.persist(user);
-               em.flush();
+               em.persist(user); //Save the new user object to the database
+               em.flush(); //Force any pending database operations to be executed immediately
            } catch (Exception e) {
-               throw new Exception("Failed to save user to database: " + e.getMessage());
+               throw new Exception("Failed to save user to database: " + e.getMessage()); //If failed to save throw an exception
            }
            
-           boolean emailSent = false;
-           String emailStatus = "";
-           // Send verification email
+           boolean emailSent = false; //Values for the RegistrationResult class
+           String emailStatus = ""; //Email status to return to the user
            try {
-               emailService.sendVerificationEmail(user.getEmail(), token);
-               emailSent = true;
-               emailStatus = "Account created and verification email sent to: " + user.getEmail() + 
+               emailService.sendVerificationEmail(user.getEmail(), token); //Send the verification email with the generated token
+               emailSent = true; //Set email sent to true
+               emailStatus = "Account created and verification email sent to: " + user.getEmail() + //Set email status to valid
                            ". Please check your inbox and spam folder.";
            } catch (Exception e) {
-               emailStatus = "Account created successfully, but we couldn't send the verification email. " +
+               emailStatus = "Account created successfully, but we couldn't send the verification email. " + //If problem while sending email then ask the user to resend the verification email during login
                            "Please try requesting a new verification email after logging in.";
            }
            
-           return new RegistrationResult(true, emailSent, emailStatus);
+           return new RegistrationResult(true, emailSent, emailStatus); //Return the registration result
            
        } catch (Exception e) {
            throw e;
@@ -154,7 +160,7 @@ public class AuthService {
     */
    @Transactional
    public String getVariableSymbol(Long id) {
-       return em.createQuery("SELECT u.variable_symbol FROM User u WHERE u.id = :id", String.class)
+       return em.createQuery("SELECT u.variable_symbol FROM User u WHERE u.id = :id", String.class) //Select the variable symbol from the db and return the string.
                 .setParameter("id", id)
                 .getSingleResult();
    }
@@ -167,18 +173,18 @@ public class AuthService {
     */
    @Transactional
    public boolean verifyEmail(String token) {
-       User user = em.createQuery("SELECT u FROM User u WHERE u.verificationToken = :token", User.class)
+       User user = em.createQuery("SELECT u FROM User u WHERE u.verificationToken = :token", User.class) //Select the user by the verification token
                     .setParameter("token", token)
                     .getSingleResult();
                     
-       if (user != null && LocalDateTime.now().isBefore(user.getTokenExpiry())) {
-           user.setIsVerified(true);
-           user.setVerificationToken(null);
+       if (user != null && LocalDateTime.now().isBefore(user.getTokenExpiry())) { //If we find the user and the token is not expired yet
+           user.setIsVerified(true); //Verify the user
+           user.setVerificationToken(null); //Remove the verification token (and token expiry)
            user.setTokenExpiry(null);
-           em.merge(user);
-           return true;
+           em.merge(user); //Merge the changes with the user
+           return true; //We verified the email!
        }
-       return false;
+       return false; //We didn't verify the email
    }
 
    /**
@@ -191,35 +197,34 @@ public class AuthService {
     * @throws SecurityException if the account is locked or email is not verified
     */
    public boolean login(String email, String password, String twoFactorCode) {
-       if (!rateLimiter.isAllowed(email)) {
-           LocalDateTime lockoutEnd = rateLimiter.getLockoutEndTime(email);
+       if (!rateLimiter.isAllowed(email)) { //If the email has not been locked yet
+           LocalDateTime lockoutEnd = rateLimiter.getLockoutEndTime(email); //Calculate the lockout end time
            throw new SecurityException("Account temporarily locked. Try again after " + 
-               lockoutEnd.toString());
+               lockoutEnd.toString()); //Throw an exception with the lockout end time
        }
 
        try {
-           User user = findUserByEmail(email);
-           if (user != null && BCrypt.checkpw(password, user.getPassword())) {
-               if (!user.getIsVerified()) {
-                   throw new SecurityException("Email not verified");
+           User user = findUserByEmail(email); //Find the user by the input email
+           if (user != null && BCrypt.checkpw(password, user.getPassword())) { //If the user exists and the password is correct
+               if (!user.getIsVerified()) { //If the user is not verified
+                   throw new SecurityException("Email not verified"); //Throw an exception
                }
                
-               if (user.isTwoFactorEnabled()) {
-                   boolean valid = gAuth.authorize(user.getTwoFactorSecret(), 
-                       Integer.parseInt(twoFactorCode));
-                   if (!valid) {
-                       rateLimiter.recordFailedAttempt(email);
-                       return false;
+               if (user.isTwoFactorEnabled()) { //If user has 2FA enabled
+                   boolean valid = gAuth.authorize(user.getTwoFactorSecret(), Integer.parseInt(twoFactorCode)); //Verify the 2FA code
+                   if (!valid) { //If 2FA code is invalid
+                       rateLimiter.recordFailedAttempt(email); //Record the failed attempt
+                       return false; //Return false
                    }
                }
-               rateLimiter.resetAttempts(email);
-               return true;
+               rateLimiter.resetAttempts(email); //Reset the attempts
+               return true; //Valid login!
            }
-           rateLimiter.recordFailedAttempt(email);
-           return false;
+           rateLimiter.recordFailedAttempt(email); //Record the failed attempt
+           return false; //Invalid login
        } catch (NumberFormatException | SecurityException e) {
-           rateLimiter.recordFailedAttempt(email);
-           throw e;
+           rateLimiter.recordFailedAttempt(email); //Record the failed attempt
+           throw e; //Throw the exception
        }
    }
 
@@ -231,11 +236,11 @@ public class AuthService {
     */
    public User findUserByEmail(String email) {
        try {
-           return em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
+           return em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class) //Select the user by email
                    .setParameter("email", email)
-                   .getSingleResult();
+                   .getSingleResult(); //Return the user
        } catch (Exception e) {
-           return null;
+           return null; //If no user is found return null
        }
    }
 
@@ -249,19 +254,19 @@ public class AuthService {
    @Transactional
    public boolean verify2FA(User user, String code) {
        try {
-           if (user == null || code == null || user.getTwoFactorSecret() == null) {
-               return false;
+           if (user == null || code == null || user.getTwoFactorSecret() == null) { //If user is null or code is null or user has no 2FA secret
+               return false; 
            }
            
-           String cleanCode = code.trim().replaceAll("[^0-9]", "");
+           String cleanCode = code.trim().replaceAll("[^0-9]", ""); //Clean the code from non-numeric characters
            
-           if (cleanCode.length() != 6) {
+           if (cleanCode.length() != 6) { //If the code is not 6 digits long
                return false;
            }
 
-           int codeInt = Integer.parseInt(cleanCode);
-           boolean isValid = gAuth.authorize(user.getTwoFactorSecret(), codeInt);
-                      return isValid;
+           int codeInt = Integer.parseInt(cleanCode); //Convert the code to an integer
+           boolean isValid = gAuth.authorize(user.getTwoFactorSecret(), codeInt); //Verify the 2FA code
+           return isValid; //Return the result
        } catch (NumberFormatException e) {
            return false;
        }
@@ -273,16 +278,17 @@ public class AuthService {
     * @param email the user's email
     */
    @Transactional
-   public void requestPasswordReset(String email) {
-       User user = findUserByEmail(email);
-       if (user != null) {
-           String token = UUID.randomUUID().toString();
-           user.setVerificationToken(token);
-           user.setTokenExpiry(LocalDateTime.now().plusHours(1)); // 1 hour from now
-           em.merge(user);
+   public void requestPasswordReset(String email) throws Exception {
+       User user = findUserByEmail(email); //Find the user by the input email
+       if (user != null) { //If the user exists
+           String token = UUID.randomUUID().toString(); //Generate a token
+           user.setVerificationToken(token); //Set the token
+           user.setTokenExpiry(LocalDateTime.now().plusHours(1)); //Set the token expiry to 1 hour from now
+           em.merge(user); //Merge the changes with the user
            try {
-               emailService.sendPasswordResetEmail(email, token);
+               emailService.sendPasswordResetEmail(email, token); //Send the password reset email with the generated token
            } catch (Exception e) {
+               throw new Exception("Failed to send password reset email: " + e.getMessage()); //If failed to send email throw an exception
            }
        }
    }
@@ -297,23 +303,23 @@ public class AuthService {
    @Transactional
    public boolean resetPassword(String token, String newPassword) {
        try {
-           validatePassword(newPassword);
-           User user = findUserByResetToken(token);
+           validatePassword(newPassword); //Validate the new password
+           User user = findUserByResetToken(token); //Find the user by the reset token
 
            if (user != null) {
-               Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-               if (user.getTokenExpiry() != null && user.getTokenExpiry().isAfter(currentTime.toLocalDateTime())) {
-                   user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
-                   user.setVerificationToken(null);
-                   user.setTokenExpiry(null);
-                   em.merge(user);
-                   return true;
+               Timestamp currentTime = new Timestamp(System.currentTimeMillis()); //Get the current time
+               if (user.getTokenExpiry() != null && user.getTokenExpiry().isAfter(currentTime.toLocalDateTime())) { //If the token expiry is valid and is after the current time
+                   user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt())); //Set the new password
+                   user.setVerificationToken(null); //Remove the verification token
+                   user.setTokenExpiry(null); //Remove the token expiry
+                   em.merge(user); //Merge the changes with the user
+                   return true; //Password reset successful
                }
            }
        } catch (ValidationException e) {
-        return false;
+        return false; //Password reset failed
        }
-       return false;
+       return false; //Password reset failed
    }
 
    /**
@@ -325,27 +331,21 @@ public class AuthService {
    @Transactional
    public void resendVerificationEmail(String email) throws Exception {
        try {
-           User user = findUserByEmail(email);
-           if (user == null) {
-               throw new Exception("No account found with this email address.");
+           User user = findUserByEmail(email); //Find the user by the input email
+           if (user == null) { //If the user is not found
+               throw new Exception("No account found with this email address."); //Throw a user not found exception
            }
            
-           if (user.getIsVerified()) {
-               throw new Exception("This account is already verified.");
+           if (user.getIsVerified()) { //If the user is verified
+               throw new Exception("This account is already verified."); //Throw an account already verified exception
            }
 
-           // Generate new verification token
-           String token = UUID.randomUUID().toString();
-           user.setVerificationToken(token);
-           user.setTokenExpiry(LocalDateTime.now().plusHours(24));
-           
-           // Update user in database
-           em.merge(user);
-           em.flush();
-           
-           // Send verification email
-           emailService.sendVerificationEmail(user.getEmail(), token);
-           
+           String token = UUID.randomUUID().toString(); //Generate a new verification token
+           user.setVerificationToken(token); //Set the verification token
+           user.setTokenExpiry(LocalDateTime.now().plusHours(24)); //Set the token expiry to 1 day from now
+           em.merge(user); //Merge the changes with the user
+           em.flush(); //Force any pending database operations to be executed immediately
+           emailService.sendVerificationEmail(user.getEmail(), token); //Send the verification email with the generated token
        } catch (Exception e) {
            throw e;
        }
@@ -384,12 +384,12 @@ public class AuthService {
    @Transactional
    public void updatePassword(User user, String newPassword) throws Exception {
        try {
-           validatePassword(newPassword);
-           user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
-           em.merge(user);
-           em.flush();
+           validatePassword(newPassword); //Validate the new password
+           user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt())); //Set the new password
+           em.merge(user); //Merge the changes with the user
+           em.flush(); //Force any pending database operations to be executed immediately
        } catch (ValidationException e) {
-           throw new Exception("Failed to update password: " + e.getMessage());
+           throw new Exception("Failed to update password: " + e.getMessage()); //If failed to update password throw an exception
        }
    }
 
@@ -402,8 +402,8 @@ public class AuthService {
     */
    public boolean verifyPassword(String email, String password) {
        try {
-           User user = findUserByEmail(email);
-           return user != null && BCrypt.checkpw(password, user.getPassword());
+           User user = findUserByEmail(email); //Find the user by the input email
+           return user != null && BCrypt.checkpw(password, user.getPassword()); //Return true if the password is correct, false otherwise
        } catch (Exception e) {
            return false;
        }
@@ -415,10 +415,10 @@ public class AuthService {
     * @return the new two-factor authentication secret
     */
    public String generateNewTwoFactorSecret() {
-       GoogleAuthenticator gAuth = new GoogleAuthenticator();
-       GoogleAuthenticatorKey key = gAuth.createCredentials();
-       String secret = key.getKey();
-       return secret;
+       GoogleAuthenticator gAuth = new GoogleAuthenticator(); //Create a new GoogleAuthenticator
+       GoogleAuthenticatorKey key = gAuth.createCredentials(); //Create a new GoogleAuthenticatorKey
+       String secret = key.getKey(); //Get the secret
+       return secret; //Return the secret
    }
 
    /**
@@ -429,11 +429,11 @@ public class AuthService {
     */
    public User findUserByResetToken(String token) {
        try {
-           return em.createQuery("SELECT u FROM User u WHERE u.verificationToken = :token", User.class)
+           return em.createQuery("SELECT u FROM User u WHERE u.verificationToken = :token", User.class) //Select the user by the reset token
                     .setParameter("token", token)
-                    .getSingleResult();
+                    .getSingleResult(); //Return the user
        } catch (Exception e) {
-           return null;
+           return null; //If no user is found return null
        }
    }
 
@@ -445,7 +445,7 @@ public class AuthService {
     * @throws Exception if sending the email fails
     */
    public void sendPasswordResetEmail(String email, String token) throws Exception {
-       emailService.sendPasswordResetEmail(email, token);
+       emailService.sendPasswordResetEmail(email, token); //Send the password reset email with the generated token
    }
 
    /**
@@ -454,21 +454,21 @@ public class AuthService {
     * @return a unique variable symbol
     */
    private String generateVariableSymbol() {
-       String variableSymbol;
-       boolean isUnique;
+       String variableSymbol; //Variable symbol to return
+       boolean isUnique; //Boolean to check if the variable symbol is unique    
 
        do {
            // Generate a random number and format it to be 10 characters long
-           long randomNumber = (long) (Math.random() * 1_000_000_000L);
-           variableSymbol = String.format("%010d", randomNumber);
+           long randomNumber = (long) (Math.random() * 1_000_000_000L); //Generate a random number
+           variableSymbol = String.format("%010d", randomNumber); //Format the number to be 10 characters long
 
            // Check if the generated symbol already exists in the database
            isUnique = em.createQuery("SELECT COUNT(u) FROM User u WHERE u.variableSymbol = :variableSymbol", Long.class)
                         .setParameter("variableSymbol", variableSymbol)
-                        .getSingleResult() == 0;
-       } while (!isUnique);
+                        .getSingleResult() == 0; //Check if the variable symbol is unique
+       } while (!isUnique); //If the variable symbol is not unique, generate a new one
 
-       return variableSymbol;
+       return variableSymbol; //Return the variable symbol
    }
 
    /**
@@ -480,11 +480,11 @@ public class AuthService {
    @Transactional
    public double getLatestBalance(Long userId) {
        try {
-           return em.createQuery("SELECT u.balance FROM User u WHERE u.id = :userId", Double.class)
+           return em.createQuery("SELECT u.balance FROM User u WHERE u.id = :userId", Double.class) //Select the balance from the db and return the double
                     .setParameter("userId", userId)
-                    .getSingleResult();
+                    .getSingleResult(); //Return the balance
        } catch (Exception e) {
-           return 0.0;
+           return 0.0; //If no balance is found return 0.0
        }
    }
 }

@@ -54,9 +54,8 @@ public class DatabasePrint {
             } catch (SQLException e) {
                 System.err.println("Error during database printing: " + e.getMessage());
             }
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
             System.err.println("Error during database printing: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
