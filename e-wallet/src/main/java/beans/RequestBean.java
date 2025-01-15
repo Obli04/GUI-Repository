@@ -1,5 +1,6 @@
 package beans;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -255,7 +256,7 @@ public class RequestBean implements Serializable {
             addGrowlMessage(FacesMessage.SEVERITY_INFO, "Success", "Request accepted and payment sent");
             FacesContext.getCurrentInstance().getExternalContext().redirect("dashboard.xhtml");
             
-        } catch (Exception e) {
+        } catch (IOException e) {
             addGrowlMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to process request");
         }
     }
@@ -293,7 +294,7 @@ public class RequestBean implements Serializable {
             addGrowlMessage(FacesMessage.SEVERITY_INFO, "Success", "Request declined");
             FacesContext.getCurrentInstance().getExternalContext().redirect("dashboard.xhtml");
             
-        } catch (Exception e) {
+        } catch (IOException e) {
             addGrowlMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to decline request");
         }
     }
