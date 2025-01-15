@@ -17,6 +17,13 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 
+/** 
+ * BudgetBean is a managed bean that handles budget-related operations 
+ * for a user, including setting total budgets, category budgets, 
+ * and retrieving spent amounts.
+ * 
+ * @author xromang00
+ */
 @Named
 @SessionScoped
 public class BudgetBean implements Serializable {
@@ -37,6 +44,11 @@ public class BudgetBean implements Serializable {
         "Bills", "Healthcare", "Education", "Other"
     };
     
+    /**
+     * Sets the total budget for the current user.
+     * 
+     * @return null if successful, or an error message if the budget is invalid.
+     */
     @Transactional
     public String setBudget() {
         User currentUser = userBean.getCurrentUser();
@@ -63,6 +75,11 @@ public class BudgetBean implements Serializable {
         }
     }
     
+    /**
+     * Sets the budget for a specific category for the current user.
+     * 
+     * @return null if successful, or an error message if the category amount is invalid.
+     */
     @Transactional
     public String setCategoryBudget() {
         User currentUser = userBean.getCurrentUser();
@@ -120,6 +137,11 @@ public class BudgetBean implements Serializable {
         }
     }
     
+    /**
+     * Calculates the remaining budget for the current user.
+     * 
+     * @return the remaining budget amount.
+     */
     public double getRemainingBudget() {
         User currentUser = userBean.getCurrentUser();
         if (currentUser != null) {
@@ -131,6 +153,11 @@ public class BudgetBean implements Serializable {
         return 0.0;
     }
 
+    /**
+     * Retrieves the total amount spent by the current user for the current month.
+     * 
+     * @return the total spent amount.
+     */
     @Transactional
     public double getTotalSpent() {
         try {
@@ -152,44 +179,94 @@ public class BudgetBean implements Serializable {
         }
     }
     
+    /**
+     * Adds a message to the FacesContext for user feedback.
+     * 
+     * @param severity the severity level of the message.
+     * @param summary a brief summary of the message.
+     * @param detail detailed information about the message.
+     */
     private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null, 
             new FacesMessage(severity, summary, detail));
     }
     
-    // Getters and setters
+
+    /**
+     * Gets the total budget.
+     * 
+     * @return the total budget.
+     */
     public double getTotalBudget() {
         return totalBudget;
     }
     
+    /**
+     * Sets the total budget.
+     * 
+     * @param totalBudget the total budget to set.
+     */
     public void setTotalBudget(double totalBudget) {
         this.totalBudget = totalBudget;
     }
     
+    /**
+     * Gets the selected category.
+     * 
+     * @return the selected category.
+     */
     public String getSelectedCategory() {
         return selectedCategory;
     }
     
+    /**
+     * Sets the selected category.
+     * 
+     * @param selectedCategory the category to set.
+     */
     public void setSelectedCategory(String selectedCategory) {
         this.selectedCategory = selectedCategory;
     }
     
+    /**
+     * Gets the category amount.
+     * 
+     * @return the category amount.
+     */
     public double getCategoryAmount() {
         return categoryAmount;
     }
     
+    /**
+     * Sets the category amount.
+     * 
+     * @param categoryAmount the category amount to set.
+     */
     public void setCategoryAmount(double categoryAmount) {
         this.categoryAmount = categoryAmount;
     }
     
+    /**
+     * Gets the available categories.
+     * 
+     * @return an array of category names.
+     */
     public String[] getCategories() {
         return CATEGORIES;
     }
     
+    /**
+     * Gets the budgets for each category.
+     * 
+     * @return a map of category names to budget amounts.
+     */
     public Map<String, Double> getCategoryBudgets() {
         return categoryBudgets;
     }
     
+    /**
+     * Initializes the bean by loading the user's existing budgets.
+     */
     @PostConstruct
     public void init() {
         User currentUser = userBean.getCurrentUser();
@@ -203,6 +280,12 @@ public class BudgetBean implements Serializable {
         }
     }
     
+    /**
+     * Retrieves the amount spent in a specific category for the current month.
+     * 
+     * @param category the category to check.
+     * @return the amount spent in the specified category.
+     */
     @Transactional
     public double getCategorySpent(String category) {
         User currentUser = userBean.getCurrentUser();
