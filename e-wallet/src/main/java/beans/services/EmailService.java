@@ -5,11 +5,13 @@ import java.util.Properties;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
 import jakarta.mail.PasswordAuthentication;
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+
 
 /**
  * Service for sending emails, including verification and password reset emails.
@@ -20,7 +22,7 @@ import jakarta.mail.internet.MimeMessage;
 
 @ApplicationScoped
 public class EmailService {
-    private static final String FROM_EMAIL = "***REMOVED***"; //TODO: Add to env variables
+    private static final String FROM_EMAIL = "***REMOVED***";
     private static final String EMAIL_PASSWORD = "***REMOVED***";
     private static final int SMTP_PORT = 587;
     private static final String SMTP_HOST = "smtp.gmail.com";
@@ -74,7 +76,7 @@ public class EmailService {
 
             message.setContent(htmlContent, "text/html; charset=utf-8"); //Setting the content type
             Transport.send(message); //Sending the message
-        } catch (Exception e) {
+        } catch (MessagingException e) {
             e.printStackTrace(System.err); //Printing the stack trace
             throw new Exception("Failed to send verification email: " + e.getMessage(), e); //Throwing an exception
         }
@@ -130,7 +132,7 @@ public class EmailService {
 
             message.setContent(htmlContent, "text/html; charset=utf-8"); //Setting the content type
             Transport.send(message); //Sending the message
-        } catch (Exception e) {
+        } catch (MessagingException e) {
             e.printStackTrace(System.err);
             throw new Exception("Failed to send password reset email: " + e.getMessage());
         }
