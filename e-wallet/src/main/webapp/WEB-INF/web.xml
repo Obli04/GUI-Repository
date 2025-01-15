@@ -64,4 +64,8 @@
         <servlet-name>Jersey REST Service</servlet-name>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
+
+    <listener>
+        <listener-class>beans.SessionTimeoutListener</listener-class>
+    </listener>
 </web-app>
