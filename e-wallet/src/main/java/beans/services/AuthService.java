@@ -15,7 +15,6 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-import jakarta.transaction.UserTransaction;
 import jakarta.validation.ValidationException;
 
 /**
@@ -36,8 +35,6 @@ public class AuthService {
    @Inject //Inject the RateLimiterService
    private RateLimiterService rateLimiter;
    
-   @jakarta.annotation.Resource
-   private UserTransaction userTransaction;
    
    private GoogleAuthenticator gAuth;
 
@@ -133,19 +130,20 @@ public class AuthService {
                throw new Exception("Failed to save user to database: " + e.getMessage()); //If failed to save throw an exception
            }
            
-           boolean emailSent = false; //Values for the RegistrationResult class
-           String emailStatus = ""; //Email status to return to the user
+           RegistrationResult result = new RegistrationResult(); //Create a new RegistrationResult object
            try {
                emailService.sendVerificationEmail(user.getEmail(), token); //Send the verification email with the generated token
-               emailSent = true; //Set email sent to true
-               emailStatus = "Account created and verification email sent to: " + user.getEmail() + //Set email status to valid
-                           ". Please check your inbox and spam folder.";
+               result.setSuccess(true); //Set success to true
+               result.setEmailSent(true); //Set email sent to true
+               result.setMessage("Account created and verification email sent to: " + user.getEmail() + //Set email status to valid
+                           ". Please check your inbox and spam folder.");
            } catch (Exception e) {
-               emailStatus = "Account created successfully, but we couldn't send the verification email. " + //If problem while sending email then ask the user to resend the verification email during login
-                           "Please try requesting a new verification email after logging in.";
+               result.setSuccess(true); //Set success to true
+               result.setEmailSent(false); //Set email sent to false
+               result.setMessage("Account created successfully, but we couldn't send the verification email. " + //If problem while sending email then ask the user to resend the verification email during login
+                           "Please try requesting a new verification email after logging in.");
            }
-           
-           return new RegistrationResult(true, emailSent, emailStatus); //Return the registration result
+           return result; //Return the registration result
            
        } catch (Exception e) {
            throw e;
@@ -415,8 +413,8 @@ public class AuthService {
     * @return the new two-factor authentication secret
     */
    public String generateNewTwoFactorSecret() {
-       GoogleAuthenticator gAuth = new GoogleAuthenticator(); //Create a new GoogleAuthenticator
-       GoogleAuthenticatorKey key = gAuth.createCredentials(); //Create a new GoogleAuthenticatorKey
+       GoogleAuthenticator gAuthNew = new GoogleAuthenticator(); //Create a new GoogleAuthenticator
+       GoogleAuthenticatorKey key = gAuthNew.createCredentials(); //Create a new GoogleAuthenticatorKey
        String secret = key.getKey(); //Get the secret
        return secret; //Return the secret
    }
