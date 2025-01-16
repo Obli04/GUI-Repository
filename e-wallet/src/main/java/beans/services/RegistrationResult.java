@@ -8,22 +8,9 @@ package beans.services;
  * @author Davide Scaccia - xscaccd00
  */
 public class RegistrationResult {
-    private final boolean success;
-    private final boolean emailSent;
-    private final String message;
-
-    /**
-     * Constructs a new RegistrationResult with the specified details.
-     * 
-     * @param success   whether the registration was successful
-     * @param emailSent whether an email was sent as part of the registration process
-     * @param message   a message providing additional information about the registration outcome
-     */
-    public RegistrationResult(boolean success, boolean emailSent, String message) {
-        this.success = success;
-        this.emailSent = emailSent;
-        this.message = message;
-    }
+    private boolean success;
+    private boolean emailSent;
+    private String message;
 
     /**
      * Returns whether the registration was successful.
@@ -50,5 +37,32 @@ public class RegistrationResult {
      */
     public String getMessage() {
         return message;
+    }
+
+    /**
+     * Sets the message.
+     * 
+     * @param message the message to set
+     */
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    /**
+     * Sets the email sent.
+     * 
+     * @param emailSent the email sent to set
+     */
+    public void setEmailSent(boolean emailSent) {
+        this.emailSent = emailSent;
+    }
+
+    /**
+     * Sets the success.
+     * 
+     * @param success the success to set
+     */
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 }
