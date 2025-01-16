@@ -12,7 +12,7 @@ import jakarta.inject.Named;
  * This bean is responsible for verifying user email addresses using a token
  * and providing feedback to the user about the verification status.
  * 
- * @author Davide Scaccia
+ * @author Davide Scaccia - xscaccd00
  */
 @Named("verificationBean")
 @RequestScoped

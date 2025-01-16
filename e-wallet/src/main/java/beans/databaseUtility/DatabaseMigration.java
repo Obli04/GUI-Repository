@@ -14,7 +14,7 @@ import io.github.cdimascio.dotenv.Dotenv;
  * A utility class for performing database migrations.
  * This class reads SQL scripts from a file and executes them on the PostgreSQL database.
  * 
- * @author Davide Scaccia
+ * @author Davide Scaccia - xscaccd00
  */
 public class DatabaseMigration {
 

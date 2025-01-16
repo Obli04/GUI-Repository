@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
  * Represents a transaction between users or deposit/withdraw.
  * Contains information about the sender, receiver, value, type, and date.
  * 
- * @author Davide Scaccia
+ * @author Davide Scaccia - xscaccd00
  */
 @Entity
 @Table(name = "transactions")

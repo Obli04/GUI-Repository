@@ -43,7 +43,7 @@ import jakarta.validation.ValidationException;
  * Manages user-related operations such as login, 2FA, and password reset.
  * Handles user session data and interactions with the authentication service.
  * 
- * @author Davide Scaccia
+ * @author Davide Scaccia - xscaccd00
  */
 @Named
 @SessionScoped

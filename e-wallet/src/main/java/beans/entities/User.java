@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
  * Represents a user entity in the system.
  * Contains personal information, account details, and security settings.
  * 
- * @author Davide Scaccia
+ * @author Davide Scaccia - xscaccd00
  */
 @Entity
 @Table(name = "users")

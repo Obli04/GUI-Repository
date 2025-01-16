@@ -22,7 +22,7 @@ import jakarta.validation.ValidationException;
  * AuthService provides authentication-related services such as login, email verification,
  * password reset, and two-factor authentication.
  * 
- * @author Davide Scaccia
+ * @author Davide Scaccia - xscaccd00
  */
 @ApplicationScoped //Let the container instantiate this class
 public class AuthService {
