@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpSession;
  * This class sets the maximum inactive interval for user sessions,
  * ensuring that sessions are automatically invalidated after a specified period of inactivity.
  * 
- * @author: Davide Scaccia
+ * @author: Davide Scaccia - xscaccd00
  */
 @Named
 @ApplicationScoped

@@ -56,6 +56,6 @@ public class SecurityFilter implements Filter {
         
         //If the user is logged in or in a page that doesn't require auth: allow the request
         if (isLoggedIn || isLoginPage || isIndexPage || isResourceRequest || isVerificationPage || isPasswordRecoveryPage ) chain.doFilter(request, response);
-        else httpResponse.sendRedirect(loginURL); //If the user is not logged in and is accesing a page that requires auth,redirect to the login page
+        else httpResponse.sendRedirect(loginURL); //If the user is not logged in and is accesing a page that requires auth, redirect to the login page
     }
 }

@@ -12,7 +12,7 @@ import jakarta.enterprise.context.ApplicationScoped;
  * This service tracks the number of attempts made by a user to login and locks them out
  * for a specified duration if they exceed the maximum allowed attempts.
  * 
- * @author Davide Scaccia
+ * @author Davide Scaccia - xscaccd00
  */
 
 @ApplicationScoped

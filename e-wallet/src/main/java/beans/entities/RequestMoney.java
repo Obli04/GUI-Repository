@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
  * Represents a request for money between users.
  * Contains information about the sender, receiver, value, and description.
  * 
- * @author Davide Scaccia
+ * @author Davide Scaccia - xscaccd00
  */
 @Entity
 public class RequestMoney {

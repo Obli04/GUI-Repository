@@ -5,7 +5,7 @@ package beans.services;
  * This class encapsulates the success status, email notification status,
  * and a message providing additional information about the registration outcome.
  * 
- * @author Davide Scaccia
+ * @author Davide Scaccia - xscaccd00
  */
 public class RegistrationResult {
     private final boolean success;

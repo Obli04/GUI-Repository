@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
  * Represents a budget entity associated with a user.
  * Contains information about the budget, amount spent, and category.
  * 
- * @author Davide Scaccia
+ * @author Davide Scaccia - xscaccd00
  */
 @Entity
 public class Budget {

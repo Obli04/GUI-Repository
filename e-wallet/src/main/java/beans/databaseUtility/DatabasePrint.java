@@ -12,7 +12,7 @@ import io.github.cdimascio.dotenv.Dotenv;
  * A utility class for printing database tables to the console.
  * This class connects to a PostgreSQL database and prints the contents of various tables.
  * 
- * @author Davide Scaccia
+ * @author Davide Scaccia - xscaccd00
  */
 public class DatabasePrint {
 

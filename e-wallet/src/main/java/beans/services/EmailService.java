@@ -17,7 +17,7 @@ import jakarta.mail.internet.MimeMessage;
  * Service for sending emails, including verification and password reset emails.
  * Utilizes Jakarta Mail API to send emails through an SMTP server.
  * 
- * @author Davide Scaccia
+ * @author Davide Scaccia - xscaccd00
  */
 
 @ApplicationScoped
