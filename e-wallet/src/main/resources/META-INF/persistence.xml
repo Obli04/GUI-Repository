@@ -6,16 +6,11 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <jta-data-source>jdbc/PostgresPool</jta-data-source>
         <class>beans.entities.User</class>
-        <class>beans.entities.Transaction</class>
+        <class>beans.entities.Transaction</class>        
+        <class>beans.entities.Budget</class>
+        <class>beans.entities.RequestMoney</class>
         <properties>
-            <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
-            <property name="eclipselink.logging.level" value="FINE"/>
-            <property name="eclipselink.logging.parameters" value="true"/>
-            <property name="eclipselink.target-database" value="PostgreSQL"/>
-            <property name="eclipselink.weaving" value="true"/>
-            <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
-            <property name="eclipselink.ddl-generation.output-mode" value="database"/>
-            <property name="eclipselink.deploy-on-startup" value="true"/>
+            <property name="jakarta.persistence.schema-generation.database.action" value="validate"/>
         </properties>
     </persistence-unit>
 </persistence>
