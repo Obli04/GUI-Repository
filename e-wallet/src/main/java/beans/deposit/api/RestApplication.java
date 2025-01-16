@@ -16,7 +16,7 @@ import jakarta.ws.rs.core.Application;
 public class RestApplication extends Application {
     
     /**
-     * Registers REST API resource classes.
+     * Registers REST API resource classes without the need of a web.xml file.
      * This method tells JAX-RS which classes should be treated as REST endpoints.
      *
      * @return Set of REST resource classes
