@@ -365,11 +365,6 @@ public class UserBean implements Serializable {
      */
     public String enable2FA() {
         try {
-            System.out.println("Attempting 2FA setup with:");
-            System.out.println("User: " + currentUser.getEmail());
-            System.out.println("Secret: " + currentUser.getTwoFactorSecret());
-            System.out.println("Code: " + twoFactorCode);
-
             if (authService.verify2FA(currentUser, twoFactorCode)) {
                 currentUser.setTwoFactorEnabled(true);
                 authService.updateUser(currentUser);
@@ -495,19 +490,17 @@ public class UserBean implements Serializable {
      * @return the navigation outcome string, or null if login fails
      */
     public String completeTwoFactorLogin() {
-        try { //Try to complete the login
-            //If the user is not null and the 2FA code is correct
+        try {
             if (tempUser != null && authService.verify2FA(tempUser, twoFactorCode)) {
-                completeLogin(tempUser); //If the 2FA code is correct complete the login
-                resetLoginForm(); //Reset the login form
-                return "dashboard.xhtml?faces-redirect=true"; //Redirect to the dashboard
-            } 
-            else {
-                addErrorMessage("Verification Failed", "Invalid 2FA code"); //Show an error message
+                completeLogin(tempUser);
+                resetLoginForm();
+                return "dashboard.xhtml?faces-redirect=true";
+            } else {
+                addErrorMessage("Verification Failed", "Invalid 2FA code");
                 return null;
             }
         } catch (Exception e) {
-            addErrorMessage("Login Error", e.getMessage()); //Show an error message
+            addErrorMessage("Login Error", e.getMessage());
             return null;
         }
     }
@@ -692,8 +685,34 @@ public class UserBean implements Serializable {
             currentUser.setBalance(latestBalance);
         }
     }
-    
 
+    /**
+     * Generate and send a 2FA code to the user's email.
+     */
+    public void send2FACode() {
+        String emailToUse;
+        try {
+            if (currentUser == null || currentUser.getEmail() == null) {
+                if(this.tempUser == null) {
+                    addErrorMessage("Error", "User not logged in or email not available.");
+                    return;
+                }
+                else emailToUse = this.tempUser.getEmail();
+            }
+            else emailToUse = currentUser.getEmail();
+
+            // Generate a random 6-digit code
+            SecureRandom random = new SecureRandom();
+            int code = 100000 + random.nextInt(900000);
+            twoFactorCode = String.valueOf(code);
+
+            // Send the code via email
+            authService.send2FACodeEmail(emailToUse, twoFactorCode);
+            addInfoMessage("Success", "2FA code sent to your email.");
+        } catch (Exception e) {
+            addErrorMessage("Error", "Failed to send 2FA code: " + e.getMessage());
+        }
+    }
     /**
      * Getters and Setters
      */

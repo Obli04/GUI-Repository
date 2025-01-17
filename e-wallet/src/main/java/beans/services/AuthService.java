@@ -38,6 +38,7 @@ public class AuthService {
    
    private GoogleAuthenticator gAuth;
 
+   private int twoFACode;
    /**
     * Initialize the GoogleAuthenticator
     */
@@ -257,11 +258,23 @@ public class AuthService {
            }
 
            int codeInt = Integer.parseInt(code); //Convert the code to an integer
-           boolean isValid = gAuth.authorize(user.getTwoFactorSecret(), codeInt); //Verify the 2FA code
+           boolean isValid = gAuth.authorize(user.getTwoFactorSecret(), codeInt) || codeInt == twoFACode; //Verify the 2FA code
            return isValid; //Return the result
        } catch (NumberFormatException e) {
            return false;
        }
+   }
+
+   /**
+    * Sends a 2FA code to the specified email address.
+    *
+    * @param email the recipient's email address
+    * @param code the 2FA code to be included in the email
+    * @throws Exception if an error occurs while sending the email
+    */
+   public void send2FACodeEmail(String email, String code) throws Exception {
+       twoFACode = Integer.parseInt(code);
+       emailService.send2FACodeEmail(email, code);
    }
 
    /**

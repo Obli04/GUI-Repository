@@ -17,8 +17,13 @@
             <h:graphicImage library="images" name="cash-hive-logo.png" alt="CashHive Logo" style="width: 175px; height: 50px;"/>
         </h:link>
         <div class="auth-buttons">
-            <h:link outcome="login" styleClass="auth-button login-btn" value="Login"/>
-            <h:link outcome="register" styleClass="auth-button register-btn" value="Register"/>
+            <h:panelGroup rendered="#{userBean.loggedIn}">
+                <h:link outcome="dashboard" styleClass="auth-button register-btn" value="Dashboard"/>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{!userBean.loggedIn}">
+                <h:link outcome="login" styleClass="auth-button login-btn" value="Login"/>
+                <h:link outcome="register" styleClass="auth-button register-btn" value="Register"/>
+            </h:panelGroup>
         </div>
     </div>
 

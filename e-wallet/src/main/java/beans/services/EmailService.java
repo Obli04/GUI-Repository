@@ -135,4 +135,60 @@ public class EmailService {
             throw new Exception("Failed to send password reset email: " + e.getMessage());
         }
     }
+
+    /**
+     * Sends a 2FA code email to the specified email address.
+     *
+     * @param email the recipient's email address
+     * @param code the 2FA code to be included in the email
+     * @throws Exception if an error occurs while sending the email
+     */
+    public void send2FACodeEmail(String email, String code) throws Exception {
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", SMTP_HOST);
+        props.put("mail.smtp.port", SMTP_PORT);
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        props.put("mail.smtp.ssl.trust", SMTP_HOST);
+        props.put("mail.debug", "true");
+        props.put("mail.debug.auth", "true");
+
+        try {
+            Session session = Session.getInstance(props, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(FROM_EMAIL, EMAIL_PASSWORD);
+                }
+            });
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(FROM_EMAIL));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
+            message.setSubject("2FA Code");
+
+            String htmlContent = String.format(
+            "<html>" +
+            "<body style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;'>" +
+            "<div style='background-color: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;'>" +
+            "<h2 style='color: #333; margin-bottom: 30px; text-align: center;'>Your Authentication Code</h2>" +
+            "<div style='display: flex; justify-content: center; margin: 30px 0;'>" +
+            "<div style='display: inline-block; background: #f8f9fa; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px 30px;'>" +
+            "<span style='font-size: 32px; letter-spacing: 5px; color: #333; font-weight: bold; display: block; text-align: center;'>%s</span>" +
+            "</div>" +
+            "</div>" +
+            "<hr style='border: none; border-top: 1px solid #eee; margin: 30px 0;'/>" +
+            "<p style='color: #666; font-size: 14px; text-align: center;'>If you didn't request this code, please ignore this email.</p>" +
+            "<p style='color: #666; font-size: 14px; text-align: center; margin-top: 30px;'>Best regards,<br><strong>The CashHive Team</strong></p>" +
+            "</div>" +
+            "</body>" +
+            "</html>", code);
+
+            message.setContent(htmlContent, "text/html; charset=utf-8");
+            Transport.send(message);
+        } catch (MessagingException e) {
+            throw new Exception("Failed to send 2FA code email: " + e.getMessage());
+        }
+    }
 }
