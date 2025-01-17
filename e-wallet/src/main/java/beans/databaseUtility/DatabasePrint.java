@@ -51,6 +51,11 @@ public class DatabasePrint {
                     printRequestMoneyTable(requestMoneyResult);
                 }
 
+                try (ResultSet friendsResult = statement.executeQuery("SELECT * FROM friends")) { //Execute a query to get all the friends from the database
+                    System.out.println("\nFriends Table:");
+                    printFriendsTable(friendsResult);
+                }
+
             } catch (SQLException e) {
                 System.err.println("Error during database printing: " + e.getMessage());
             }
@@ -123,6 +128,14 @@ public class DatabasePrint {
                                ", Receiver ID: " + requestMoneyResult.getInt("id_receiver") +
                                ", Value: " + requestMoneyResult.getDouble("value") +
                                ", Description: " + requestMoneyResult.getString("description"));
+        }
+    }
+
+    public static void printFriendsTable(ResultSet friendsResult) throws SQLException {
+        while (friendsResult.next()) {
+            System.out.println("ID: " + friendsResult.getInt("id") +
+                               ", User 1 ID: " + friendsResult.getInt("id_user_1") +
+                               ", User 2 ID: " + friendsResult.getInt("id_user_2"));
         }
     }
 }
