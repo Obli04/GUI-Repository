@@ -704,10 +704,10 @@ public class UserBean implements Serializable {
             // Generate a random 6-digit code
             SecureRandom random = new SecureRandom();
             int code = 100000 + random.nextInt(900000);
-            twoFactorCode = String.valueOf(code);
+            String generatedCode = String.valueOf(code);
 
             // Send the code via email
-            authService.send2FACodeEmail(emailToUse, twoFactorCode);
+            authService.send2FACodeEmail(emailToUse, generatedCode);
             addInfoMessage("Success", "2FA code sent to your email.");
         } catch (Exception e) {
             addErrorMessage("Error", "Failed to send 2FA code: " + e.getMessage());

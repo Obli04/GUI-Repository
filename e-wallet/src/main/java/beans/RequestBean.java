@@ -8,6 +8,7 @@ import java.util.List;
 import beans.entities.RequestMoney;
 import beans.entities.Transaction;
 import beans.entities.User;
+import beans.services.EmailService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -32,6 +33,9 @@ public class RequestBean implements Serializable {
     
     @Inject
     private UserBean userBean;
+
+    @Inject
+    private EmailService emailService;
     
     // Form fields for money request
     private String recipientIdentifier; // Can be email or variable symbol
@@ -91,7 +95,8 @@ public class RequestBean implements Serializable {
             request.setReceiver(recipient);
             request.setValue(amount);
             request.setDescription(description);
-            
+
+            emailService.sendEmailForMoneyRequest(recipient.getEmail(), amount, currentUser);
             em.persist(request);
             
             // Show success message and reset form

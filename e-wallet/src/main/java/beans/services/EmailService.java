@@ -2,6 +2,7 @@ package beans.services;
 
 import java.util.Properties;
 
+import beans.entities.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
@@ -173,9 +174,9 @@ public class EmailService {
             "<body style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;'>" +
             "<div style='background-color: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;'>" +
             "<h2 style='color: #333; margin-bottom: 30px; text-align: center;'>Your Authentication Code</h2>" +
-            "<div style='display: flex; justify-content: center; margin: 30px 0;'>" +
-            "<div style='display: inline-block; background: #f8f9fa; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px 30px;'>" +
-            "<span style='font-size: 32px; letter-spacing: 5px; color: #333; font-weight: bold; display: block; text-align: center;'>%s</span>" +
+            "<div style='display: flex; justify-content: center; align-items: center; margin: 30px 0;'>" +
+            "<div style='display: flex; justify-content: center; align-items: center; background: #f8f9fa; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px 30px; width: 100%%;'>" +
+            "<span style='font-size: 32px; letter-spacing: 5px; color: #333; font-weight: bold; text-align: center; width: 100%%;'>%s</span>" +
             "</div>" +
             "</div>" +
             "<hr style='border: none; border-top: 1px solid #eee; margin: 30px 0;'/>" +
@@ -189,6 +190,64 @@ public class EmailService {
             Transport.send(message);
         } catch (MessagingException e) {
             throw new Exception("Failed to send 2FA code email: " + e.getMessage());
+        }
+    }
+
+    
+    /**
+     * Sends an email to the specified email address with a 2FA code.
+     *
+     * @param email the recipient's email address
+     * @throws Exception if an error occurs while sending the email
+     */
+    public void sendEmailForMoneyRequest(String email, Double value, User sender) throws Exception {
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", SMTP_HOST);
+        props.put("mail.smtp.port", SMTP_PORT);
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        props.put("mail.smtp.ssl.trust", SMTP_HOST);
+        props.put("mail.debug", "true");
+        props.put("mail.debug.auth", "true");
+
+        try {
+            Session session = Session.getInstance(props, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(FROM_EMAIL, EMAIL_PASSWORD);
+                }
+            });
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(FROM_EMAIL));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
+            message.setSubject("New Money Request - CashHive");
+            String htmlContent = String.format(
+            "<html>" +
+            "<body style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;'>" +
+            "<div style='background-color: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;'>" +
+            "<h2 style='color: #333; margin-bottom: 30px; text-align: center;'>New Money Request Received</h2>" +
+            "<p style='color: #666; font-size: 16px; text-align: center; margin: 20px 0;'>From: <strong>%s %s</strong></p>" +
+            "<div style='display: flex; justify-content: center; margin: 30px 0;'>" +
+            "<div style='display: inline-block; background: #f8f9fa; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px 30px; text-align: center; width: 100%%;'>" +
+            "<p style='color: #666; margin: 0; font-size: 16px;'>Amount Requested:</p>" +
+            "<span style='font-size: 32px; color: #4CAF50; font-weight: bold; display: block; margin: 0 auto; text-align: center; width: 100%%;'>$%.2f</span>" +
+            "</div>" +
+            "</div>" +
+            "<p style='color: #666; font-size: 16px; text-align: center; margin: 20px 0;'>Please log in to your CashHive account to view and respond to this request.</p>" +
+            "<hr style='border: none; border-top: 1px solid #eee; margin: 30px 0;'/>" +
+            "<p style='color: #666; font-size: 14px; text-align: center;'>If you don't recognize this request, please contact our support team.</p>" +
+            "<p style='color: #666; font-size: 14px; text-align: center; margin-top: 30px;'>Best regards,<br><strong>The CashHive Team</strong></p>" +
+            "</div>" +
+            "</body>" +
+            "</html>", sender.getFirstName(), sender.getSecondName(), value);
+
+            message.setContent(htmlContent, "text/html; charset=utf-8");
+            Transport.send(message);
+        } catch (MessagingException e) {
+            throw new Exception("Failed to send money request email: " + e.getMessage());
         }
     }
 }
