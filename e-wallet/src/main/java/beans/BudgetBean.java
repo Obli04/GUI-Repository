@@ -288,53 +288,28 @@ public class BudgetBean implements Serializable {
      * @param category the category to check.
      * @return the amount spent in the specified category.
      */
-    @Transactional
     public double getCategorySpent(String category) {
         User currentUser = userBean.getCurrentUser();
         if (currentUser == null) return 0.0;
         
         try {
-            // Get spent amount for specific category for current month
+            // Query to calculate the total spent amount for the specified category
             TypedQuery<Double> query = em.createQuery(
-                "SELECT COALESCE(SUM(t.value), 0) FROM Transaction t " +
-                "WHERE t.sender.id = :userId " +
-                "AND (t.type = 'WITHDRAW' OR t.type = 'SEND') " +
-                "AND t.category = :category " +
-                "AND FUNCTION('YEAR', t.timestamp) = FUNCTION('YEAR', CURRENT_DATE) " +
-                "AND FUNCTION('MONTH', t.timestamp) = FUNCTION('MONTH', CURRENT_DATE)", Double.class);
+                "SELECT COALESCE(SUM(CASE " +
+                "    WHEN t.type = 'Withdraw' THEN t.value " +
+                "    WHEN t.type = 'Transfer' AND t.sender.id = :userId THEN t.value " +
+                "    ELSE 0 END), 0) " +
+                "FROM Transaction t " +
+                "WHERE EXTRACT(MONTH FROM t.transactionDate) = EXTRACT(MONTH FROM CURRENT_DATE) " +
+                "AND EXTRACT(YEAR FROM t.transactionDate) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+                "AND t.sender.id = :userId " +
+                "AND t.category = :category", Double.class);
             query.setParameter("userId", currentUser.getId());
             query.setParameter("category", category);
             
-            double spentAmount = query.getSingleResult();
-            
-            // Update the Budget entity with the latest spent amount
-            TypedQuery<Budget> budgetQuery = em.createQuery(
-                "SELECT b FROM Budget b WHERE b.user = :user AND b.budgetCategory = :category",
-                Budget.class);
-            budgetQuery.setParameter("user", currentUser);
-            budgetQuery.setParameter("category", category);
-            
-            Budget budget;
-            try {
-                budget = budgetQuery.getSingleResult();
-            } catch (Exception e) {
-                budget = new Budget();
-                budget.setUser(currentUser);
-                budget.setBudgetCategory(category);
-                budget.setBudget(0.0);
-            }
-            
-            budget.setBudgetSpent(spentAmount);
-            
-            if (budget.getId() == null) {
-                em.persist(budget);
-            } else {
-                em.merge(budget);
-            }
-            
-            return spentAmount;
+            return query.getSingleResult(); // Return the total spent amount
         } catch (Exception e) {
-            return 0.0;
+            return 0.0; // Return 0.0 in case of any error
         }
     }
 }
