@@ -120,6 +120,11 @@ small {
     transform: translateY(-2px);
 }
 
+.submit-button.small-button {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.85rem !important;
+}
+
 .p-link {
     display: block;
     text-align: center;
