@@ -8,8 +8,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 
 /**
@@ -20,10 +18,6 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "users")
-@NamedQueries({
-    @NamedQuery(name = "User.findByEmail", 
-                query = "SELECT u FROM User u WHERE u.email = :email")
-})
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
