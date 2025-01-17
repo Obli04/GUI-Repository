@@ -38,7 +38,7 @@
                 <p:card styleClass="budget-card spent">
                     <div class="card-title">Total Spent</div>
                     <div class="card-value">
-                        <h:outputText value="#{budgetBean.totalSpent}">
+                        <h:outputText value="#{budgetBean.getTotalSpent(userBean.currentUser.id)}">
                             <f:convertNumber type="currency" currencySymbol="Kč"/>
                         </h:outputText>
                     </div>
@@ -47,7 +47,7 @@
                 <p:card styleClass="budget-card remaining">
                     <div class="card-title">Remaining Budget</div>
                     <div class="card-value">
-                        <h:outputText value="#{budgetBean.remainingBudget}">
+                        <h:outputText value="#{budgetBean.getRemainingBudget(userBean.currentUser.id)}">
                             <f:convertNumber type="currency" currencySymbol="Kč"/>
                         </h:outputText>
                     </div>
