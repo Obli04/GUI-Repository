@@ -21,6 +21,15 @@
 
     <div class="content">
         <h2>Transaction History</h2>
+
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <p:barChart model="#{transactionBean.barModel}" style="width: 100%; height: 100%;"/>
+            </div>
+            <div class="chart-wrapper">
+                <p:pieChart model="#{transactionBean.pieModel}" style="width: 100%; height: 100%;" />
+            </div>
+        </div>
         
         <h:form id="transactionForm">
             <p:dataTable value="#{transactionBean.getUserTransactions(userBean.currentUser.id)}"
