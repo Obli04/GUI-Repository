@@ -17,11 +17,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class RateLimiterService {
-    private static final int MAX_ATTEMPTS = 5;
-    private static final int LOCK_DURATION_MINUTES = 30;
+    private static final int MAX_ATTEMPTS = 5; //Maximum number of attempts
+    private static final int LOCK_DURATION_MINUTES = 5; //Lockout duration (minutes)
     
-    private final Map<String, AtomicInteger> attemptCount = new ConcurrentHashMap<>();
-    private final Map<String, LocalDateTime> lockoutTime = new ConcurrentHashMap<>();
+    private final Map<String, AtomicInteger> attemptCount = new ConcurrentHashMap<>(); //Map of each email to the number of attempts
+    private final Map<String, LocalDateTime> lockoutTime = new ConcurrentHashMap<>(); //Map of each email to the lockout time
 
     /**
      * Checks if the user is allowed to login based on their email.
@@ -30,21 +30,19 @@ public class RateLimiterService {
      * @return true if the user is allowed to login, false if they are locked out
      */
     public boolean isAllowed(String email) {
-        cleanupExpiredEntries();
+        cleanupExpiredEntries(); //Clean up expired entries
         
-        // Check if user is locked out
-        LocalDateTime lockoutEndTime = lockoutTime.get(email);
+        LocalDateTime lockoutEndTime = lockoutTime.get(email); //Get the lockout end time
         if (lockoutEndTime != null && LocalDateTime.now().isBefore(lockoutEndTime)) {
-            return false;
+            return false; //Return false if the user is locked out
         }
 
-        // Reset if lockout has expired
         if (lockoutEndTime != null && LocalDateTime.now().isAfter(lockoutEndTime)) {
-            attemptCount.remove(email);
+            attemptCount.remove(email); //Remove the attempt count and lockoutTime if the user is not locked out anymore
             lockoutTime.remove(email);
         }
 
-        return attemptCount.getOrDefault(email, new AtomicInteger(0)).get() < MAX_ATTEMPTS;
+        return attemptCount.getOrDefault(email, new AtomicInteger(0)).get() < MAX_ATTEMPTS; //Return true if the user is allowed to login
     }
 
     /**

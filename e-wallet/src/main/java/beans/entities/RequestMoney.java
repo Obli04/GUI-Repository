@@ -35,7 +35,7 @@ public class RequestMoney {
     @Column(name = "description", nullable = true)
     private String description;
 
-    // Getters and setters
+    //Getters and setters
     public Long getId() {
         return id;
     }

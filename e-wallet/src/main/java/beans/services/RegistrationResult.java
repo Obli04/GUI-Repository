@@ -2,8 +2,9 @@ package beans.services;
 
 /**
  * Represents the result of a registration process.
- * This class encapsulates the success status, email notification status,
- * and a message providing additional information about the registration outcome.
+ * This class has a success, emailSent and message parameter;
+ * Success if the registration was successful, emailSent if the email was sent.
+ * Message is the String that will be displayed to the user.
  * 
  * @author Davide Scaccia - xscaccd00
  */

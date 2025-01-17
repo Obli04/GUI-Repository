@@ -73,7 +73,7 @@ public class User implements Serializable {
     @Column(name = "variable_symbol", nullable = false, unique = true)
     private String variableSymbol;
 
-    // Getters and setters
+    //Getters and setters
     public Long getId() {
         return id;
     }

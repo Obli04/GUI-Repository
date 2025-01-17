@@ -23,22 +23,22 @@ import jakarta.validation.ValidationException;
  * 
  * @author Davide Scaccia - xscaccd00
  */
-@ApplicationScoped //Let the container instantiate this class
+@ApplicationScoped
 public class AuthService {
     
-   @PersistenceContext(unitName = "e-walletPU") //Inject the EntityManager
+   @PersistenceContext(unitName = "e-walletPU")
    private EntityManager em;
    
-   @Inject //Inject the EmailService
+   @Inject
    private EmailService emailService;
    
-   @Inject //Inject the RateLimiterService
+   @Inject
    private RateLimiterService rateLimiter;
    
    
    private GoogleAuthenticator gAuth;
 
-   /*
+   /**
     * Initialize the GoogleAuthenticator
     */
     @PostConstruct
@@ -85,23 +85,18 @@ public class AuthService {
     */
    @Transactional
    public RegistrationResult register(User user) throws Exception {
-       try {
-
-           validatePassword(user.getPassword()); //Validate the password
-           if (user.getEmail() == null || user.getFirstName() == null || user.getSecondName() == null) { //Verify that all fields have been entered
+        try {
+            validatePassword(user.getPassword()); //Validate the password
+            if (user.getEmail() == null || user.getFirstName() == null || user.getSecondName() == null) { //Verify that all fields have been entered
                throw new jakarta.validation.ValidationException("All fields are required");
-           }
+            }
            
-           //Check for existing user
+            //Check for existing user
            try {
                User existingUser = findUserByEmail(user.getEmail()); //Search if the user's entered email is alredy in the database
-               if (existingUser != null) {
-                   throw new jakarta.validation.ValidationException("Email already registered"); //If we found a user throw an exception.
-               }
+               if (existingUser != null) throw new jakarta.validation.ValidationException("Email already registered"); //If we found a user throw an exception.
            } catch (ValidationException e) {
-               if (!(e instanceof jakarta.validation.ValidationException)) {
-                   throw new Exception("Database error while checking existing user"); //Error in findUserByEmail: couldn't connect to database
-               }
+               if (!(e instanceof jakarta.validation.ValidationException)) throw new Exception("Database error while checking existing user"); //Database error
                throw e;
            }
            
@@ -193,6 +188,7 @@ public class AuthService {
     * @param twoFactorCode the two-factor authentication code
     * @return true if login is successful, false otherwise
     * @throws SecurityException if the account is locked or email is not verified
+    * @throws NumberFormatException if the two-factor code is not a number
     */
    public boolean login(String email, String password, String twoFactorCode) {
        if (!rateLimiter.isAllowed(email)) { //If the email has not been locked yet
@@ -221,7 +217,6 @@ public class AuthService {
            rateLimiter.recordFailedAttempt(email); //Record the failed attempt
            return false; //Invalid login
        } catch (NumberFormatException | SecurityException e) {
-           rateLimiter.recordFailedAttempt(email); //Record the failed attempt
            throw e; //Throw the exception
        }
    }
@@ -248,6 +243,7 @@ public class AuthService {
     * @param user the user to verify
     * @param code the two-factor authentication code
     * @return true if the code is valid, false otherwise
+    * @throws NumberFormatException if the two-factor code is not a number
     */
    @Transactional
    public boolean verify2FA(User user, String code) {
@@ -256,13 +252,11 @@ public class AuthService {
                return false; 
            }
            
-           String cleanCode = code.trim().replaceAll("[^0-9]", ""); //Clean the code from non-numeric characters
-           
-           if (cleanCode.length() != 6) { //If the code is not 6 digits long
+           if (code.length() != 6) { //If the code is not 6 digits long
                return false;
            }
 
-           int codeInt = Integer.parseInt(cleanCode); //Convert the code to an integer
+           int codeInt = Integer.parseInt(code); //Convert the code to an integer
            boolean isValid = gAuth.authorize(user.getTwoFactorSecret(), codeInt); //Verify the 2FA code
            return isValid; //Return the result
        } catch (NumberFormatException e) {
@@ -297,9 +291,10 @@ public class AuthService {
     * @param token the reset token
     * @param newPassword the new password
     * @return true if the password is successfully reset, false otherwise
+    * @throws Exception if the password is not valid or the token is expired
     */
    @Transactional
-   public boolean resetPassword(String token, String newPassword) {
+   public boolean resetPassword(String token, String newPassword) throws Exception {
        try {
            validatePassword(newPassword); //Validate the new password
            User user = findUserByResetToken(token); //Find the user by the reset token
@@ -313,11 +308,12 @@ public class AuthService {
                    em.merge(user); //Merge the changes with the user
                    return true; //Password reset successful
                }
+               else throw new Exception("Token expired"); //Throw exception if the token is expired   
            }
-       } catch (ValidationException e) {
-        return false; //Password reset failed
+       } catch (Exception e) {
+           throw e;
        }
-       return false; //Password reset failed
+       return false;
    }
 
    /**
@@ -342,7 +338,7 @@ public class AuthService {
            user.setVerificationToken(token); //Set the verification token
            user.setTokenExpiry(LocalDateTime.now().plusHours(24)); //Set the token expiry to 1 day from now
            em.merge(user); //Merge the changes with the user
-           em.flush(); //Force any pending database operations to be executed immediately
+           em.flush(); //Execute changes
            emailService.sendVerificationEmail(user.getEmail(), token); //Send the verification email with the generated token
        } catch (Exception e) {
            throw e;
@@ -358,17 +354,13 @@ public class AuthService {
    @Transactional
    public void updateUser(User user) throws Exception {
        try {
-           // Validate user exists
-           User existingUser = findUserByEmail(user.getEmail());
-           if (existingUser == null) {
-               throw new Exception("User not found");
-           }
+           User existingUser = findUserByEmail(user.getEmail()); //Find the user by the input email
+           if (existingUser == null) throw new Exception("User not found"); //Throw an exception if the user is not found
 
-           // Update the user
-           em.merge(user);
-           em.flush();
+           em.merge(user); //Merge the changes with the user
+           em.flush(); //Execute changes
        } catch (Exception e) {
-           throw new Exception("Failed to update user: " + e.getMessage());
+           throw new Exception("Failed to update user: " + e.getMessage()); //Throw an exception if the user is not found
        }
    }
 
@@ -397,8 +389,9 @@ public class AuthService {
     * @param email the user's email
     * @param password the password to verify
     * @return true if the password is correct, false otherwise
+    * @throws Exception if the user is not found
     */
-   public boolean verifyPassword(String email, String password) {
+   public boolean verifyPassword(String email, String password) throws Exception {
        try {
            User user = findUserByEmail(email); //Find the user by the input email
            return user != null && BCrypt.checkpw(password, user.getPassword()); //Return true if the password is correct, false otherwise

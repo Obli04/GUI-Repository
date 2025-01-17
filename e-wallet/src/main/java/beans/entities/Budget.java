@@ -33,7 +33,7 @@ public class Budget {
     @Column(name = "budget_category", nullable = false)
     private String budgetCategory;
 
-    // Getters and setters
+    //Getters and setters
     public Long getId() {
         return id;
     }

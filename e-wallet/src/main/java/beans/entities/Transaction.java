@@ -47,7 +47,7 @@ public class Transaction {
     @JoinColumn(name="id_receiver", nullable=true)
     private User receiver;
     
-    // Getters and setters
+    //Getters and setters
     public Long getId() {
         return id;
     }
