@@ -22,7 +22,7 @@ import jakarta.mail.internet.MimeMessage;
 
 @ApplicationScoped
 public class EmailService {
-    private static final String FROM_EMAIL = "cashhivegja@gmail.com";
+    private static final String FROM_EMAIL = "cashhivegja@gmail.com"; //Credentials for the email
     private static final String EMAIL_PASSWORD = "vxdl euux tbon zecu";
     private static final int SMTP_PORT = 587;
     private static final String SMTP_HOST = "smtp.gmail.com";
@@ -77,7 +77,6 @@ public class EmailService {
             message.setContent(htmlContent, "text/html; charset=utf-8"); //Setting the content type
             Transport.send(message); //Sending the message
         } catch (MessagingException e) {
-            e.printStackTrace(System.err); //Printing the stack trace
             throw new Exception("Failed to send verification email: " + e.getMessage(), e); //Throwing an exception
         }
     }
@@ -133,7 +132,6 @@ public class EmailService {
             message.setContent(htmlContent, "text/html; charset=utf-8"); //Setting the content type
             Transport.send(message); //Sending the message
         } catch (MessagingException e) {
-            e.printStackTrace(System.err);
             throw new Exception("Failed to send password reset email: " + e.getMessage());
         }
     }

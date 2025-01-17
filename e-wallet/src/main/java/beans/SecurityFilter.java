@@ -17,15 +17,14 @@ import jakarta.servlet.http.HttpSession;
  * This filter checks if a user is logged in before allowing access to certain pages.
  * If the user is not logged in, they are redirected to the login page.
  * 
- * @author Davide Scaccia
+ * @author Davide Scaccia - xscaccd00
  */
 @WebFilter(filterName = "SecurityFilter", urlPatterns = {
     "/dashboard.xhtml", "/deposit.xhtml", "/withdraw.xhtml", 
     "/budget.xhtml", "/account.xhtml", "/transactions.xhtml", "/transfer.xhtml", "/piggybank.xhtml", "/request.xhtml", "/send.xhtml"
 })
 public class SecurityFilter implements Filter {
-    
-    
+
     /**
      * Filters requests to ensure the user is authenticated.
      * 

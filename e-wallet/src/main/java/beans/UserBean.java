@@ -436,7 +436,8 @@ public class UserBean implements Serializable {
 
             if (user == null || !authService.verifyPassword(email, password)) {
                 rateLimiterService.recordFailedAttempt(email);
-                addErrorMessage("Login Failed", "Invalid email or password.");
+                int getRemainingAttempts = rateLimiterService.getRemainingAttempts(email);
+                addErrorMessage("Login Failed", "Invalid email or password. " + getRemainingAttempts + " attempts remaining.");
                 return null;
             }
 
