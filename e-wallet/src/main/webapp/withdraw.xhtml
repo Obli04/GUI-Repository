@@ -60,21 +60,10 @@
                                          required="true"
                                          minValue="0.01"
                                          styleClass="modern-input"/>
-                            
-                            <div class="budget-info">
-                                <p:outputPanel rendered="#{budgetBean.getRemainingBudget(userBean.currentUser.id) > 0}">
-                                    <div class="budget-status">
-                                        <span>Monthly Budget Remaining:</span>
-                                        <h:outputText value="#{budgetBean.getRemainingBudget(userBean.currentUser.id)}" styleClass="#{budgetBean.getRemainingBudget(userBean.currentUser.id) < withdrawalBean.amount ? 'budget-warning' : ''}">
-                                            <f:convertNumber type="currency" currencySymbol="Kč"/>
-                                        </h:outputText>
-                                    </div>
-                                </p:outputPanel>
-                            </div>
                         </div>
                         
                         <div class="payment-details" 
-                             rendered="#{withdrawalBean.showPaymentDetails}">
+                             rendered="#{not empty withdrawalBean.paymentReference}">
                             <h3>Payment Details</h3>
                             <div class="detail-row">
                                 <span class="label">IBAN:</span>

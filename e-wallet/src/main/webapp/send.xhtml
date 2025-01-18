@@ -56,5 +56,29 @@
             </h:form>
         </p:card>
     </div>
+
+    <p:dialog header="Budget Warning" widgetVar="budgetWarningDialog" modal="true" 
+              showEffect="fade" hideEffect="fade" responsive="true">
+        <h:form>
+            <div class="p-d-flex p-flex-column">
+                <div style="margin-bottom: 20px;">
+                    <p style="color: #e74c3c; font-weight: bold; margin-bottom: 10px;">
+                        <i class="pi pi-exclamation-triangle" style="margin-right: 8px;"></i>
+                        Warning: This transaction will exceed your monthly budget!
+                    </p>
+                    <p>Do you want to proceed with the payment anyway?</p>
+                </div>
+                
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <p:commandButton value="Back" onclick="PF('budgetWarningDialog').hide()" 
+                                   styleClass="ui-button-secondary"/>
+                    <p:commandButton value="Proceed" action="#{sendBean.confirmTransfer}"
+                                   oncomplete="PF('budgetWarningDialog').hide()" 
+                                   update="@all"
+                                   styleClass="ui-button-warning"/>
+                </div>
+            </div>
+        </h:form>
+    </p:dialog>
 </h:body>
 </html>

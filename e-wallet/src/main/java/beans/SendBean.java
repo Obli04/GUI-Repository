@@ -3,6 +3,8 @@ package beans;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import org.primefaces.PrimeFaces;
+
 import beans.entities.Transaction;
 import beans.entities.User;
 import jakarta.enterprise.context.SessionScoped;
@@ -29,6 +31,9 @@ public class SendBean implements Serializable {
     // UserBean for getting current user
     @Inject
     private UserBean userBean;
+
+    @Inject
+    private BudgetBean budgetBean;
 
     private String recipientIdentifier; // Can be email or variable symbol
     private double amount; // Amount to send
@@ -78,40 +83,85 @@ public class SendBean implements Serializable {
                 return null;
             }
 
-            // Create and save transaction
-            Transaction transaction = new Transaction();
-            transaction.setSender(sender);
-            transaction.setReceiver(recipient);
-            transaction.setValue(amount);
-            transaction.setType("Transfer");
-            transaction.setCategory("User Transfer");
-            transaction.setTransactionDate(LocalDateTime.now());
+            // Check budget status before proceeding
+            double remainingBudget = budgetBean.getRemainingBudget(sender.getId());
+            
+            // If budget is already exceeded or would be exceeded by this transfer, show warning
+            if (remainingBudget < 0 || (remainingBudget - amount) < 0) {
+                // Store recipient and amount in view scope to access it later if user confirms
+                FacesContext.getCurrentInstance().getViewRoot().getViewMap().put("pendingRecipient", recipient);
+                FacesContext.getCurrentInstance().getViewRoot().getViewMap().put("pendingAmount", amount);
+                // Display the warning dialog using PrimeFaces
+                PrimeFaces.current().executeScript("PF('budgetWarningDialog').show()");
+                return null;
+            }
 
-            // Update balances
-            sender.setBalance(sender.getBalance() - amount);
-            recipient.setBalance(recipient.getBalance() + amount);
-
-            // Persist changes to database
-            em.persist(transaction);
-            em.merge(sender);
-            em.merge(recipient);
-
-            // Show success message
-            addMessage(FacesMessage.SEVERITY_INFO, "Success", 
-                String.format("Successfully sent %.2f CZK to %s", amount, 
-                    recipient.getFirstName() + " " + recipient.getSecondName()));
-
-            // Reset form
-            resetForm();
-
-            // Redirect to dashboard
-            return "dashboard?faces-redirect=true";
+            // If budget check passes, process the transfer normally
+            return processTransfer(sender, recipient, amount);
 
         } catch (Exception e) {
             addMessage(FacesMessage.SEVERITY_ERROR, "Error", 
                 "An error occurred during the transfer: " + e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Processes the transfer after user confirms to proceed despite budget warning.
+     */
+    @Transactional
+    public String confirmTransfer() {
+        try {
+            User sender = userBean.getCurrentUser();
+            User recipient = (User) FacesContext.getCurrentInstance()
+                .getViewRoot().getViewMap().get("pendingRecipient");
+            Double amount = (Double) FacesContext.getCurrentInstance()
+                .getViewRoot().getViewMap().get("pendingAmount");
+            
+            if (recipient != null && amount != null) {
+                return processTransfer(sender, recipient, amount);
+            }
+            return null;
+        } catch (Exception e) {
+            addMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                "Failed to process transfer: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Helper method to process the actual transfer
+     */
+    @Transactional
+    private String processTransfer(User sender, User recipient, double amount) {
+        // Create and save transaction
+        Transaction transaction = new Transaction();
+        transaction.setSender(sender);
+        transaction.setReceiver(recipient);
+        transaction.setValue(amount);
+        transaction.setType("Transfer");
+        transaction.setCategory("User Transfer");
+        transaction.setTransactionDate(LocalDateTime.now());
+
+        // Update balances
+        sender.setBalance(sender.getBalance() - amount);
+        recipient.setBalance(recipient.getBalance() + amount);
+
+        // Persist changes to database
+        em.persist(transaction);
+        em.merge(sender);
+        em.merge(recipient);
+
+        // Show success message
+        addMessage(FacesMessage.SEVERITY_INFO, "Success", 
+            String.format("Successfully sent %.2f CZK to %s", amount, 
+                recipient.getFirstName() + " " + recipient.getSecondName()));
+
+        // Reset form
+        resetForm();
+
+        // Redirect to dashboard
+        return "dashboard?faces-redirect=true";
     }
 
     // Method for adding messages to the FacesContext
