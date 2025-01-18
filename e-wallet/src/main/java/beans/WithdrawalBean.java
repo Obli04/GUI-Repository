@@ -2,6 +2,7 @@ package beans;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import beans.entities.Transaction;
 import beans.entities.User;
@@ -32,6 +33,7 @@ public class WithdrawalBean implements Serializable {
     private UserBean userBean;
     
     private double amount; // Amount to withdraw
+    private String paymentReference; // Add this field
     
     // Transactional method for withdrawing money, returns null if error occurs
     @Transactional
@@ -60,6 +62,9 @@ public class WithdrawalBean implements Serializable {
                 return null;
             }
             
+            // Generate unique payment reference
+            paymentReference = generatePaymentReference();
+            
             // Create withdrawal transaction
             Transaction withdrawal = new Transaction();
             withdrawal.setReceiver(currentUser);
@@ -75,15 +80,13 @@ public class WithdrawalBean implements Serializable {
             em.persist(withdrawal);
             em.merge(currentUser);
             
+
             // Add success message
             addMessage(FacesMessage.SEVERITY_INFO, "Success", 
                 String.format("Withdrawal of %.2f CZK completed successfully", amount));
             
-            // Reset form
-            amount = 0;
-            
-            // Redirect to dashboard
-            return "dashboard?faces-redirect=true";
+            // Don't reset amount or redirect, just return null to stay on page
+            return null;
             
         } catch (Exception e) {
             addMessage(FacesMessage.SEVERITY_ERROR, "Error", 
@@ -98,6 +101,15 @@ public class WithdrawalBean implements Serializable {
             new FacesMessage(severity, summary, detail));
     }
     
+    // Add these new methods
+    private String generatePaymentReference() {
+        // Format: WD-YYYYMMDD-RANDOM
+        LocalDateTime now = LocalDateTime.now();
+        String dateStr = now.format(DateTimeFormatter.BASIC_ISO_DATE);
+        String random = String.format("%06d", (int)(Math.random() * 1000000));
+        return "WD-" + dateStr + "-" + random;
+    }
+    
     // Getters and setters
     public double getAmount() {
         return amount;
@@ -105,5 +117,15 @@ public class WithdrawalBean implements Serializable {
     
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+    
+    public String getPaymentReference() {
+        return paymentReference;
+    }
+    
+    // Add method to reset the form
+    public void resetForm() {
+        amount = 0;
+        paymentReference = null;
     }
 }

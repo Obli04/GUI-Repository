@@ -171,4 +171,51 @@ body {
     .modern-grid {
         grid-template-columns: 1fr;
     }
+}
+
+.payment-details {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row .label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.detail-row .value {
+    color: #212529;
+}
+
+.budget-info {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.budget-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #666;
+}
+
+.budget-warning {
+    color: #ff5722;
+    font-weight: bold;
 } 
