@@ -22,12 +22,14 @@
 
     <div class="content">
         <div class="container">
-            <div class="balance-header">
-                Current Balance 
-                <h:outputText value="#{userBean.currentUser.balance}" styleClass="balance-text">
-                    <f:convertNumber type="currency" currencySymbol="Kč"/>
-                </h:outputText>
-            </div>
+            <h:form id="balanceForm">
+                <div class="balance-header">
+                    Current Balance 
+                    <h:outputText value="#{userBean.currentUser.balance}" styleClass="balance-text">
+                        <f:convertNumber type="currency" currencySymbol="Kč"/>
+                    </h:outputText>
+                </div>
+            </h:form>
             
             <h:panelGroup rendered="#{empty userBean.currentUser.iban}">
                 <div class="no-iban-warning">
@@ -58,6 +60,34 @@
                                          required="true"
                                          minValue="0.01"
                                          styleClass="modern-input"/>
+                            
+                            <div class="budget-info">
+                                <p:outputPanel rendered="#{budgetBean.getRemainingBudget(userBean.currentUser.id) > 0}">
+                                    <div class="budget-status">
+                                        <span>Monthly Budget Remaining:</span>
+                                        <h:outputText value="#{budgetBean.getRemainingBudget(userBean.currentUser.id)}" styleClass="#{budgetBean.getRemainingBudget(userBean.currentUser.id) < withdrawalBean.amount ? 'budget-warning' : ''}">
+                                            <f:convertNumber type="currency" currencySymbol="Kč"/>
+                                        </h:outputText>
+                                    </div>
+                                </p:outputPanel>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-details" 
+                             rendered="#{withdrawalBean.showPaymentDetails}">
+                            <h3>Payment Details</h3>
+                            <div class="detail-row">
+                                <span class="label">IBAN:</span>
+                                <span class="value">#{userBean.currentUser.iban}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Amount:</span>
+                                <span class="value">
+                                    <h:outputText value="#{withdrawalBean.amount}">
+                                        <f:convertNumber type="currency" currencySymbol="Kč"/>
+                                    </h:outputText>
+                                </span>
+                            </div>
                         </div>
                         
                         <p:messages id="messages" showDetail="true" closable="true" styleClass="modern-messages">
@@ -67,10 +97,16 @@
                         <div class="button-container">
                             <p:commandButton value="Withdraw" 
                                            action="#{withdrawalBean.withdraw}"
-                                           update="@form"
+                                           update="@form :balanceForm"
                                            styleClass="modern-button-success"/>
+                            <p:commandButton value="New Withdrawal" 
+                                           action="#{withdrawalBean.resetForm}"
+                                           update="@form"
+                                           rendered="#{withdrawalBean.showPaymentDetails}"
+                                           styleClass="modern-button-secondary"/>
                             <p:button value="Cancel" 
                                      outcome="dashboard"
+                                     rendered="#{!withdrawalBean.showPaymentDetails}"
                                      styleClass="modern-button-secondary"/>
                         </div>
                     </p:panel>
