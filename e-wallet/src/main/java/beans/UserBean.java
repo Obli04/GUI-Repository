@@ -50,7 +50,7 @@ import jakarta.validation.ValidationException;
 public class UserBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    // Form fields
+    //Form fields
     private String email;
     private String password;
     private String firstName;
@@ -58,7 +58,7 @@ public class UserBean implements Serializable {
     private String twoFactorCode;
     private String iban;
     
-    // Session data
+    //Session data
     private User currentUser;
     private StreamedContent qrCodeImage;
     
@@ -210,7 +210,7 @@ public class UserBean implements Serializable {
         return qrCodeImage; //Return the QR code image
     }
     
-    /*Penso che questa funzione non serva più: Refresh user data from the database
+    /*Function not used anymore
     public void refreshUserData() {
         if (currentUser != null && currentUser.getEmail() != null) { //If the current user is not null and the email is not null
             User freshUser = authService.findUserByEmail(currentUser.getEmail()); //Find the user by email
@@ -233,7 +233,7 @@ public class UserBean implements Serializable {
      */
     private void addErrorMessage(String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null, 
-            new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail));
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail)); //Show an error message
     }
 
     /**
@@ -241,14 +241,14 @@ public class UserBean implements Serializable {
      */
     private void addInfoMessage(String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null, 
-            new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail));
+            new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail)); //Show an info message
     }
 
     /**
      * Check if user is logged in
      */
     public boolean isLoggedIn() {
-        return currentUser != null;
+        return currentUser != null; //Check if the current user is not null
     }
 
     /**
@@ -280,10 +280,10 @@ public class UserBean implements Serializable {
      * @return the new token
      */
     private String generateNewToken() {
-        SecureRandom random = new SecureRandom();
-        byte[] bytes = new byte[32];
-        random.nextBytes(bytes);
-        return Base64.getEncoder().encodeToString(bytes);
+        SecureRandom random = new SecureRandom(); //Token Generator
+        byte[] bytes = new byte[32]; //Create a byte array
+        random.nextBytes(bytes); //Generate a new token
+        return Base64.getEncoder().encodeToString(bytes); //Return the token
     }
 
     /**
@@ -294,7 +294,7 @@ public class UserBean implements Serializable {
      */
     private boolean isValidEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
-        return email != null && email.matches(emailRegex);
+        return email != null && email.matches(emailRegex); //Check if the email is valid
     }
 
     /**
@@ -304,26 +304,26 @@ public class UserBean implements Serializable {
      */
     public String updateProfile() {
         try {
-            User user = authService.findUserByEmail(currentUser.getEmail());
-            user.setFirstName(firstName);
-            user.setSecondName(secondName);
-            user.setIban(iban);
+            User user = authService.findUserByEmail(currentUser.getEmail()); //Find the user by email
+            user.setFirstName(firstName); //Set the first name
+            user.setSecondName(secondName); //Set the second name
+            user.setIban(iban); //Set the IBAN
             
             //If email is changed, verify it's not already in use
             if (!user.getEmail().equals(email)) {
-                if (authService.findUserByEmail(email) != null) {
+                if (authService.findUserByEmail(email) != null) { //If the email is already in use show an error message
                     addErrorMessage("Update Failed", "Email already in use");
                     return null;
                 }
-                user.setEmail(email);
+                user.setEmail(email); //Set the email
             }
             
-            authService.updateUser(user);
-            currentUser = user;
-            addInfoMessage("Success", "Profile updated successfully");
+            authService.updateUser(user); //Update the user in the database 
+            currentUser = user; //Set the current user to the user
+            addInfoMessage("Success", "Profile updated successfully"); //Show a success message
             return null;
         } catch (Exception e) {
-            addErrorMessage("Update Failed", e.getMessage());
+            addErrorMessage("Update Failed", e.getMessage()); //Show an error message
             return null;
         }
     }
@@ -335,25 +335,24 @@ public class UserBean implements Serializable {
      */
     public String changePassword() {
         try {
-            if (!newPassword.equals(confirmPassword)) {
+            if (!newPassword.equals(confirmPassword)) { //If the new password and the confirm password do not match show an error message
                 addErrorMessage("Password Change Failed", "New passwords do not match");
                 return null;
             }
 
-            if (authService.verifyPassword(currentUser.getEmail(), currentPassword)) {
-                authService.updatePassword(currentUser, newPassword);
-                addInfoMessage("Success", "Password changed successfully");
-                // Clear password fields
-                currentPassword = null;
+            if (authService.verifyPassword(currentUser.getEmail(), currentPassword)) { //If the current password is correct update the password
+                authService.updatePassword(currentUser, newPassword); //Update the password
+                addInfoMessage("Success", "Password changed successfully"); //Show a success message
+                currentPassword = null; //Clear the password fields
                 newPassword = null;
                 confirmPassword = null;
                 return null;
             } else {
-                addErrorMessage("Password Change Failed", "Current password is incorrect");
+                addErrorMessage("Password Change Failed", "Current password is incorrect"); //Show an error message
                 return null;
             }
         } catch (Exception e) {
-            addErrorMessage("Password Change Failed", e.getMessage());
+            addErrorMessage("Password Change Failed", e.getMessage()); //Show an error message
             return null;
         }
     }
@@ -365,17 +364,17 @@ public class UserBean implements Serializable {
      */
     public String enable2FA() {
         try {
-            if (authService.verify2FA(currentUser, twoFactorCode)) {
-                currentUser.setTwoFactorEnabled(true);
-                authService.updateUser(currentUser);
-                addInfoMessage("Success", "Two-factor authentication enabled");
+            if (authService.verify2FA(currentUser, twoFactorCode)) { //If the 2FA code is correct enable 2FA
+                currentUser.setTwoFactorEnabled(true); //Set the 2FA enabled to true
+                authService.updateUser(currentUser); //Update the user
+                addInfoMessage("Success", "Two-factor authentication enabled"); //Show a success message
                 return null;
             } else {
-                addErrorMessage("Error", "Invalid verification code");
+                addErrorMessage("Error", "Invalid verification code"); //Show an error message
                 return null;
             }
         } catch (Exception e) {
-            addErrorMessage("Error", "Failed to enable 2FA");
+            addErrorMessage("Error", "Failed to enable 2FA"); //Show an error message
             return null;
         }
     }
@@ -421,7 +420,7 @@ public class UserBean implements Serializable {
      * @return navigation outcome string
      */
     public String initiateLogin() {
-        if (!rateLimiterService.isAllowed(email)) {
+        if (!rateLimiterService.isAllowed(email)) { //If the email is not allowed show an error message
             addErrorMessage("Login Failed", "Too many failed attempts. Please try again later.");
             return null;
         }
@@ -429,30 +428,30 @@ public class UserBean implements Serializable {
         try {
             User user = authService.findUserByEmail(email);
 
-            if (user == null || !authService.verifyPassword(email, password)) {
-                rateLimiterService.recordFailedAttempt(email);
-                int getRemainingAttempts = rateLimiterService.getRemainingAttempts(email);
-                addErrorMessage("Login Failed", "Invalid email or password. " + getRemainingAttempts + " attempts remaining.");
+            if (user == null || !authService.verifyPassword(email, password)) { //If the user is null or the password is incorrect show an error message
+                rateLimiterService.recordFailedAttempt(email); //Record a failed attempt
+                int getRemainingAttempts = rateLimiterService.getRemainingAttempts(email); //Get the remaining attempts
+                addErrorMessage("Login Failed", "Invalid email or password. " + getRemainingAttempts + " attempts remaining."); //Show an error message
                 return null;
             }
 
-            if (!user.getIsVerified()) {
-                addErrorMessageWithLink("Login Failed", "User is not verified. Click here to request a new verification email.", "resendVerificationEmail");
+            if (!user.getIsVerified()) { //If the user is not verified show an error message
+                addErrorMessageWithLink("Login Failed", "User is not verified. Click here to request a new verification email.", "resendVerificationEmail"); //Show an error message
                 return null;
             }
 
             if (user.isTwoFactorEnabled()) {
-                this.tempUser = user;
-                this.showTwoFactorInput = true;
+                this.tempUser = user; //Set the tempUser to the current user
+                this.showTwoFactorInput = true; //Show the 2FA input
                 return null;
             } else {
-                completeLogin(user);
-                sessionTimeoutConfig.configureSessionTimeout();
-                rateLimiterService.resetAttempts(email);
-                return "dashboard.xhtml?faces-redirect=true";
+                completeLogin(user); //Complete the login
+                sessionTimeoutConfig.configureSessionTimeout(); //Configure the session timeout
+                rateLimiterService.resetAttempts(email); //Reset the attempts
+                return "dashboard.xhtml?faces-redirect=true"; //Redirect to the dashboard
             }
         } catch (Exception e) {
-            addErrorMessage("Login Error", e.getMessage());
+            addErrorMessage("Login Error", e.getMessage()); //Show an error message
             return null;
         }
     }
@@ -461,24 +460,24 @@ public class UserBean implements Serializable {
      * Resend verification email
      */
     public void resendVerificationEmail() {
-        System.out.println("Attempting to resend verification email for: " + email);
         try {
-            if (email == null || email.trim().isEmpty()) {
+            if (email == null || email.trim().isEmpty()) { //If the email is null or empty show an error message
                 addErrorMessage("Error", "No email address provided");
                 return;
             }
             
-            authService.resendVerificationEmail(email);
-            loginMessage = "Verification email has been resent. Please check your inbox.";
-            // Also add a regular message for better visibility
-            addInfoMessage("Success", "Verification email has been resent");
+            authService.resendVerificationEmail(email); //Resend verification email
+            loginMessage = "Verification email has been resent. Please check your inbox."; //Show a success message
+            addInfoMessage("Success", "Verification email has been resent"); //Show a success message
         } catch (Exception e) {
-            System.err.println("Failed to resend verification email: " + e.getMessage());
-            loginMessage = "Failed to resend verification email: " + e.getMessage();
-            addErrorMessage("Error", "Failed to resend verification email");
+            loginMessage = "Failed to resend verification email: " + e.getMessage(); //Show an error message
+            addErrorMessage("Error", "Failed to resend verification email"); //Show an error message
         }
     }
 
+    /**
+     * Add an error message with a link
+     */
     private void addErrorMessageWithLink(String summary, String detail, String actionMethod) {
         String link = "<div class='error-message'>" + summary + " <a href='#' onclick=\"document.getElementById('hiddenForm:" + actionMethod + "').click(); return false;\">" + detail + "</a></div>";
         this.loginMessage = link;
@@ -491,16 +490,16 @@ public class UserBean implements Serializable {
      */
     public String completeTwoFactorLogin() {
         try {
-            if (tempUser != null && authService.verify2FA(tempUser, twoFactorCode)) {
-                completeLogin(tempUser);
+            if (tempUser != null && authService.verify2FA(tempUser, twoFactorCode)) { //If the tempUser is not null and the 2FA code is correct complete the login
+                completeLogin(tempUser); //Complete the login
                 resetLoginForm();
                 return "dashboard.xhtml?faces-redirect=true";
             } else {
-                addErrorMessage("Verification Failed", "Invalid 2FA code");
+                addErrorMessage("Verification Failed", "Invalid 2FA code"); //Show an error message
                 return null;
             }
         } catch (Exception e) {
-            addErrorMessage("Login Error", e.getMessage());
+            addErrorMessage("Login Error", e.getMessage()); //Show an error message
             return null;
         }
     }
@@ -652,13 +651,11 @@ public class UserBean implements Serializable {
      * Check and display messages after redirect
      */
     public void checkResetMessage() {
-        //Get the current faces context
-        FacesContext context = FacesContext.getCurrentInstance();
-        message = (String) context.getExternalContext().getSessionMap().get("resetMessage");
-        //If the message is not null add it to the context  
+        FacesContext context = FacesContext.getCurrentInstance(); //Get the current faces context
+        message = (String) context.getExternalContext().getSessionMap().get("resetMessage"); //Get the message from the session 
         if (message != null) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", message));
-            context.getExternalContext().getSessionMap().remove("resetMessage");
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", message)); //Add the message to the context
+            context.getExternalContext().getSessionMap().remove("resetMessage"); //Remove the message from the session
         }
     }
 
@@ -667,6 +664,7 @@ public class UserBean implements Serializable {
      * 
      * @param userId the user's id
      * @return the user's transactions
+     * @author Giovanni Romano
      */
     public List<Transaction> getUserTransactions(Long userId) {
         return em.createQuery("SELECT t FROM Transaction t WHERE (t.sender.id = :userId OR t.receiver.id = :userId OR (t.sender IS NULL AND t.receiver.id = :userId)) ORDER BY t.transactionDate DESC", Transaction.class)
@@ -677,6 +675,7 @@ public class UserBean implements Serializable {
 
     /**
      * Refreshes the user's balance from the database.
+     * Sets the currentUser balance to the balance fetched from the database
      */
     public void refreshBalance() {
         currentUser = getCurrentUser();
@@ -690,29 +689,55 @@ public class UserBean implements Serializable {
      * Generate and send a 2FA code to the user's email.
      */
     public void send2FACode() {
-        String emailToUse;
+        String emailToUse; //Temp variable to save what email to use (during login there's a tempUser)
         try {
-            if (currentUser == null || currentUser.getEmail() == null) {
-                if(this.tempUser == null) {
+            if (currentUser == null || currentUser.getEmail() == null) { //Check if the user is logged in (2fa request for account.xhtml)
+                if(this.tempUser == null) { //Check if we are in login (2fa request for login.xhtml)
                     addErrorMessage("Error", "User not logged in or email not available.");
                     return;
                 }
-                else emailToUse = this.tempUser.getEmail();
+                else emailToUse = this.tempUser.getEmail(); //If we are in login use the tempUser email
             }
-            else emailToUse = currentUser.getEmail();
+            else emailToUse = currentUser.getEmail(); //Else use the currentUser email
 
-            // Generate a random 6-digit code
-            SecureRandom random = new SecureRandom();
-            int code = 100000 + random.nextInt(900000);
-            String generatedCode = String.valueOf(code);
-
-            // Send the code via email
-            authService.send2FACodeEmail(emailToUse, generatedCode);
-            addInfoMessage("Success", "2FA code sent to your email.");
+            SecureRandom random = new SecureRandom(); //Random number generator
+            int code = 100000 + random.nextInt(900000); //Generate a random 6-digit code
+            String generatedCode = String.valueOf(code); //Convert the code to a string
+            authService.send2FACodeEmail(emailToUse, generatedCode); //Send the code via email
+            addInfoMessage("Success", "2FA code sent to your email."); //Show a success message
         } catch (Exception e) {
-            addErrorMessage("Error", "Failed to send 2FA code: " + e.getMessage());
+            addErrorMessage("Error", "Failed to send 2FA code: " + e.getMessage()); //Show an error message
         }
     }
+
+    /**
+     * Delete the user account, makes sure to update all transactions sender/receiver to null
+     * 
+     * @return the navigation outcome string, or null if deletion fails
+     */
+    public String deleteAccount() {
+        try {
+            authService.deleteUserAccount(currentUser, currentPassword); //Delete the user account
+            invalidateSession(); //Invalidate the session
+            return "index?faces-redirect=true"; //Redirect to the index page
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage())); //Show an error message    
+            return null;
+        }
+    }
+
+    /**
+     * Invalidate the session of the current user
+     */
+    private void invalidateSession() {
+        FacesContext context = FacesContext.getCurrentInstance(); //Get the current faces context
+        HttpSession session = (HttpSession) context.getExternalContext().getSession(false); //Get the current session
+        if (session != null) {
+            session.invalidate(); //Invalidate the session
+        }
+    }
+
     /**
      * Getters and Setters
      */
@@ -743,10 +768,7 @@ public class UserBean implements Serializable {
     public void setResetToken(String resetToken) { this.resetToken = resetToken; }
     public String getIban() { return iban; }
     public void setIban(String iban) { this.iban = iban; }
-    public String getLoginMessage() {
-        return loginMessage;
-    }
-    public void clearLoginMessage() {
-        this.loginMessage = null;
-    }
+    public String getLoginMessage() { return loginMessage; }
+    public void setLoginMessage(String loginMessage) { this.loginMessage = loginMessage; }
+    public void clearLoginMessage() { this.loginMessage = null; }
 }

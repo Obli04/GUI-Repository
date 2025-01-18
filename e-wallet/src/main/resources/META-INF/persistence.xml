@@ -9,6 +9,7 @@
         <class>beans.entities.Transaction</class>        
         <class>beans.entities.Budget</class>
         <class>beans.entities.RequestMoney</class>
+        <class>beans.entities.Friends</class>
         <properties>
             <property name="jakarta.persistence.schema-generation.database.action" value="validate"/>
         </properties>
