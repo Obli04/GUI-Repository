@@ -34,7 +34,8 @@ public class WithdrawalBean implements Serializable {
     
     private double amount; // Amount to withdraw
     private String paymentReference; // Add this field
-    
+    private boolean showPaymentDetails; // Add this field
+
     // Transactional method for withdrawing money, returns null if error occurs
     @Transactional
     public String withdraw() {
@@ -85,6 +86,9 @@ public class WithdrawalBean implements Serializable {
             addMessage(FacesMessage.SEVERITY_INFO, "Success", 
                 String.format("Withdrawal of %.2f CZK completed successfully", amount));
             
+            // Set showPaymentDetails to true after successful withdrawal
+            this.showPaymentDetails = true;
+            
             // Don't reset amount or redirect, just return null to stay on page
             return null;
             
@@ -123,9 +127,20 @@ public class WithdrawalBean implements Serializable {
         return paymentReference;
     }
     
-    // Add method to reset the form
+    // Add getter and setter for showPaymentDetails
+    public boolean isShowPaymentDetails() {
+        return showPaymentDetails;
+    }
+    
+    public void setShowPaymentDetails(boolean showPaymentDetails) {
+        this.showPaymentDetails = showPaymentDetails;
+    }
+    
+    // Update resetForm to also reset showPaymentDetails
     public void resetForm() {
         amount = 0;
         paymentReference = null;
+        showPaymentDetails = false;
     }
+    
 }
