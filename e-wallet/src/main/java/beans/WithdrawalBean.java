@@ -2,7 +2,6 @@ package beans;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import beans.entities.Transaction;
 import beans.entities.User;
@@ -24,24 +23,25 @@ import jakarta.transaction.Transactional;
 public class WithdrawalBean implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    // EntityManager for database operations
     @PersistenceContext
     private EntityManager em;
     
-    // UserBean for getting current user
     @Inject
     private UserBean userBean;
     
-    private double amount; // Amount to withdraw
-    private String paymentReference; // Add this field
-    private boolean showPaymentDetails; // Add this field
+    private double amount;
+    private String paymentReference;
+    private boolean showPaymentDetails;
 
-    // Transactional method for withdrawing money, returns null if error occurs
+    /**
+     * Method for withdrawing money, returns null if error occurs
+     * @return null if error occurs
+     * @return String to redirect to dashboard if successful
+    */
     @Transactional
     public String withdraw() {
         User currentUser = userBean.getCurrentUser();
         
-        // Check if the user has set up their IBAN in account page
         try {
             if (currentUser.getIban() == null || currentUser.getIban().trim().isEmpty()) {
                 addMessage(FacesMessage.SEVERITY_ERROR, "No IBAN configured", 
@@ -49,24 +49,18 @@ public class WithdrawalBean implements Serializable {
                 return null;
             }
 
-            // Check if amount entered by the user is greater than 0
             if (amount <= 0) {
                 addMessage(FacesMessage.SEVERITY_ERROR, "Invalid amount", 
                     "Please enter a positive amount");
                 return null;
             }
             
-            // Check the balance of the user to make sure they have enough money to withdraw
             if (currentUser.getBalance() < amount) {
                 addMessage(FacesMessage.SEVERITY_ERROR, "Insufficient funds", 
                     "Your balance is insufficient for this withdrawal");
                 return null;
             }
-            
-            // Generate unique payment reference
-            paymentReference = generatePaymentReference();
-            
-            // Create withdrawal transaction
+
             Transaction withdrawal = new Transaction();
             withdrawal.setReceiver(currentUser);
             withdrawal.setValue(amount);
@@ -74,22 +68,16 @@ public class WithdrawalBean implements Serializable {
             withdrawal.setCategory("Bank Withdrawal - " + currentUser.getIban());
             withdrawal.setTransactionDate(LocalDateTime.now());
             
-            // Update user balance
             currentUser.setBalance(currentUser.getBalance() - amount);
             
-            // Persist changes
             em.persist(withdrawal);
             em.merge(currentUser);
-            
 
-            // Add success message
             addMessage(FacesMessage.SEVERITY_INFO, "Success", 
                 String.format("Withdrawal of %.2f CZK completed successfully", amount));
             
-            // Set showPaymentDetails to true after successful withdrawal
             this.showPaymentDetails = true;
             
-            // Don't reset amount or redirect, just return null to stay on page
             return null;
             
         } catch (Exception e) {
@@ -99,22 +87,17 @@ public class WithdrawalBean implements Serializable {
         }
     }
     
-    // Method for adding messages to the FacesContext
+    /**
+     * Method for adding messages to the FacesContext
+     * @param severity - Severity of the message
+     * @param summary - Summary of the message
+     * @param detail - Detail of the message
+    */
     private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null, 
             new FacesMessage(severity, summary, detail));
     }
     
-    // Add these new methods
-    private String generatePaymentReference() {
-        // Format: WD-YYYYMMDD-RANDOM
-        LocalDateTime now = LocalDateTime.now();
-        String dateStr = now.format(DateTimeFormatter.BASIC_ISO_DATE);
-        String random = String.format("%06d", (int)(Math.random() * 1000000));
-        return "WD-" + dateStr + "-" + random;
-    }
-    
-    // Getters and setters
     public double getAmount() {
         return amount;
     }
@@ -127,20 +110,24 @@ public class WithdrawalBean implements Serializable {
         return paymentReference;
     }
     
-    // Add getter and setter for showPaymentDetails
     public boolean isShowPaymentDetails() {
         return showPaymentDetails;
     }
     
+    /**
+     * Method for setting showPaymentDetails, which is used to show the payment details after a successful withdrawal
+     * @param showPaymentDetails - Boolean to set showPaymentDetails
+    */
     public void setShowPaymentDetails(boolean showPaymentDetails) {
         this.showPaymentDetails = showPaymentDetails;
     }
     
-    // Update resetForm to also reset showPaymentDetails
+    /**
+     * Method for resetting the form
+    */
     public void resetForm() {
         amount = 0;
         paymentReference = null;
         showPaymentDetails = false;
     }
-    
 }
