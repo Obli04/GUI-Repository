@@ -43,25 +43,34 @@
                 </f:facet>
                 <h:form id="personalInfoForm">
                     <div class="form-group">
-                        <p:outputLabel for="firstName" value="First Name" styleClass="field-label"/>
-                        <p:inputText id="firstName" value="#{userBean.firstName}" 
-                                    placeholder="First Name"
-                                    required="true"/>
-                                    
+                        <div class="input-field">
+                            <p:outputLabel for="firstName" value="First Name" styleClass="field-label"/>
+                            <p:inputText id="firstName" value="#{userBean.firstName}" 
+                                        placeholder="First Name"
+                                        required="true"
+                                        style="width: 100%;"/>
+                        </div>
+                        <div class="input-field">
                         <p:outputLabel for="lastName" value="Last Name" styleClass="field-label"/>
-                        <p:inputText id="lastName" value="#{userBean.secondName}" 
-                                    placeholder="Last Name"
-                                    required="true"/>
-                                    
+                            <p:inputText id="lastName" value="#{userBean.secondName}" 
+                                        placeholder="Last Name"
+                                        required="true"
+                                        style="width: 100%;" />
+                        </div>
+                        <div class="input-field">
                         <p:outputLabel for="email" value="Email" styleClass="field-label"/>
-                        <p:inputText id="email" value="#{userBean.email}" 
-                                    placeholder="Email"
-                                    required="true"/>
-                                    
+                            <p:inputText id="email" value="#{userBean.email}" 
+                                        placeholder="Email"
+                                        required="true"
+                                        style="width: 100%;"/>
+                        </div>
+                        <div class="input-field">
                         <p:outputLabel for="iban" value="IBAN" styleClass="field-label"/>
                         <p:inputText id="iban" value="#{userBean.iban}" 
-                                    placeholder="IBAN"
-                                    required="true"/>
+                                        placeholder="IBAN"
+                                        required="true"
+                                        style="width: 100%;"/>
+                        </div>
                         <p:commandButton value="Update Profile"
                                        action="#{userBean.updateProfile}"
                                        update=":personalInfoForm :growl"
@@ -76,29 +85,33 @@
                 </f:facet>
                 <h:form id="passwordForm">
                     <div class="form-group">
-                        <p:outputLabel for="currentPw" value="Current Password" styleClass="field-label"/>
-                        <p:password id="currentPw" value="#{userBean.currentPassword}"
-                                   placeholder="Current Password"
-                                   required="true"
-                                   toggleMask="true"
-                                   feedback="false"
-                                   styleClass="full-width"/>
-                                   
-                        <p:outputLabel for="newPw" value="New Password" styleClass="field-label"/>
-                        <p:password id="newPw" value="#{userBean.newPassword}"
-                                   placeholder="New Password"
-                                   required="true"
-                                   toggleMask="true"
-                                   feedback="false"
-                                   styleClass="full-width"/>
-                                   
-                        <p:outputLabel for="confirmPw" value="Confirm New Password" styleClass="field-label"/>
-                        <p:password id="confirmPw" value="#{userBean.confirmPassword}"
-                                   placeholder="Confirm New Password"
-                                   required="true"
-                                   toggleMask="true"
-                                   feedback="false"
-                                   styleClass="full-width"/>
+                        <div class="input-field">
+                            <p:outputLabel for="currentPw" value="Current Password" styleClass="field-label"/>
+                            <p:password id="currentPw" value="#{userBean.currentPassword}"
+                                        placeholder="Current Password"
+                                        required="true"
+                                        toggleMask="true"
+                                        feedback="false"
+                                        styleClass="form-input"/>
+                        </div>
+                        <div class="input-field">
+                            <p:outputLabel for="newPw" value="New Password" styleClass="field-label"/>
+                            <p:password id="newPw" value="#{userBean.newPassword}"
+                                        placeholder="New Password"
+                                        required="true"
+                                        toggleMask="true"
+                                        feedback="false"
+                                        styleClass="form-input"/>
+                        </div>
+                        <div class="input-field">
+                            <p:outputLabel for="confirmPw" value="Confirm New Password" styleClass="field-label"/>
+                            <p:password id="confirmPw" value="#{userBean.confirmPassword}"
+                                        placeholder="Confirm New Password"
+                                        required="true"
+                                        toggleMask="true"
+                                        feedback="false"
+                                        styleClass="form-input"/>
+                        </div>
                         <p:commandButton value="Change Password"
                                        action="#{userBean.changePassword}"
                                        update=":passwordForm :growl"
