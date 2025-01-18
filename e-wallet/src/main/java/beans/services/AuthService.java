@@ -462,12 +462,10 @@ public class AuthService {
        boolean isUnique; //Boolean to check if the variable symbol is unique    
 
        do {
-           // Generate a random number and format it to be 10 characters long
            long randomNumber = (long) (Math.random() * 1_000_000_000L); //Generate a random number
            variableSymbol = String.format("%010d", randomNumber); //Format the number to be 10 characters long
 
-           // Check if the generated symbol already exists in the database
-           isUnique = em.createQuery("SELECT COUNT(u) FROM User u WHERE u.variableSymbol = :variableSymbol", Long.class)
+           isUnique = em.createQuery("SELECT COUNT(u) FROM User u WHERE u.variableSymbol = :variableSymbol", Long.class) //Check if the variable symbol is unique
                         .setParameter("variableSymbol", variableSymbol)
                         .getSingleResult() == 0; //Check if the variable symbol is unique
        } while (!isUnique); //If the variable symbol is not unique, generate a new one
@@ -489,6 +487,37 @@ public class AuthService {
                     .getSingleResult(); //Return the balance
        } catch (Exception e) {
            return 0.0; //If no balance is found return 0.0
+       }
+   }
+
+   /**
+    * Deletes a user account and all associated data
+    * @param user The user to delete
+    * @param password The user's password for confirmation
+    * @throws Exception if deletion fails or password is incorrect
+    */
+   @Transactional
+   public void deleteUserAccount(User user, String password) throws Exception {
+       if (!BCrypt.checkpw(password, user.getPassword())) { //If the password is incorrect throw an exception
+           throw new SecurityException("Incorrect password");
+       }
+       if(user.getBalance() != 0) { //If the user has a balance throw an exception
+           throw new Exception("Your balance must be 0 to delete the account");
+       }
+
+       try {
+           em.createQuery("UPDATE Transaction t SET t.sender = NULL WHERE t.sender.id = :userId") //Update transactions to set sender to null where user is sender
+             .setParameter("userId", user.getId())
+             .executeUpdate();
+           em.createQuery("UPDATE Transaction t SET t.receiver = NULL WHERE t.receiver.id = :userId") //Update transactions to set receiver to null where user is receiver  
+             .setParameter("userId", user.getId())
+             .executeUpdate();
+        
+           User managedUser = em.merge(user); //Merge the changes with the user
+           em.remove(managedUser); //Remove the user
+           em.flush(); //Execute changes
+       } catch (Exception e) {
+           throw new Exception("Failed to delete account: " + e.getMessage()); //If failed to delete account throw an exception
        }
    }
 }

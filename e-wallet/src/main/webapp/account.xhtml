@@ -16,7 +16,7 @@
     <h:form id="navForm">
         <ui:include src="navbar.xhtml"/>
     </h:form>
-    <p:growl id="growl" showDetail="true" sticky="true" position="bottom-right">
+    <p:growl id="growl" showDetail="true" sticky="true" position="top-right">
         <p:autoUpdate />
     </p:growl>
 
@@ -24,6 +24,15 @@
         <div class="user-info-card">
             <div class="user-welcome">
                 <h1>Account Settings</h1>
+            </div>
+            <div class="delete-account-section">
+                <h:form>
+                    <p:commandLink styleClass="delete-account-label" 
+                                  onclick="PF('deleteAccountDialog').show(); return false;">
+                        <i class="pi pi-trash delete-account-icon"></i>
+                        <span>Delete Account</span>
+                    </p:commandLink>
+                </h:form>
             </div>
         </div>
 
@@ -163,6 +172,55 @@
                 </h:form>
             </p:card>
         </div>
+
+        <!-- First Confirmation Dialog -->
+        <p:dialog header="Delete Account Confirmation" 
+                  widgetVar="deleteAccountDialog" 
+                  modal="true" 
+                  responsive="true"
+                  styleClass="delete-dialog">
+            <h:form>
+                <div class="form-group">
+                    <p class="delete-warning">Are you sure you want to delete your account?</p>
+                    <ul class="delete-warning-list">
+                        <li>All your data will be permanently deleted</li>
+                        <li>This action cannot be undone</li>
+                        <li>Your balance must be 0 to delete the account</li>
+                    </ul>
+                    <p:commandButton value="Proceed" 
+                                   onclick="PF('deleteAccountDialog').hide(); PF('finalDeleteDialog').show();"
+                                   styleClass="p-button-danger"/>
+                    <p:commandButton value="Cancel" 
+                                   onclick="PF('deleteAccountDialog').hide();"
+                                   styleClass="p-button-secondary"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <!-- Final Confirmation Dialog -->
+        <p:dialog header="Final Confirmation" 
+                  widgetVar="finalDeleteDialog" 
+                  modal="true" 
+                  responsive="true"
+                  styleClass="delete-dialog">
+            <h:form>
+                <div class="form-group">
+                    <p class="delete-warning">Please enter your password to confirm account deletion</p>
+                    <p:password id="deletePassword" 
+                               value="#{userBean.currentPassword}"
+                               required="true"
+                               placeholder="Enter your password"/>
+                    <p:commandButton value="Permanently Delete Account" 
+                                   action="#{userBean.deleteAccount}"
+                                   update="@form :growl"
+                                   styleClass="p-button-danger"
+                                   onclick="PF('finalDeleteDialog').hide();"/>
+                    <p:commandButton value="Cancel" 
+                                   onclick="PF('finalDeleteDialog').hide();"
+                                   styleClass="p-button-secondary"/>
+                </div>
+            </h:form>
+        </p:dialog>
     </div>
 </h:body>
 </html>

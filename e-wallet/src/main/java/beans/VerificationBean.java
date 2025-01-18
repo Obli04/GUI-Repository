@@ -59,4 +59,8 @@ public class VerificationBean {
     private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, detail)); //Add a message to the JSF context
     }
+    
+    //Getter and setter for the token
+    public String getToken() { return token; }
+    public void setToken(String token) { this.token = token; }
 }
