@@ -16,53 +16,44 @@
         <ui:include src="navbar.xhtml"/>
     </h:form>
 
-    <div class="content" style="margin-top: 80px;">
-        <h1 style="color: black;">Send Money</h1>
+    <div class="content" style="margin-top: 120px;">
+        <h1>Send Money</h1>
+        
         <p:card styleClass="container">
-            <div class="balance-header">
-                <span>Current Balance</span>
-                <h:outputText value="#{userBean.currentUser.balance}" styleClass="balance-text">
-                    <f:convertNumber type="currency" currencySymbol="Kč"/>
-                </h:outputText>
-            </div>
-
-            <div class="send-info">
-                <h:form>
-                    <p:panelGrid columns="1" styleClass="ui-noborder">
-                        <p:outputLabel for="recipient" value="Recipient account - email or variable symbol:"/>
-                        <p:inputText id="recipient" 
-                                   value="#{sendBean.recipientIdentifier}"
-                                   required="true"
-                                   styleClass="send-input"
-                                   requiredMessage="Please enter recipient's email or variable symbol"/>
-                        
-                        <p:outputLabel for="amount" value="Amount to send:"/>
-                        <p:inputNumber id="amount" 
-                                     value="#{sendBean.amount}"
-                                     required="true"
-                                     minValue="0.01"
-                                     decimalPlaces="2"
-                                     symbol=" Kč"
-                                     styleClass="send-input"
-                                     symbolPosition="s"
-                                     validatorMessage="Amount must be greater than 0 CZK"/>
-                    </p:panelGrid>
-                        
-                    <div class="button-container">
-                        <p:commandButton value="Send"
-                                       action="#{sendBean.sendMoney}"
-                                       styleClass="p-button-success"
-                                       update="@form"/>
-                        <p:button value="Cancel"
-                                 outcome="dashboard"
-                                 styleClass="p-button-secondary"/>
-                    </div>
+            <h:form>
+                <p:panelGrid columns="1" styleClass="ui-noborder">
+                    <p:outputLabel for="recipient" value="Recipient Email or Variable Symbol"/>
+                    <p:inputText id="recipient" 
+                               value="#{sendBean.recipientIdentifier}"
+                               required="true"
+                               requiredMessage="Please enter recipient's email or variable symbol"
+                               placeholder="Enter email or variable symbol"/>
                     
-                    <p:messages id="messages" showDetail="true" closable="true">
-                        <p:autoUpdate />
-                    </p:messages>
-                </h:form>
-            </div>
+                    <p:outputLabel for="amount" value="Amount"/>
+                    <p:inputNumber id="amount" 
+                                 value="#{sendBean.amount}"
+                                 required="true"
+                                 minValue="0.01"
+                                 decimalPlaces="2"
+                                 symbol=" CZK"
+                                 symbolPosition="s"
+                                 placeholder="Enter amount"/>
+                </p:panelGrid>
+                
+                <div class="button-container">
+                    <p:button value="Cancel"
+                             outcome="dashboard"
+                             styleClass="p-button-secondary"/>
+                    <p:commandButton value="Send Money"
+                                   action="#{sendBean.sendMoney}"
+                                   styleClass="p-button-success"
+                                   update="@form"/>
+                </div>
+                
+                <p:messages id="messages" showDetail="true" closable="true">
+                    <p:autoUpdate />
+                </p:messages>
+            </h:form>
         </p:card>
     </div>
 </h:body>
