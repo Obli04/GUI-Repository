@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.primefaces.PrimeFaces;
+
 import beans.entities.RequestMoney;
 import beans.entities.Transaction;
 import beans.entities.User;
@@ -36,6 +38,9 @@ public class RequestBean implements Serializable {
 
     @Inject
     private EmailService emailService;
+    
+    @Inject
+    private BudgetBean budgetBean;
     
     // Form fields for money request
     private String recipientIdentifier; // Can be email or variable symbol
@@ -226,44 +231,106 @@ public class RequestBean implements Serializable {
             
             // Validate request ownership
             if (managedRequest == null || !managedRequest.getReceiver().getId().equals(receiver.getId())) {
-                addGrowlMessage(FacesMessage.SEVERITY_ERROR, "Error", "Invalid request");
+                addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Invalid request");
                 return;
             }
             
             // Check sufficient balance
             if (receiver.getBalance() < managedRequest.getValue()) {
-                addGrowlMessage(FacesMessage.SEVERITY_ERROR, "Insufficient funds", 
+                addMessage(FacesMessage.SEVERITY_ERROR, "Insufficient funds", 
                     "You don't have enough balance to accept this request");
                 return;
             }
+
+            // Check if accepting the request would exceed budget limits
+            // Check budget status
+            double remainingBudget = budgetBean.getRemainingBudget(receiver.getId());
+            double requestAmount = managedRequest.getValue();
             
-            // Create transaction record
-            Transaction transaction = new Transaction();
-            transaction.setSender(receiver);
-            transaction.setReceiver(managedRequest.getSender());
-            transaction.setValue(managedRequest.getValue());
-            transaction.setType("Transfer");
-            transaction.setCategory("Money Request");
-            transaction.setTransactionDate(LocalDateTime.now());
+            // If budget is already exceeded or would be exceeded by this request, show warning
+            if (remainingBudget < 0 || (remainingBudget - requestAmount) < 0) {
+                // Store the request in view scope to access it later if user confirms
+                FacesContext.getCurrentInstance().getViewRoot().getViewMap().put("pendingRequest", managedRequest);
+                // Display the warning dialog using PrimeFaces
+                PrimeFaces.current().executeScript("PF('budgetWarningDialog').show()");
+                return;
+            }
+
+            // If budget check passes, process the request normally
+            processAcceptedRequest(managedRequest);
             
-            // Update balances for both users
-            receiver.setBalance(receiver.getBalance() - managedRequest.getValue());
-            managedRequest.getSender().setBalance(
-                managedRequest.getSender().getBalance() + managedRequest.getValue()
-            );
-            
-            // Persist all changes
-            em.persist(transaction);
-            em.merge(receiver);
-            em.merge(managedRequest.getSender());
-            em.remove(managedRequest);
-            
-            addGrowlMessage(FacesMessage.SEVERITY_INFO, "Success", "Request accepted and payment sent");
-            FacesContext.getCurrentInstance().getExternalContext().redirect("dashboard.xhtml");
-            
-        } catch (IOException e) {
-            addGrowlMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to process request");
+        } catch (Exception e) {
+            addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to process request");
         }
+    }
+    
+    /**
+     * Processes the request after user confirms to proceed despite budget warning.
+     * This method is called when user clicks "Proceed" in the budget warning dialog.
+     * It retrieves the stored request from view scope and processes it even though
+     * it exceeds the budget.
+     */
+    @Transactional
+    public void confirmAcceptRequest() {
+        try {
+            // Retrieve the pending request from view scope that was stored when showing warning
+            RequestMoney managedRequest = (RequestMoney) FacesContext.getCurrentInstance()
+                .getViewRoot().getViewMap().get("pendingRequest");
+                
+            if (managedRequest != null) {
+                // Refetch the request from database to ensure we have fresh data
+                managedRequest = em.find(RequestMoney.class, managedRequest.getId());
+                // Verify request still exists
+                if (managedRequest == null) {
+                    addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Request no longer exists");
+                    return;
+                }
+                processAcceptedRequest(managedRequest);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to process request");
+        }
+    }
+    
+    /**
+     * Helper method to process the accepted request.
+     * This method handles the actual processing of money requests, including:
+     * - Creating transaction records
+     * - Updating user balances
+     * - Removing the processed request
+     * 
+     * @param managedRequest The request to process, must be a managed entity
+     * @throws IOException If redirect after processing fails
+     */
+    @Transactional
+    private void processAcceptedRequest(RequestMoney managedRequest) throws IOException {
+        User receiver = userBean.getCurrentUser();
+        // Ensure entities are managed by the persistence context
+        receiver = em.merge(receiver);
+        User sender = em.merge(managedRequest.getSender());
+        
+        // Set up the transaction record
+        Transaction transaction = new Transaction();
+        transaction.setSender(receiver);
+        transaction.setReceiver(sender);
+        transaction.setValue(managedRequest.getValue());
+        transaction.setType("Transfer");
+        transaction.setCategory("Money Request");
+        transaction.setTransactionDate(LocalDateTime.now());
+        
+        // Update the balances of both users
+        receiver.setBalance(receiver.getBalance() - managedRequest.getValue());
+        sender.setBalance(sender.getBalance() + managedRequest.getValue());
+        
+        // Persist changes to database
+        em.persist(transaction);
+        em.remove(managedRequest);
+        // Force immediate write to database
+        em.flush();
+        
+        addMessage(FacesMessage.SEVERITY_INFO, "Success", "Request accepted and payment sent");
+        FacesContext.getCurrentInstance().getExternalContext().redirect("dashboard.xhtml");
     }
     
     /**
@@ -330,4 +397,8 @@ public class RequestBean implements Serializable {
     
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    
+    private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
+        addGrowlMessage(severity, summary, detail);
+    }
 } 
