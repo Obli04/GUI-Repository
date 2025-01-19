@@ -247,8 +247,8 @@ public class RequestBean implements Serializable {
             double remainingBudget = budgetBean.getRemainingBudget(receiver.getId());
             double requestAmount = managedRequest.getValue();
             
-            // If budget is already exceeded or would be exceeded by this request, show warning
-            if (remainingBudget < 0 || (remainingBudget - requestAmount) < 0) {
+            // If budget has been setted and already exceeded or would be exceeded by this request, show warning
+            if (receiver.getBudget()>0 && (remainingBudget < 0 || (remainingBudget - requestAmount) < 0)) {
                 // Store the request in view scope to access it later if user confirms
                 FacesContext.getCurrentInstance().getViewRoot().getViewMap().put("pendingRequest", managedRequest);
                 // Display the warning dialog using PrimeFaces
