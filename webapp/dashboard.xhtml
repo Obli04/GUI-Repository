@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>Dashboard - CashHive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/favicon.ico"/>
+    <h:outputStylesheet library="styles" name="dashboard.css"/>
+    <h:outputStylesheet library="styles" name="transaction.css"/>
+    <h:outputStylesheet library="styles" name="transfer.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</h:head>
+<h:body>
+    <f:metadata>
+        <!-- <f:event type="preRenderView" listener="#{userBean.refreshUserData}"/> -->
+        <f:event type="preRenderView" listener="#{userBean.refreshBalance}"/>
+    </f:metadata>
+    <h:form>
+        <f:websocket channel="payment" onmessage="handlePayment" />
+        <ui:include src="navbar.xhtml"/>
+    </h:form>
+
+    <div class="content" style="margin-top: 150px">
+        <p:growl id="growl" showDetail="true" sticky="true" position="bottom-right">
+            <p:autoUpdate />
+        </p:growl>
+        <h1>Hello, <span class="user-full-name">#{userBean.firstName} #{userBean.secondName}</span></h1>
+        <p>Email: #{userBean.email}</p>
+
+
+        <div class="financial-cards-container">
+            <div class="financial-card balance">
+                <div class="financial-card-header">
+                    <i class="financial-card-icon pi pi-wallet"></i>
+                    <h3 class="financial-card-title">Balance</h3>
+                </div>
+                <div class="financial-card-amount">#{userBean.currentUser.balance} CZK</div>
+            </div>
+            
+            <div class="financial-card budget">
+                <div class="financial-card-header">
+                    <i class="financial-card-icon pi pi-chart-bar"></i>
+                    <h3 class="financial-card-title">Budget</h3>
+                </div>
+                <div class="financial-card-amount">#{userBean.currentUser.budget} CZK</div>
+            </div>
+            
+            <div class="financial-card piggy">
+                <div class="financial-card-header">
+                    <i class="financial-card-icon pi pi-money-bill"></i>
+                    <h3 class="financial-card-title">Piggy Bank</h3>
+                </div>
+                <div class="financial-card-amount">#{userBean.currentUser.piggyBank} CZK</div>
+            </div>
+        </div>
+
+        <div class="transfer-options">
+            <h:link outcome="send" styleClass="transfer-card send-money">
+                <div class="card-content">
+                    <i class="pi pi-send"></i>
+                    <h2>Send Money</h2>
+                    <p>Transfer money to another CashHive user</p>
+                </div>
+            </h:link>
+
+            <h:link outcome="request" styleClass="transfer-card request-money">
+                <div class="card-content">
+                    <i class="pi pi-dollar"></i>
+                    <h2>Request Money</h2>
+                    <p>Request money from another CashHive user</p>
+                </div>
+            </h:link>
+        </div>
+
+        <div class="money-requests-section">
+            <p:panel id="allRequests" header="Money Requests" styleClass="request-panel" 
+                     rendered="#{not empty requestBean.receivedRequests or not empty requestBean.sentRequests}">
+                <p:dataTable value="#{requestBean.allRequests}" var="moneyRequest"
+                             styleClass="request-table" paginator="false">
+                    <p:column headerText="Type">
+                        <h:outputText value="#{moneyRequest.receiver.id eq userBean.currentUser.id ? 'Received' : 'Sent'}" 
+                                    styleClass="#{moneyRequest.receiver.id eq userBean.currentUser.id ? 'received-request' : 'sent-request'}"/>
+                    </p:column>
+                    
+                    <p:column headerText="From/To">
+                        <h:outputText value="#{moneyRequest.receiver.id eq userBean.currentUser.id ? moneyRequest.sender.email : moneyRequest.receiver.email}" />
+                    </p:column>
+                    
+                    <p:column headerText="Amount">
+                        <h:outputText value="#{moneyRequest.value}">
+                            <f:convertNumber type="currency" currencySymbol="Kč"/>
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="Description">
+                        <h:outputText value="#{moneyRequest.description}" />
+                    </p:column>
+                    
+                    <p:column headerText="Actions" styleClass="action-column">
+                        <h:form>
+                            <h:panelGroup rendered="#{moneyRequest.receiver.id eq userBean.currentUser.id}">
+                                <p:commandButton value="Accept" 
+                                               action="#{requestBean.acceptRequest(moneyRequest)}"
+                                               styleClass="p-button-success"
+                                               update="@form :growl"/>
+                                
+                                <p:commandButton value="Decline"
+                                               action="#{requestBean.declineRequest(moneyRequest)}"
+                                               styleClass="p-button-danger"
+                                               update="@form :growl"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{moneyRequest.sender.id eq userBean.currentUser.id}">
+                                <p:commandButton value="Delete" 
+                                               action="#{requestBean.deleteRequest(moneyRequest)}"
+                                               styleClass="p-button-danger"
+                                               oncomplete="window.location.reload()"/>
+                            </h:panelGroup>
+                        </h:form>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+            <p:dialog header="Budget Warning" widgetVar="budgetWarningDialog" modal="true" 
+                      showEffect="fade" hideEffect="fade" responsive="true">
+                <h:form>
+                    <div class="p-d-flex p-flex-column">
+                        <div style="margin-bottom: 20px;">
+                            <p style="color: #e74c3c; font-weight: bold; margin-bottom: 10px;">
+                                <i class="pi pi-exclamation-triangle" style="margin-right: 8px;"></i>
+                                Warning: This transaction will exceed your monthly budget!
+                            </p>
+                            <p>Do you want to proceed with the payment anyway?</p>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                            <p:commandButton value="Back" onclick="PF('budgetWarningDialog').hide()" 
+                                           styleClass="ui-button-secondary"/>
+                            <p:commandButton value="Proceed" action="#{requestBean.confirmAcceptRequest}"
+                                           oncomplete="PF('budgetWarningDialog').hide()" 
+                                           update="@all"
+                                           styleClass="ui-button-warning"/>
+                        </div>
+                    </div>
+                </h:form>
+            </p:dialog>
+        </div>
+
+        <!-- Mini Transaction table -->
+        <div class="transactions-card">
+            <h3 style="color: #2c3e50 !important;">Recent Transactions</h3>
+            <p:dataTable id="transactionsTable"
+                        value="#{transactionBean.getUserTransactions(userBean.currentUser.id)}"
+                        var="transaction"
+                        styleClass="transaction-table"
+                        rows="5"
+                        paginator="false">
+                <p:column headerText="Date">
+                    <h:outputText value="#{transaction.transactionDate}" styleClass="transaction-date">
+                        <f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm:ss" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Type">
+                    <h:outputText value="#{transaction.type}" 
+                                  styleClass="transaction-type type-#{transaction.type eq 'Transfer' ? (userBean.currentUser.id eq transaction.sender.id ? 'send' : 'receive') : transaction.type.toLowerCase()}" />
+                </p:column>
+                <p:column headerText="Amount">
+                    <h:outputText value="#{transaction.value}" 
+                                  styleClass="#{transaction.type eq 'Withdraw' ? 'negative-amount' : 
+                                                transaction.type eq 'Deposit' ? 'positive-amount' : 
+                                                transaction.type eq 'Transfer' ? 
+                                                (userBean.currentUser.id eq transaction.sender.id ? 'negative-amount' : 'positive-amount') : 'negative-amount'}">
+                        <f:convertNumber type="currency" currencySymbol="Kč"/>
+                    </h:outputText>
+                </p:column>
+            </p:dataTable>
+            <p:link outcome="transactions" value="View All Transactions" 
+                    style="display: block; text-align: right; margin-top: 1rem;"/>
+        </div>
+    </div>
+</h:body>
+</html>

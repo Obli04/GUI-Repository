@@ -1,0 +1,634 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-image: url('../resources/images/bg.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    min-height: 100vh;  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    margin-top: 60px;
+}
+
+.p-card {
+    background: rgba(255, 255, 255, 1) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(10px);
+    padding: 2rem !important;
+    width: 650px !important;
+    max-width: 90vw !important;
+}
+
+.register-card {
+    width: 700px !important;
+    padding: 2rem !important;
+    border-radius: 30px !important;
+    background: rgba(255, 255, 255, 1) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(10px);
+}
+
+.login-card {
+    width: 450px !important;
+    padding: 2rem !important;
+}
+
+h1 {
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.p-fluid .p-field {
+    margin-bottom: 1rem !important;
+}
+
+.p-panelgrid {
+    width: 100% !important;
+}
+
+.p-password {
+    width: 100% !important;
+    display: block !important;
+    margin-bottom: 1rem !important;
+    position: relative;
+}
+
+.p-password input {
+    width: 100% !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #000000 !important;
+}
+
+.p-password .ui-icon {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #999999 !important;
+}
+
+.p-password .ui-icon:hover {
+    color: #ff9800 !important;
+}
+
+.p-inputtext:focus,
+.p-password input:focus {
+    width: 100% !important;
+    border-color: #ff9800 !important;
+    box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2) !important;
+}
+
+small {
+    color: #636e72;
+    font-size: 0.85rem;
+    display: block;
+    margin: 0.25rem 0 1rem 0 !important;
+}
+
+.submit-button {
+    background: linear-gradient(135deg, #ff9800, #ff5722) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 1rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    transition: all 0.3s ease !important;
+    width: 100% !important;
+    margin: 1rem 0 !important;
+    color: #ffffff !important;
+}
+
+.submit-button:hover {
+    background: linear-gradient(135deg, #ff5722, #ff9800) !important;
+    transform: translateY(-2px);
+}
+
+.submit-button.small-button {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.85rem !important;
+}
+
+.p-link {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    color: #ff9800 !important;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.p-link:hover {
+    color: #ff5722 !important;
+    text-decoration: underline;
+}
+
+.p-messages {
+    margin: 0.5rem 0 !important;
+    border-radius: 12px !important;
+}
+
+.p-password-meter {
+    margin-top: 0.25rem !important;
+    background: #e9ecef !important;
+    height: 4px !important;
+    border-radius: 2px !important;
+}
+
+@media (max-width: 480px) {
+    .p-card,
+    .register-card,
+    .login-card {
+        width: 90vw !important;
+        padding: 1.5rem !important;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100% !important;
+}
+
+.form-input,
+.form-input input,
+.p-password,
+.p-password input {
+    width: 100% !important;
+    display: block !important;
+}
+
+.form-input input,
+.p-password input {
+    width: 100% !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #000000 !important;
+}
+
+.p-password {
+    width: 100% !important;
+    display: block !important;
+}
+
+.password-hint {
+    margin: 0.25rem 0 0.5rem 0 !important;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.links-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.login-card {
+    width: 450px !important;
+    max-width: 90vw !important;
+    background: rgba(255, 255, 255, 1) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(10px);
+    padding: 2rem !important;
+}
+
+.register-card {
+    width: 100% !important;
+    padding: 1.5rem !important;
+}
+
+.p-messages {
+    margin: 0.5rem 0 !important;
+}
+
+.submit-button {
+    margin: 0.5rem 0 !important;
+    width: 100% !important;
+}
+
+.p-password-meter {
+    margin: 0.25rem 0 !important;
+}
+
+@media (max-width: 480px) {
+    .login-card,
+    .register-card {
+        width: 90vw !important;
+        padding: 1rem !important;
+    }
+}
+
+.header {
+    background-color: rgba(0, 0, 0, 0.85);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-container img {
+    height: 40px;
+    width: auto;
+    transition: transform 0.3s ease;
+}
+
+.logo-container:hover img {
+    transform: scale(1.05);
+}
+
+.auth-buttons {
+    display: flex;
+    margin-right: 1rem;
+}
+
+.auth-button {
+    color: white;
+    text-decoration: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    margin: 0 0.5rem; /* Add horizontal margin */
+}
+
+.login-btn {
+    background-color: transparent;
+    border: 2px solid #ff9800;
+}
+
+.login-btn:hover {
+    background-color: rgba(255, 152, 0, 0.1);
+    color: #ff9800;
+}
+
+.register-btn {
+    background-color: #ff9800;
+}
+
+.register-btn:hover {
+    background-color: #e68900;
+    transform: translateY(-2px);
+}
+
+.two-factor-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+}
+
+.two-factor-container h2 {
+    color: #2d3436;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.two-factor-container p {
+    color: #636e72;
+    margin-bottom: 1rem;
+}
+
+.back-link {
+    color: #00b894;
+    text-decoration: none;
+    margin-top: 1rem;
+    cursor: pointer;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.p-card h1,
+.p-card p,
+.p-card small {
+    color: #000000 !important;
+}
+
+.p-password input {
+    width: 100% !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #000000 !important;
+}
+.submit-button {
+    color: #ffffff !important;
+}
+
+.field-label {
+    display: block !important;
+    color: #000000 !important;
+    margin: 0 0 0.25rem 0 !important;
+    padding: 0 !important;
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+}
+
+.verification-card {
+    background: rgba(255, 255, 255, 1) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(10px);
+    padding: 2rem !important;
+    width: 450px !important;
+    max-width: 90vw !important;
+}
+
+.verification-title {
+    color: #000000 !important;
+    margin-bottom: 1.5rem !important;
+    font-size: 1.8rem !important;
+}
+
+.verification-content {
+    text-align: center;
+}
+
+.verification-actions {
+    margin-top: 1.5rem;
+}
+
+/* Specific login form styles */
+.login-form {
+    width: 100% !important;
+}
+
+.login-form .form-container {
+    width: 100%;
+}
+.back-button {
+    background: #e9ecef !important;
+    color: #495057 !important;
+    border: none !important;
+    margin-top: 0.5rem !important;
+    padding: 1rem !important;
+    border-radius: 12px !important;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease !important;
+}
+
+.back-button:hover {
+    background: #dee2e6 !important;
+    transform: translateY(-2px);
+}
+
+/* Ensure consistent width for both normal and 2FA states */
+.p-outputpanel {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+/* Consistent input styling for all states */
+.form-input,
+.p-inputtext,
+.p-password {
+    width: 100% !important;
+    display: block !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Input field styling */
+.form-input input,
+.p-inputtext,
+.p-password input {
+    width: 100% !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #000000 !important;
+}
+
+/* Output panel styling for 2FA state */
+.p-outputpanel {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+}
+/* Consistent button spacing */
+.submit-button,
+.back-button {
+    margin: 1rem 0 !important;
+    width: 100% !important;
+}
+
+/* Output panel full width */
+.p-outputpanel {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+}
+
+/* Button styling */
+.submit-button,
+.back-button {
+    width: 100% !important;
+    margin: 1rem 0 !important;
+}
+
+/* Links container */
+.links-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+/* Login form specific */
+.login-form {
+    width: 100% !important;
+}
+
+/* Force full width on all direct children of form container */
+.form-container > * {
+    width: 100% !important;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.input-field {
+    width: 100% !important;
+    display: block !important;
+    position: relative !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.input-field .ui-password,
+.input-field .ui-inputwrapper {
+    width: 100% !important;
+    position: relative !important;
+}
+
+.input-field .ui-password input,
+.input-field .ui-inputwrapper input {
+    width: 100% !important;
+    display: block !important;
+    padding: 0.75rem 1rem !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #000000 !important;
+}
+
+.input-field .ui-password-icon {
+    position: absolute !important;
+    right: 0.75rem !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    cursor: pointer !important;
+}
+
+.p-fluid .p-inputtext {
+    margin: 0 0 0.5rem 0 !important;
+}
+
+/* Target panelGrid and its cells */
+.p-panelgrid .p-panelgrid-cell {
+    padding: 0.5rem 0 !important;
+    margin: 0 !important;
+}
+
+/* Adjust input spacing */
+.p-fluid .p-inputtext {
+    margin: 0 0 0.5rem 0 !important;
+}
+
+/* Make form more compact */
+.p-card .p-card-content {
+    padding: 1rem !important;
+    width: 100% !important;
+}
+
+/* Adjust form container spacing */
+.p-fluid .p-panelgrid .p-panelgrid-content {
+    padding: 0 !important;
+}
+
+/* Form should take full width */
+.p-card form {
+    width: 100% !important;
+}
+
+/* Ensure the input takes full width */
+.input-field .p-inputtext {
+    width: 100% !important;
+    display: block !important;
+}
+
+.register-form .form-container {
+    width: 100% !important;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.register-form .row {
+    display: flex;
+    gap: 1rem;
+}
+
+.register-form .input-field {
+    flex: 1;
+}
+
+/* Ensure the input takes full width */
+.input-field .p-inputtext,
+.input-field .p-password {
+    width: 100% !important;
+    display: block !important;
+}
+
+/* Update input field styles */
+.register-form .input-field .p-inputtext,
+.register-form .input-field .p-password {
+    width: 100% !important;
+    padding: 1rem !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #000000 !important;
+}
+
+.message-panel {
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border-radius: 0.25rem;
+}
+
+.error-message a {
+    color: #721c24;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.error-message a:hover {
+    color: #491217;
+}
+
+.login-message {
+    display: block;
+    margin-bottom: 1rem;
+}

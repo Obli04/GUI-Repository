@@ -1,0 +1,189 @@
+/* Transaction Table Container */
+.transaction-table {
+    width: 100%;
+    margin-left: 40px;
+    margin-right: 40px;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 2rem 0;
+    overflow: hidden;
+    font-size: 1.1rem;
+}
+
+/* Header Styling */
+.transaction-table .ui-datatable-header {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border: none;
+}
+
+/* Column Headers */
+.transaction-table th {
+    background: #f8f9fa !important;
+    color: #2c3e50 !important;
+    font-weight: 600 !important;
+    padding: 1.2rem 1.5rem !important;
+    border: none !important;
+    text-transform: uppercase;
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
+    text-align: center !important;
+}
+
+/* Table Cells */
+.transaction-table td {
+    padding: 1.2rem 1.5rem !important;
+    border: none !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+    color: #4a4a4a;
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+/* Row Hover Effect */
+.transaction-table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.transaction-table tbody tr:hover {
+    background: #f8f9fa !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Amount Styling */
+.positive-amount {
+    color: #2ecc71 !important;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.negative-amount {
+    color: #e74c3c !important;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* Pagination Styling */
+.transaction-table .ui-paginator {
+    background: #f8f9fa;
+    border: none;
+    padding: 1rem;
+    font-size: 1rem;
+}
+
+.transaction-table .ui-paginator-page {
+    border-radius: 4px !important;
+    margin: 0 2px;
+    transition: all 0.2s ease;
+}
+
+.transaction-table .ui-paginator-page.ui-state-active {
+    background: #3498db !important;
+    color: white !important;
+}
+
+/* Type Column Badges */
+.transaction-type {
+    padding: 0.6rem 1rem;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    display: inline-block;
+    min-width: 100px;
+}
+
+.type-send { 
+    background: #fff3e0; 
+    color: #f57c00; 
+}
+.type-receive { 
+    background: #e8f5e9; 
+    color: #2e7d32;
+}
+.type-withdraw { 
+    background: #ffebee; 
+    color: #c62828; 
+}
+.type-declined {
+    background: #ffebee; 
+    color: #c62828; 
+}
+.type-deposit { 
+    background: #e3f2fd; 
+    color: #1565c0; 
+}
+
+/* Date Column */
+.transaction-date {
+    color: #666;
+    font-size: 1rem;
+}
+
+/* Category Column */
+.transaction-category {
+    color: #495057;
+    font-size: 1rem;
+    padding: 0.4rem 0.8rem;
+    display: inline-block;
+    min-width: 120px;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Table Header Text */
+.content h2 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-weight: 600;
+} 
+
+
+.chart-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 2rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    background-color: #f0f0f0 !important;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 400px;
+    overflow: hidden;
+}
+
+.chart-wrapper {
+    flex: 0 0 calc(50% - 1rem);
+    height: 400px;
+    max-width: calc(50% - 1rem);
+    background-color: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex; /* Add flex display */
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+}
+
+/* Make PrimeFaces charts responsive */
+.chart-wrapper .ui-chart {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Ensure canvas elements inside charts are responsive */
+.chart-wrapper canvas {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100%;
+    max-height: 100%;
+}
