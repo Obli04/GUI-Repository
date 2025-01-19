@@ -1,1 +1,0 @@
-ALTER TABLE transactions ADD COLUMN iban_receiver VARCHAR(34);
