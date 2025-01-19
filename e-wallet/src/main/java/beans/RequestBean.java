@@ -259,8 +259,9 @@ public class RequestBean implements Serializable {
             // If budget check passes, process the request normally
             processAcceptedRequest(managedRequest);
             
-        } catch (Exception e) {
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to process request");
+        } catch (IOException | IllegalStateException | IllegalArgumentException e) {
+            // Log error details in message
+            addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to process request: " + e.getMessage());
         }
     }
     
@@ -287,9 +288,8 @@ public class RequestBean implements Serializable {
                 }
                 processAcceptedRequest(managedRequest);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to process request");
+        } catch (IOException | IllegalStateException | IllegalArgumentException e) {
+            addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to process request: " + e.getMessage());
         }
     }
     
