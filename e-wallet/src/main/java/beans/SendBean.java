@@ -83,7 +83,7 @@ public class SendBean implements Serializable {
 
             double remainingBudget = budgetBean.getRemainingBudget(sender.getId());
             
-            if (remainingBudget != 0 && (remainingBudget < 0 || (remainingBudget - amount) < 0)) {
+            if (sender.getBudget() != 0 && (remainingBudget < 0 || remainingBudget - amount < 0)) {
                 FacesContext.getCurrentInstance().getViewRoot().getViewMap().put("pendingRecipient", recipient);
                 FacesContext.getCurrentInstance().getViewRoot().getViewMap().put("pendingAmount", amount);
                 PrimeFaces.current().executeScript("PF('budgetWarningDialog').show()");
