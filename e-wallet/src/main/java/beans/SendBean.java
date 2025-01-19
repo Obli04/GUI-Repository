@@ -18,7 +18,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
 /**
- * Bean for sending money to a user account to anoter one using email or variable symbol
+ * Bean for sending money to a user account to anoter one using email or variable symbol of another user
  * @author Arcangelo Mauro - xmauroa00
  */
 @Named
@@ -37,8 +37,8 @@ public class SendBean implements Serializable {
     private double amount;
 
     /**
-     * Method for sending money, returns null if error occurs
-     * @return null if error occurs
+     * Method for sending money between users, returns null if error occurs
+     * @return null if error during sending money occurs
      * @return String to redirect to dashboard if successful
     */
     @Transactional
@@ -102,7 +102,7 @@ public class SendBean implements Serializable {
     /**
      * Processes the transfer after user confirms to proceed despite budget warning.
      * @return String to redirect to dashboard if successful
-     * @return null if error occurs
+     * @return null if error during transfer processing occurs, so if it fails or some data are missing
     */
     @Transactional
     public String confirmTransfer() {
@@ -110,11 +110,11 @@ public class SendBean implements Serializable {
             User sender = userBean.getCurrentUser();
             User recipient = (User) FacesContext.getCurrentInstance()
                 .getViewRoot().getViewMap().get("pendingRecipient");
-            Double amount = (Double) FacesContext.getCurrentInstance()
+            Double pendingAmount = (Double) FacesContext.getCurrentInstance()
                 .getViewRoot().getViewMap().get("pendingAmount");
             
-            if (recipient != null && amount != null) {
-                return processTransfer(sender, recipient, amount);
+            if (recipient != null && pendingAmount != null) {
+                return processTransfer(sender, recipient, pendingAmount);
             }
             return null;
         } catch (Exception e) {
@@ -130,7 +130,6 @@ public class SendBean implements Serializable {
      * @param recipient - User receiving the money
      * @param amount - Amount to send
      * @return String to redirect to dashboard if successful
-     * @return null if error occurs
     */
     @Transactional
     private String processTransfer(User sender, User recipient, double amount) {
@@ -160,9 +159,9 @@ public class SendBean implements Serializable {
 
     /**
      * Method for adding messages to the FacesContext
-     * @param severity - Severity of the message
-     * @param summary - Summary of the message
-     * @param detail - Detail of the message
+     * @param severity - Severity level of the message, so if it's an error, success, etc.
+     * @param summary - Summary/title of the message
+     * @param detail - Details of the message
     */
     private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null, 
@@ -177,17 +176,34 @@ public class SendBean implements Serializable {
         this.amount = 0.0;
     }
 
+    /**
+     * Method for getting the recipient identifier
+     * @return recipientIdentifier
+    */
     public String getRecipientIdentifier() {
         return recipientIdentifier;
     }
 
+    /**
+     * Method for setting the recipient identifier
+     * @param recipientIdentifier
+    */
     public void setRecipientIdentifier(String recipientIdentifier) {
         this.recipientIdentifier = recipientIdentifier;
     }
 
+    /**
+     * Method for getting the amount
+     * @return amount
+    */
     public double getAmount() {
         return amount;
     }
+
+    /**
+     * Method for setting the amount
+     * @param amount
+    */
 
     public void setAmount(double amount) {
         this.amount = amount;

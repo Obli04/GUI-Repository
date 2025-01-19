@@ -29,19 +29,17 @@ public class WithdrawalBean implements Serializable {
     private UserBean userBean;
     
     private double amount;
-    private String paymentReference;
     private boolean showPaymentDetails;
     private boolean confirmationStep = false;
 
     /**
-     * Method for withdrawing money, returns null if error occurs
-     * @return null if error occurs
-     * @return String to redirect to dashboard if successful
+     * Method for withdrawing money from the e-wallet to a bank account
+     * @return null if an error occurs during the withdrawal process
+     * @return String to redirect to dashboard if the withdrawal is successful
     */
     @Transactional
     public String withdraw() {
         if (!confirmationStep) {
-            // First click - show confirmation
             if (validateWithdrawal()) {
                 this.showPaymentDetails = true;
                 this.confirmationStep = true;
@@ -50,7 +48,6 @@ public class WithdrawalBean implements Serializable {
             return null;
         }
         
-        // Second click - process withdrawal
         User currentUser = userBean.getCurrentUser();
         try {
             Transaction withdrawal = new Transaction();
@@ -77,6 +74,10 @@ public class WithdrawalBean implements Serializable {
         }
     }
     
+    /**
+     * Method for validating the withdrawal process
+     * @return true if the withdrawal is valid, false otherwise
+    */
     private boolean validateWithdrawal() {
         User currentUser = userBean.getCurrentUser();
         
@@ -103,33 +104,39 @@ public class WithdrawalBean implements Serializable {
     
     /**
      * Method for adding messages to the FacesContext
-     * @param severity - Severity of the message
-     * @param summary - Summary of the message
-     * @param detail - Detail of the message
+     * @param severity - Severity level of the message, so if it's an error, success, etc.
+     * @param summary - Summary/title of the message
+     * @param detail - Details of the message
     */
     private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null, 
             new FacesMessage(severity, summary, detail));
     }
-    
+    /**
+     * Method for getting the amount of money to withdraw
+     * @return amount - Amount of money to withdraw
+    */
     public double getAmount() {
         return amount;
     }
-    
+    /**
+     * Method for setting the amount of money to withdraw
+     * @param amount
+     */
     public void setAmount(double amount) {
         this.amount = amount;
     }
     
-    public String getPaymentReference() {
-        return paymentReference;
-    }
-    
+    /**
+     * Method for getting showPaymentDetails, so the details of the withdrawal
+     * @return showPaymentDetails
+    */
     public boolean isShowPaymentDetails() {
         return showPaymentDetails;
     }
     
     /**
-     * Method for setting showPaymentDetails, which is used to show the payment details after a successful withdrawal
+     * Method for setting showPaymentDetails
      * @param showPaymentDetails - Boolean to set showPaymentDetails
     */
     public void setShowPaymentDetails(boolean showPaymentDetails) {
@@ -141,12 +148,14 @@ public class WithdrawalBean implements Serializable {
     */
     public void resetForm() {
         amount = 0;
-        paymentReference = null;
         showPaymentDetails = false;
         confirmationStep = false;
     }
-    
-    // Add getter for confirmationStep
+
+    /**
+     * Method for getting confirmationStep
+     * @return confirmationStep - Boolean to check if the confirmation step is active
+    */
     public boolean isConfirmationStep() {
         return confirmationStep;
     }
