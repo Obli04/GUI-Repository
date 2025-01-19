@@ -504,12 +504,15 @@ public class AuthService {
        if(user.getBalance() != 0) { //If the user has a balance throw an exception
            throw new Exception("Your balance must be 0 to delete the account");
        }
+       User deletedAccount = findUserByEmail("scacciadavide@gmail.com"); //Get the account with "Deleted Account" as name
 
        try {
-           em.createQuery("UPDATE Transaction t SET t.sender = NULL WHERE t.sender.id = :userId") //Update transactions to set sender to null where user is sender
+           em.createQuery("UPDATE Transaction t SET t.sender = :deletedAccount WHERE t.sender.id = :userId") //Update transactions to set sender to deleted account where user is sender
+             .setParameter("deletedAccount", deletedAccount)
              .setParameter("userId", user.getId())
              .executeUpdate();
-           em.createQuery("UPDATE Transaction t SET t.receiver = NULL WHERE t.receiver.id = :userId") //Update transactions to set receiver to null where user is receiver  
+           em.createQuery("UPDATE Transaction t SET t.receiver = :deletedAccount WHERE t.receiver.id = :userId") //Update transactions to set receiver to deleted account where user is receiver
+             .setParameter("deletedAccount", deletedAccount)
              .setParameter("userId", user.getId())
              .executeUpdate();
         
