@@ -52,8 +52,8 @@
                 </div>
 
                 <h:form id="withdrawForm">
-                    <p:panelGrid columns="1" styleClass="ui-noborder">
-                        <p:outputLabel for="amount" value="Withdrawal Amount"/>
+                    <p:panelGrid columns="1" styleClass="ui-noborder" rendered="#{!withdrawalBean.showPaymentDetails}">
+                        <p:outputLabel for="amount" value="Withdrawal Amount *"/>
                         <p:inputNumber id="amount" 
                                      value="#{withdrawalBean.amount}" 
                                      symbol=" CZK"
@@ -62,40 +62,48 @@
                                      required="true"
                                      minValue="0.01"
                                      placeholder="Enter amount"/>
+                        
+                        <div class="button-container">
+                            <p:button value="Cancel" 
+                                     outcome="dashboard"
+                                     styleClass="withdraw-button-secondary"/>
+                            
+                            <p:commandButton value="Withdraw"
+                                           action="#{withdrawalBean.withdraw}"
+                                           update="@form :balanceForm"
+                                           styleClass="withdraw-button-success"/>
+                        </div>
                     </p:panelGrid>
                     
-                    <div class="payment-details" 
-                         rendered="#{not empty withdrawalBean.paymentReference}">
-                        <h3>Payment Details</h3>
-                        <div class="detail-row">
-                            <span class="label">IBAN:</span>
-                            <span class="value">#{userBean.currentUser.iban}</span>
+                    <h:panelGroup rendered="#{withdrawalBean.showPaymentDetails}">
+                        <div class="payment-details">
+                            <h3>Confirm Withdrawal</h3>
+                            <div class="detail-row">
+                                <span class="label">IBAN:</span>
+                                <span class="value">#{userBean.currentUser.iban}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Amount:</span>
+                                <span class="value">
+                                    <h:outputText value="#{withdrawalBean.amount}">
+                                        <f:convertNumber type="currency" currencySymbol="Kč"/>
+                                    </h:outputText>
+                                </span>
+                            </div>
                         </div>
-                        <div class="detail-row">
-                            <span class="label">Amount:</span>
-                            <span class="value">
-                                <h:outputText value="#{withdrawalBean.amount}">
-                                    <f:convertNumber type="currency" currencySymbol="Kč"/>
-                                </h:outputText>
-                            </span>
+                        
+                        <div class="button-container">
+                            <p:commandButton value="Back" 
+                                           action="#{withdrawalBean.resetForm}"
+                                           update="@form"
+                                           styleClass="withdraw-button-secondary"/>
+                            
+                            <p:commandButton value="Confirm Withdrawal"
+                                           action="#{withdrawalBean.withdraw}"
+                                           update="@form :balanceForm"
+                                           styleClass="withdraw-button-warning"/>
                         </div>
-                    </div>
-                    
-                    <div class="button-container">
-                        <p:button value="Cancel" 
-                                 outcome="dashboard"
-                                 rendered="#{!withdrawalBean.showPaymentDetails}"
-                                 styleClass="p-button-secondary"/>
-                        <p:commandButton value="Withdraw" 
-                                       action="#{withdrawalBean.withdraw}"
-                                       update="@form :balanceForm"
-                                       styleClass="p-button-success"/>
-                        <p:commandButton value="New Withdrawal" 
-                                       action="#{withdrawalBean.resetForm}"
-                                       update="@form"
-                                       rendered="#{withdrawalBean.showPaymentDetails}"
-                                       styleClass="p-button-secondary"/>
-                    </div>
+                    </h:panelGroup>
                     
                     <p:messages id="messages" showDetail="true" closable="true">
                         <p:autoUpdate/>
