@@ -63,13 +63,14 @@
                         <f:convertNumber type="currency" currencySymbol="Kč"/>
                     </h:outputText>
                 </p:column>
-                
+
                 <p:column headerText="Sender">
-                    <h:outputText value="#{transaction.sender.firstName != null ? 
-                                        transaction.sender.firstName.concat(' ').concat(transaction.sender.secondName) : 
-                                        transaction.receiver.firstName.concat(' ').concat(transaction.receiver.secondName)} 
-                                        #{transaction.nameOfSender != null ? transaction.nameOfSender : ' '}"
-                                rendered="#{transaction.type != 'Withdraw'}" />
+                    <h:outputText value="#{transactionBean.getSenderDisplayName(transaction, userBean.currentUser)}" />
+                    
+                    <!-- <h:outputText value="#{transaction.type eq 'Deposit' ? transaction.nameOfSender :
+                                            transaction.type  eq 'Declined' ? transaction.sender.firstName.concat(' ').concat(transaction.sender.secondName) :
+                                            (transaction.category eq 'User Transfer' or transaction.category eq 'Money Request') and transaction.sender.id eq userBean.currentUser.id ? 'You' : transaction.sender.firstName.concat(' ').concat(transaction.sender.secondName)}"
+                                    rendered="#{transaction.type != 'Withdraw'}" /> -->
                 </p:column>
                 
 
@@ -79,7 +80,8 @@
 
 
 
-<!-- 
+
+                <!-- DEBUG
                 <p:column headerText="Details">
                     <p:panelGrid columns="2" styleClass="ui-noborder">
                         <h:outputText value="ID:" />
