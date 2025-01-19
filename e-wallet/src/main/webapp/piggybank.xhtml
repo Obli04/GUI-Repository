@@ -2,18 +2,225 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 <h:head>
-    <title>CashHive - PiggyBank</title>
+    <title>Piggy Bank - CashHive</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
     <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/favicon.ico"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <h:outputStylesheet library="styles" name="dashboard.css"/>
+    <h:outputStylesheet library="styles" name="piggybank.css"/>
 </h:head>
 <h:body>
-    <h:form>
-        <ui:include src="navbar.xhtml"/>
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{userBean.refreshBalance}"/>
+    </f:metadata>
+
+    <h:form id="navbarForm">
+        <ui:include src="navbar.xhtml" />
     </h:form>
-    Empty Page For now.
+
+    <div class="content" style="margin-top: 150px">
+        <h1>Piggy Bank</h1>
+
+        <h:form id="cardsForm">
+            <div class="financial-cards-container">
+                <div class="financial-card saving-goal">
+                    <div class="financial-card-header">
+                        <i class="financial-card-icon pi pi-chart-bar"></i>
+                        <h3 class="financial-card-title">Saving Goal</h3>
+                    </div>
+                    <div class="financial-card-amount" style="color: green;">
+                        <h:outputText value="Goal: #{piggyBankBean.savingGoalAmount} CZK" />
+                        <br />
+                        <h:outputText value="Remaining: #{piggyBankBean.remainingGoal} CZK" />
+                    </div>
+                </div>
+
+                <div class="financial-card piggy">
+                    <div class="financial-card-header">
+                        <i class="financial-card-icon pi pi-money-bill"></i>
+                        <h3 class="financial-card-title">Piggy Bank</h3>
+                    </div>
+                    <div class="financial-card-amount">#{piggyBankBean.currentBalance} CZK</div>
+                </div>
+            </div>
+        </h:form>
+
+        <div class="form-cards-container">
+
+            <p:card styleClass="form-card">
+                <h2 class="section-title">Deposit to Piggy Bank</h2>
+                <h:form id="depositForm">
+                    <h:panelGrid columns="2" cellpadding="5" class="form-grid">
+                        <h:outputLabel for="addAmount" value="Amount to Deposit (CZK):" />
+                        <p:inputNumber id="addAmount"
+                                       value="#{piggyBankBean.addAmount}"
+                                       symbol="Kč"
+                                       decimalPlaces="2"
+                                       required="true"
+                                       minValue="1.0" />
+                        <h:message for="addAmount" styleClass="error-message" />
+                        <h:outputLabel />
+                        <div class="center-button">
+                            <p:commandButton value="Deposit"
+                                             action="#{piggyBankBean.addToBalance}"
+                                             update="cardsForm depositForm messages"
+                                             styleClass="ui-button-primary" />
+                        </div>
+                    </h:panelGrid>
+                </h:form>
+            </p:card>
+
+            <p:card styleClass="form-card">
+                <h2 class="section-title">Withdraw from Piggy Bank</h2>
+                <h:form id="withdrawForm">
+                    <h:panelGrid columns="2" cellpadding="5" class="form-grid">
+                        <h:outputLabel for="withdrawAmount" value="Amount to Withdraw (CZK):" />
+                        <p:inputNumber id="withdrawAmount"
+                                       value="#{piggyBankBean.withdrawAmount}"
+                                       symbol="Kč"
+                                       decimalPlaces="2"
+                                       required="true"
+                                       minValue="1.0" />
+                        <h:message for="withdrawAmount" styleClass="error-message" />
+                        <h:outputLabel />
+                        <div class="center-button">
+                            <p:commandButton value="Withdraw"
+                                             action="#{piggyBankBean.withdrawFromPiggyBank}"
+                                             update="cardsForm withdrawForm messages"
+                                             disabled="#{piggyBankBean.isFundsLocked()}"
+                                             styleClass="ui-button-primary" />
+                        </div>
+                    </h:panelGrid>
+                </h:form>
+            </p:card>
+
+            <p:card styleClass="form-card">
+                <h2 class="section-title">Set Saving Goal</h2>
+                <h:form id="setGoalForm">
+                    <h:panelGrid columns="2" cellpadding="5" class="form-grid">
+                        <h:outputLabel for="goalAmount" value="Set Saving Goal (CZK):" />
+                        <p:inputNumber id="goalAmount"
+                                       value="#{piggyBankBean.savingGoalAmount}"
+                                       symbol="Kč"
+                                       decimalPlaces="2"
+                                       required="true"
+                                       minValue="1.0" />
+                        <h:message for="goalAmount" styleClass="error-message" />
+                        <h:outputLabel />
+                        <div class="center-button">
+                            <p:commandButton value="Set Goal"
+                                             action="#{piggyBankBean.setSavingGoalAmount}"
+                                             update="cardsForm messages"
+                                             styleClass="ui-button-primary" />
+                        </div>
+                    </h:panelGrid>
+                </h:form>
+            </p:card>
+
+            <p:card styleClass="form-card">
+                <h2 class="section-title">Activate Piggy Bank Lock</h2>
+                <div class="center-button">
+                    <p:commandButton value="Lock Piggy Bank"
+                                     onclick="PF('lockDialog').show();"
+                                     type="button"
+                                     styleClass="ui-button-primary" />
+                </div>
+            </p:card>
+
+            <p:dialog id="lockDialog" widgetVar="lockDialog" header="Set Lock Date" modal="true" closable="false" resizable="false" draggable="false">
+                <h:form id="lockForm">
+                    <h:panelGrid columns="1" cellpadding="5" class="form-grid">
+                        <h:outputLabel for="lockEndDate" value="Select Lock End Date:" />
+                        <p:calendar id="lockEndDate"
+                                    value="#{piggyBankBean.lockEndDate}"
+                                    showButtonPanel="true"
+                                    dateFormat="dd/MM/yyyy"
+                                    styleClass="calendar-input" />
+                    </h:panelGrid>
+                    <div class="center-button">
+                        <p:commandButton value="Done"
+                                         action="#{piggyBankBean.calculateLockDuration}"
+                                         update="lockValidationDialog"
+                                         oncomplete="PF('lockDialog').hide(); PF('lockValidationDialog').show();"
+                                         styleClass="ui-button-primary" />
+                    </div>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog id="lockValidationDialog" widgetVar="lockValidationDialog" header="Validate Lock" modal="true" closable="false">
+                <h:outputText value="You are going to lock the piggy bank for #{piggyBankBean.lockDurationInDays} days. Are you sure?" />
+                <div class="center-button">
+                    <p:commandButton value="Yes"
+                                     action="#{piggyBankBean.activateLock}"
+                                     update="cardsForm messages"
+                                     oncomplete="PF('lockValidationDialog').hide();"
+                                     styleClass="ui-button-primary" />
+                    <p:commandButton value="No"
+                                     onclick="PF('lockValidationDialog').hide();"
+                                     type="button"
+                                     styleClass="ui-button-secondary" />
+                </div>
+            </p:dialog>
+
+            <p:card styleClass="form-card">
+                <h2 class="section-title">Break Piggy Bank</h2>
+                <div class="center-button">
+                    <p:commandButton value="Break Piggy Bank"
+                                     onclick="PF('breakConfirmationDialog').show();"
+                                     type="button"
+                                     styleClass="ui-button-danger" />
+                </div>
+            </p:card>
+        </div>
+
+        <!-- Dialog for confirming break piggy bank action -->
+        <p:dialog id="breakConfirmationDialog" widgetVar="breakConfirmationDialog" header="Are you sure you want to break the piggy bank?" modal="true" closable="false">
+            <h:outputText value="Are you sure you want to break the piggy bank? This action cannot be undone." />
+            <div class="center-button">
+                <p:commandButton value="Yes"
+                                 action="#{piggyBankBean.confirmBreakAction}"
+                                 update="cardsForm messages"
+                                 oncomplete="PF('breakConfirmationDialog').hide(); PF('emergencyDialog').show();"
+                                 styleClass="ui-button-primary" />
+                <p:commandButton value="No"
+                                 onclick="PF('breakConfirmationDialog').hide();"
+                                 type="button"
+                                 styleClass="ui-button-secondary" />
+            </div>
+        </p:dialog>
+
+        <!-- Dialog for emergency warning -->
+        <p:dialog id="emergencyDialog" widgetVar="emergencyDialog" header="Emergency Only" modal="true" closable="false">
+            <h:outputText value="The piggy bank must be broken only in an emergency. Are you sure you want to proceed?" />
+            <div class="center-button">
+                <p:commandButton value="Proceed"
+                                 action="#{piggyBankBean.finalBreakAction}"
+                                 update="cardsForm messages"
+                                 oncomplete="PF('emergencyDialog').hide(); PF('clickChallengeDialog').show();"
+                                 styleClass="ui-button-primary" />
+                <p:commandButton value="Close"
+                                 onclick="PF('emergencyDialog').hide();"
+                                 type="button"
+                                 styleClass="ui-button-secondary" />
+            </div>
+        </p:dialog>
+
+        <!-- Dialog for unlocking the piggy bank -->
+        <p:dialog id="unlockDialog" widgetVar="unlockDialog" header="Piggy Bank Unlocked" modal="true" closable="false">
+            <h:outputText value="The piggy bank has been successfully unlocked, and all funds are now available." />
+            <div class="center-button">
+                <p:commandButton value="Close"
+                                 onclick="PF('unlockDialog').hide();"
+                                 type="button"
+                                 styleClass="ui-button-primary" />
+            </div>
+        </p:dialog>
+
+
+        <p:messages id="messages" showDetail="true" closable="true" styleClass="global-messages"/>
+    </div>
 </h:body>
 </html>
