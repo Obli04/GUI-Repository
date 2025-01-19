@@ -1,7 +1,6 @@
 package beans;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 import beans.entities.Transaction;
 import beans.entities.User;
@@ -32,6 +31,7 @@ public class WithdrawalBean implements Serializable {
     private double amount;
     private String paymentReference;
     private boolean showPaymentDetails;
+    private boolean confirmationStep = false;
 
     /**
      * Method for withdrawing money, returns null if error occurs
@@ -40,33 +40,24 @@ public class WithdrawalBean implements Serializable {
     */
     @Transactional
     public String withdraw() {
-        User currentUser = userBean.getCurrentUser();
+        if (!confirmationStep) {
+            // First click - show confirmation
+            if (validateWithdrawal()) {
+                this.showPaymentDetails = true;
+                this.confirmationStep = true;
+                return null;
+            }
+            return null;
+        }
         
+        // Second click - process withdrawal
+        User currentUser = userBean.getCurrentUser();
         try {
-            if (currentUser.getIban() == null || currentUser.getIban().trim().isEmpty()) {
-                addMessage(FacesMessage.SEVERITY_ERROR, "No IBAN configured", 
-                    "Please set up your IBAN in Account Settings before making a withdrawal");
-                return null;
-            }
-
-            if (amount <= 0) {
-                addMessage(FacesMessage.SEVERITY_ERROR, "Invalid amount", 
-                    "Please enter a positive amount");
-                return null;
-            }
-            
-            if (currentUser.getBalance() < amount) {
-                addMessage(FacesMessage.SEVERITY_ERROR, "Insufficient funds", 
-                    "Your balance is insufficient for this withdrawal");
-                return null;
-            }
-
             Transaction withdrawal = new Transaction();
             withdrawal.setReceiver(currentUser);
             withdrawal.setValue(amount);
             withdrawal.setType("Withdraw");
             withdrawal.setCategory("Bank Withdrawal - " + currentUser.getIban());
-            withdrawal.setTransactionDate(LocalDateTime.now());
             
             currentUser.setBalance(currentUser.getBalance() - amount);
             
@@ -76,15 +67,38 @@ public class WithdrawalBean implements Serializable {
             addMessage(FacesMessage.SEVERITY_INFO, "Success", 
                 String.format("Withdrawal of %.2f CZK completed successfully", amount));
             
-            this.showPaymentDetails = true;
-            
-            return null;
+            resetForm();
+            return "dashboard?faces-redirect=true";
             
         } catch (Exception e) {
             addMessage(FacesMessage.SEVERITY_ERROR, "Error", 
                 "An error occurred during withdrawal: " + e.getMessage());
             return null;
         }
+    }
+    
+    private boolean validateWithdrawal() {
+        User currentUser = userBean.getCurrentUser();
+        
+        if (currentUser.getIban() == null || currentUser.getIban().trim().isEmpty()) {
+            addMessage(FacesMessage.SEVERITY_ERROR, "No IBAN configured", 
+                "Please set up your IBAN in Account Settings before making a withdrawal");
+            return false;
+        }
+
+        if (amount <= 0) {
+            addMessage(FacesMessage.SEVERITY_ERROR, "Invalid amount", 
+                "Please enter a positive amount");
+            return false;
+        }
+        
+        if (currentUser.getBalance() < amount) {
+            addMessage(FacesMessage.SEVERITY_ERROR, "Insufficient funds", 
+                "Your balance is insufficient for this withdrawal");
+            return false;
+        }
+        
+        return true;
     }
     
     /**
@@ -129,5 +143,11 @@ public class WithdrawalBean implements Serializable {
         amount = 0;
         paymentReference = null;
         showPaymentDetails = false;
+        confirmationStep = false;
+    }
+    
+    // Add getter for confirmationStep
+    public boolean isConfirmationStep() {
+        return confirmationStep;
     }
 }
