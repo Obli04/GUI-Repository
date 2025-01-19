@@ -6,6 +6,6 @@ It also includes features such as Budgeting, Transaction History, and PiggyBank.
 ## Contributors
 - Davide Scaccia (xscaccd00)
 - Danilo Spera (xsperad00)
-- Arthur (x.....)
+- Arthur Phommachanh (xphomma00)
 - Arcangelo Mauro (xmauroa00)
 - Giovanni Romano (xromana01)?
