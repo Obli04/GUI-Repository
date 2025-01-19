@@ -8,4 +8,4 @@ It also includes features such as Budgeting, Transaction History, and PiggyBank.
 - Danilo Spera (xsperad00)
 - Arthur Phommachanh (xphomma00)
 - Arcangelo Mauro (xmauroa00)
-- Giovanni Romano (xromana01)?
+- Giovanni Romano (xromang00)
