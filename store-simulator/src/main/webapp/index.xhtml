@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+<h:head>
+    <title>Store Simulator</title>
+    <link rel="stylesheet" type="text/css" href="resources/styles/main.css" />
+</h:head>
+<h:body>
+    <h1>Store Simulator</h1>
+    <h:form>
+        <h:outputLabel value="Amount: " for="amount" />
+        <h:inputText id="amount" value="#{paymentBean.amount}" />
+        <br />
+        <h:outputLabel value="Description: " for="description" />
+        <h:inputText id="description" value="#{paymentBean.description}" />
+        <br />
+        <h:commandButton value="Pay Now" action="#{paymentBean.processPayment}" />
+        <br />
+        <h:outputText value="Remaining Budget: #{paymentBean.budget}" />
+    </h:form>
+</h:body>
+</html>
