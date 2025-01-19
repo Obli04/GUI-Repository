@@ -233,7 +233,7 @@ public class EmailService {
             "<div style='display: flex; justify-content: center; margin: 30px 0;'>" +
             "<div style='display: inline-block; background: #f8f9fa; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px 30px; text-align: center; width: 100%%;'>" +
             "<p style='color: #666; margin: 0; font-size: 16px;'>Amount Requested:</p>" +
-            "<span style='font-size: 32px; color: #4CAF50; font-weight: bold; display: block; margin: 0 auto; text-align: center; width: 100%%;'>$%.2f</span>" +
+            "<span style='font-size: 32px; color: #4CAF50; font-weight: bold; display: block; margin: 0 auto; text-align: center; width: 100%%;'>Kč%.2f</span>" +
             "</div>" +
             "</div>" +
             "<p style='color: #666; font-size: 16px; text-align: center; margin: 20px 0;'>Please log in to your CashHive account to view and respond to this request.</p>" +
