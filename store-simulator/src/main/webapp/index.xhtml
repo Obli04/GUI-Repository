@@ -1,22 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html">
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 <h:head>
     <title>Store Simulator</title>
-    <link rel="stylesheet" type="text/css" href="resources/styles/main.css" />
+    <h:outputStylesheet library="styles" name="main.css"/>
 </h:head>
 <h:body>
-    <h1>Store Simulator</h1>
-    <h:form>
-        <h:outputLabel value="Amount: " for="amount" />
-        <h:inputText id="amount" value="#{paymentBean.amount}" />
-        <br />
-        <h:outputLabel value="Description: " for="description" />
-        <h:inputText id="description" value="#{paymentBean.description}" />
-        <br />
-        <h:commandButton value="Pay Now" action="#{paymentBean.processPayment}" />
-        <br />
-        <h:outputText value="Remaining Budget: #{paymentBean.budget}" />
-    </h:form>
+    <div class="store-simulator">
+        <div class="store-logo">
+            <span class="store-name">Store Simulator</span>
+        </div>
+
+        <p:card>
+            <f:facet name="title">
+                Purchase Items
+            </f:facet>
+
+            <div class="budget-info">
+                <h3>Available Budget:
+                    <h:outputText id="budget-display" value="#{storeBean.budget}">
+                        <f:convertNumber pattern="#,##0.00 CZK"/>
+                    </h:outputText>
+                </h3>
+            </div>
+
+            <h:form id="form" styleClass="form-container">
+                <p:panelGrid columns="2" styleClass="ui-noborder">
+                    <p:outputLabel for="itemName" value="Item Name:"/>
+                    <p:inputText id="itemName"
+                                 value="#{storeBean.itemName}"
+                                 required="true"
+                                 requiredMessage="Item name is required"
+                                 placeholder="Enter item name"/>
+
+                    <p:outputLabel for="quantity" value="Quantity:"/>
+                    <p:inputNumber id="quantity"
+                                   value="#{storeBean.quantity}"
+                                   required="true"
+                                   placeholder="Enter quantity"/>
+
+                    <p:outputLabel for="itemPrice" value="Item Price:"/>
+                    <p:inputNumber id="itemPrice"
+                                   value="#{storeBean.itemPrice}"
+                                   required="true"
+                                   decimalPlaces="2"
+                                   symbol=" CZK"
+                                   symbolPosition="s"/>
+                </p:panelGrid>
+
+                <div class="button-container">
+                    <p:commandButton value="Make Purchase"
+                                     action="#{storeBean.makePurchase}"
+                                     update="@form budget-display"
+                                     styleClass="p-button-success"/>
+                </div>
+
+                <p:messages showDetail="true" closable="true">
+                    <p:autoUpdate />
+                </p:messages>
+            </h:form>
+        </p:card>
+    </div>
 </h:body>
 </html>
