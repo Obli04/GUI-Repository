@@ -451,8 +451,6 @@ public class RequestBean implements Serializable {
     
     /**
      * Automatically insert the email when a friend is selected from the dropdown.
-     * 
-     * @param event The selection event
      */
     public void onFriendSelect() {
         // Update UI components
