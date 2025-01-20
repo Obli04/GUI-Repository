@@ -52,7 +52,8 @@ public class RequestBean implements Serializable {
     private double amount;
     private String description;
     
-    private Map<String, String> friendEmailToNameMap = new HashMap<>();
+    /** Map to store email-to-name mappings for friends display */
+    private final Map<String, String> friendEmailToNameMap = new HashMap<>();
     
     /**
      * Processes a new money request from the current user to another user.
@@ -396,13 +397,16 @@ public class RequestBean implements Serializable {
     /**
      * Gets a list of friends' names and emails for the current user.
      * This combines friends where the current user is either user1 or user2.
+     * This method creates SelectItem objects that show the friend's full name
+     * in the dropdown while storing their email as the actual value.
      *
      * @return List of SelectItem with friend's name as label and email as value
      */
     public List<SelectItem> getFriendsList() {
         User currentUser = userBean.getCurrentUser();
         List<SelectItem> friendItems = new ArrayList<>();
-        friendEmailToNameMap.clear(); // Clear the map before populating
+        // Clear the map before repopulating
+        friendEmailToNameMap.clear(); 
         
         try {
             // Get friends where current user is user1
@@ -419,14 +423,18 @@ public class RequestBean implements Serializable {
                 .setParameter("userId", currentUser.getId())
                 .getResultList();
                 
-            // Add names and emails from both lists
+            // Process friends from both queries
             for (Friends friendship : friendsAsUser1) {
                 User friend = friendship.getUser2();
-                String displayName = friend.getFirstName()+" "+friend.getSecondName();
+                // Create display name by combining first and second name
+                String displayName = friend.getFirstName() + " " + friend.getSecondName();
+                // Store mapping for autocomplete feature
                 friendEmailToNameMap.put(friend.getEmail(), displayName);
+                // Create SelectItem with display name as label and email as value
                 friendItems.add(new SelectItem(friend.getEmail(), displayName));
             }
             
+            // Same process for reverse friendships
             for (Friends friendship : friendsAsUser2) {
                 User friend = friendship.getUser1();
                 String displayName = friend.getFirstName()+" "+friend.getSecondName();
@@ -441,14 +449,7 @@ public class RequestBean implements Serializable {
     }
     
     /**
-     * Gets a list of friends' emails for autocomplete
-     */
-    public List<String> getFriendEmails() {
-        return new ArrayList<>(friendEmailToNameMap.keySet());
-    }
-    
-    /**
-     * Updates the recipient identifier when a friend is selected from the dropdown.
+     * Automatically insert the email when a friend is selected from the dropdown.
      * 
      * @param event The selection event
      */
