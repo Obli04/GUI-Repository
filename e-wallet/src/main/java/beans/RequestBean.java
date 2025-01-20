@@ -3,10 +3,14 @@ package beans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.primefaces.PrimeFaces;
 
+import beans.entities.Friends;
 import beans.entities.RequestMoney;
 import beans.entities.Transaction;
 import beans.entities.User;
@@ -14,6 +18,7 @@ import beans.services.EmailService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.model.SelectItem;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
@@ -46,6 +51,8 @@ public class RequestBean implements Serializable {
     private String recipientIdentifier; // Can be email or variable symbol
     private double amount;
     private String description;
+    
+    private Map<String, String> friendEmailToNameMap = new HashMap<>();
     
     /**
      * Processes a new money request from the current user to another user.
@@ -384,6 +391,72 @@ public class RequestBean implements Serializable {
             RequestMoney.class)
             .setParameter("userId", currentUser.getId())
             .getResultList();
+    }
+    
+    /**
+     * Gets a list of friends' names and emails for the current user.
+     * This combines friends where the current user is either user1 or user2.
+     *
+     * @return List of SelectItem with friend's name as label and email as value
+     */
+    public List<SelectItem> getFriendsList() {
+        User currentUser = userBean.getCurrentUser();
+        List<SelectItem> friendItems = new ArrayList<>();
+        friendEmailToNameMap.clear(); // Clear the map before populating
+        
+        try {
+            // Get friends where current user is user1
+            List<Friends> friendsAsUser1 = em.createQuery(
+                "SELECT f FROM Friends f WHERE f.user1.id = :userId", 
+                Friends.class)
+                .setParameter("userId", currentUser.getId())
+                .getResultList();
+                
+            // Get friends where current user is user2
+            List<Friends> friendsAsUser2 = em.createQuery(
+                "SELECT f FROM Friends f WHERE f.user2.id = :userId", 
+                Friends.class)
+                .setParameter("userId", currentUser.getId())
+                .getResultList();
+                
+            // Add names and emails from both lists
+            for (Friends friendship : friendsAsUser1) {
+                User friend = friendship.getUser2();
+                String displayName = friend.getFirstName()+" "+friend.getSecondName();
+                friendEmailToNameMap.put(friend.getEmail(), displayName);
+                friendItems.add(new SelectItem(friend.getEmail(), displayName));
+            }
+            
+            for (Friends friendship : friendsAsUser2) {
+                User friend = friendship.getUser1();
+                String displayName = friend.getFirstName()+" "+friend.getSecondName();
+                friendEmailToNameMap.put(friend.getEmail(), displayName);
+                friendItems.add(new SelectItem(friend.getEmail(), displayName));
+            }
+            
+            return friendItems;
+        } catch (Exception e) {
+            return new ArrayList<>(); // Return empty list if error occurs
+        }
+    }
+    
+    /**
+     * Gets a list of friends' emails for autocomplete
+     */
+    public List<String> getFriendEmails() {
+        return new ArrayList<>(friendEmailToNameMap.keySet());
+    }
+    
+    /**
+     * Updates the recipient identifier when a friend is selected from the dropdown.
+     * 
+     * @param event The selection event
+     */
+    public void onFriendSelect() {
+        // Update UI components
+        if (recipientIdentifier != null && !recipientIdentifier.isEmpty()) {
+            PrimeFaces.current().ajax().update("requestForm:recipient");
+        }
     }
     
     // Getters and setters
