@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Friends - CashHive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/favicon.ico"/>
+    <h:outputStylesheet library="styles" name="friends.css"/>
+</h:head>
+<h:body>
+    <h:form id="navForm">
+        <ui:include src="navbar.xhtml"/>
+    </h:form>
+    <div class="friends-container">
+        <div class="friends-header">
+            Your Friends
+        </div>
+
+        <h:form id="friendsForm">
+            <h:panelGroup rendered="#{not empty friendBean.friends}">
+                <div class="friends-grid">
+                    <ui:repeat value="#{friendBean.friends}" var="friend">
+                        <div class="friend-card">
+                            <div class="friend-name">
+                                #{friend.user1.id == friendBean.userBean.currentUser.id
+                                    ? friend.user2.firstName.concat(' ').concat(friend.user2.secondName)
+                                    : friend.user1.firstName.concat(' ').concat(friend.user1.secondName)}
+                            </div>
+                            <div class="friend-action-buttons">
+                                <p:commandButton value="Remove"
+                                                 action="#{friendBean.removeFriend(friend.user1.id == friendBean.userBean.currentUser.id ? friend.user2 : friend.user1)}"
+                                                 update="friendsForm potentialFriendsForm"
+                                                 styleClass="ui-button remove-button"/>
+                            </div>
+                        </div>
+                    </ui:repeat>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{empty friendBean.friends}">
+                <div class="no-friends-message">
+                    You have no friends yet. Add some from the suggestions below!
+                </div>
+            </h:panelGroup>
+        </h:form>
+
+        <div class="friends-header" style="margin-top: 2rem;">
+            Add New Friends
+        </div>
+
+        <h:form id="potentialFriendsForm">
+            <h:panelGroup rendered="#{not empty friendBean.potentialFriends}">
+                <div class="friends-grid">
+                    <ui:repeat value="#{friendBean.potentialFriends}" var="potentialFriend">
+                        <div class="friend-card">
+                            <div class="friend-name">
+                                #{potentialFriend.firstName.concat(' ').concat(potentialFriend.secondName)}
+                            </div>
+                            <div class="friend-action-buttons">
+                                <p:commandButton value="Add Friend"
+                                                 action="#{friendBean.addFriend(potentialFriend)}"
+                                                 update="friendsForm potentialFriendsForm"
+                                                 styleClass="ui-button add-button"/>
+                            </div>
+                        </div>
+                    </ui:repeat>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{empty friendBean.potentialFriends}">
+                <div class="no-friends-message">
+                    No new friends to suggest at the moment.
+                </div>
+            </h:panelGroup>
+        </h:form>
+    </div>
+</h:body>
+</html>
