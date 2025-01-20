@@ -61,6 +61,12 @@ public class User implements Serializable {
     @Column(name = "piggy_bank", nullable = false)
     private Double piggyBank = 0.0;
 
+    @Column(name = "lockoutendtime")
+    private LocalDateTime lockoutEndTime;
+
+    @Column(name = "piggybankgoal")
+    private Double piggyBankGoal = 0.0;
+
     @Column(name = "iban", nullable = false)
     private String iban;
 
@@ -180,30 +186,27 @@ public class User implements Serializable {
         this.iban = iban;
     }
 
-    // For Debug
-    @Override
-    public String toString() {
-        return "User{" +
-               "id=" + id +
-               ", email='" + email + '\'' +
-               ", firstName='" + firstName + '\'' +
-               ", secondName='" + secondName + '\'' +
-               ", isVerified=" + isVerified +
-               ", twoFactorEnabled=" + twoFactorEnabled +
-               ", twoFactorSecret='" + twoFactorSecret + '\'' +
-               ", balance=" + balance +
-               ", budget=" + budget +
-               ", piggyBank=" + piggyBank +
-               ", iban='" + iban + '\'' +
-               ", variableSymbol='" + variableSymbol + '\'' +
-               '}';
-    }
-
     public String getVariableSymbol() {
         return variableSymbol;
     }
 
     public void setVariableSymbol(String variableSymbol) {
         this.variableSymbol = variableSymbol;
+    }
+
+    public Double getPiggyBankGoal() {
+        return piggyBankGoal;
+    }
+
+    public void setPiggyBankGoal(Double piggyBankGoal) {
+        this.piggyBankGoal = piggyBankGoal;
+    }
+
+    public LocalDateTime getLockoutEndTime() {
+        return lockoutEndTime;
+    }
+
+    public void setLockoutEndTime(LocalDateTime lockoutEndTime) {
+        this.lockoutEndTime = lockoutEndTime;
     }
 }
