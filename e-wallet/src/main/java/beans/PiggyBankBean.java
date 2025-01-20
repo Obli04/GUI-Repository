@@ -31,10 +31,7 @@ public class PiggyBankBean implements Serializable {
 
     private double addAmount = 0.0;
     private double withdrawAmount = 0.0;
-    private double savingGoalAmount = 0.0;
     private LocalDateTime lockEndDate;
-    private long lockDurationInDays;
-    private double piggyBank = 0.0;
 
 
     @Inject
@@ -105,8 +102,7 @@ public class PiggyBankBean implements Serializable {
 
 
     public double getSavingGoalAmount() {
-        User currentUser = userBean.getCurrentUser();
-        return currentUser != null ? currentUser.getBudget() : 0.0;
+        return userBean.getCurrentUser().getPiggyBankGoal();
     }
 
     public void setSavingGoalAmount(double savingGoal) {
@@ -121,11 +117,7 @@ public class PiggyBankBean implements Serializable {
     }
 
     public double getRemainingGoal() {
-        User currentUser = userBean.getCurrentUser();
-        if (currentUser != null) {
-            return Math.max(currentUser.getBudget() - currentUser.getPiggyBank(), 0);
-        }
-        return 0.0;
+        return Math.max(userBean.getCurrentUser().getPiggyBankGoal() - userBean.getCurrentUser().getPiggyBank(), 0);
     }
 
     public LocalDateTime getLockEndDate() {
@@ -180,10 +172,6 @@ public class PiggyBankBean implements Serializable {
             em.persist(transaction);
             saveUser(currentUser);
         }
-    }
-
-
-    private void reloadPage() {
     }
 
     private void saveUser(User user) {
