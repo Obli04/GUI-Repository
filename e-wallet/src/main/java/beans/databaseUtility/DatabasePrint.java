@@ -119,6 +119,10 @@ public class DatabasePrint {
                             }
                         }
                         break;
+                    case "exit":
+                        System.out.println("Exiting...");
+                        System.exit(0);
+                        break;
                     default:
                         System.out.println("Invalid input");
                     }
