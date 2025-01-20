@@ -26,40 +26,95 @@ public class DatabasePrint {
         String url = dotenv.get("DB_URL"); //Get the database URL from the .env file
         String user = dotenv.get("DB_USER"); //Get the database user from the .env file
         String password = dotenv.get("DB_PASSWORD"); //Get the database password from the .env file
+        String input;
         try {
             Class.forName("org.postgresql.Driver"); //Load the PostgreSQL JDBC Driver
-            try (Connection connection = DriverManager.getConnection(url, user, password); //Establish a connection to the database
-                 Statement statement = connection.createStatement()) { //Create a statement object to execute SQL commands
+            do{
+                System.out.println("\nWhat do you wanna see? (users, transactions, budgets, requestMoney, friends, everything, exit)");
+                input = System.console().readLine();
+                switch (input) {    
+                    case "users":
+                        try (Connection connection = DriverManager.getConnection(url, user, password); //Establish a connection to the database
+                            Statement statement = connection.createStatement()) { //Create a statement object to execute SQL commands
 
-                try (ResultSet usersResult = statement.executeQuery("SELECT * FROM users")) { //Execute a query to get all the users from the database
-                    System.out.println("Users Table:");
-                    printUserTable(usersResult);
-                }
+                            try (ResultSet usersResult = statement.executeQuery("SELECT * FROM users")) { //Execute a query to get all the users from the database
+                                System.out.println("Users Table:");
+                                printUserTable(usersResult);
+                            }
+                        }
+                        break;  
+                    case "transactions":
+                        try (Connection connection = DriverManager.getConnection(url, user, password); //Establish a connection to the database
+                            Statement statement = connection.createStatement()) { //Create a statement object to execute SQL commands
+                            try (ResultSet transactionsResult = statement.executeQuery("SELECT * FROM transactions")) { //Execute a query to get all the transactions from the database
+                                System.out.println("Transactions Table:");
+                                printTransactionsTable(transactionsResult);
+                            }
+                        }
+                        break;
 
-                try (ResultSet transactionsResult = statement.executeQuery("SELECT * FROM transactions")) { //Execute a query to get all the transactions from the database
-                    System.out.println("\nTransactions Table:");
-                    printTransactionsTable(transactionsResult);
-                }
+                    case "budgets":
+                        try (Connection connection = DriverManager.getConnection(url, user, password); //Establish a connection to the database
+                            Statement statement = connection.createStatement()) { //Create a statement object to execute SQL commands
+                            try (ResultSet budgetsResult = statement.executeQuery("SELECT * FROM budget")) { //Execute a query to get all the budgets from the database
+                                System.out.println("Budgets Table:");
+                                printBudgetsTable(budgetsResult);
+                            }
+                        }
+                        break;
 
-                try (ResultSet budgetsResult = statement.executeQuery("SELECT * FROM budget")) { //Execute a query to get all the budgets from the database
-                    System.out.println("\nBudgets Table:");
-                    printBudgetsTable(budgetsResult);
-                }
+                    case "requestMoney":
+                        try (Connection connection = DriverManager.getConnection(url, user, password); //Establish a connection to the database
+                            Statement statement = connection.createStatement()) { //Create a statement object to execute SQL commands
+                            try (ResultSet requestMoneyResult = statement.executeQuery("SELECT * FROM requestMoney")) { //Execute a query to get all the request money from the database
+                                System.out.println("Request Money Table:");
+                                printRequestMoneyTable(requestMoneyResult);
+                            }
+                        }
+                        break;
 
-                try (ResultSet requestMoneyResult = statement.executeQuery("SELECT * FROM requestMoney")) { //Execute a query to get all the request money from the database
-                    System.out.println("\nRequest Money Table:");
-                    printRequestMoneyTable(requestMoneyResult);
-                }
+                    case "friends":
+                        try (Connection connection = DriverManager.getConnection(url, user, password); //Establish a connection to the database
+                            Statement statement = connection.createStatement()) { //Create a statement object to execute SQL commands
+                            try (ResultSet friendsResult = statement.executeQuery("SELECT * FROM friends")) { //Execute a query to get all the friends from the database
+                                System.out.println("Friends Table:");
+                                printFriendsTable(friendsResult);
+                            } catch (SQLException e) {
+                                System.err.println("Error during database printing: " + e.getMessage());
+                            }
+                        }
+                        break;
+                    case "everything":  
+                        try (Connection connection = DriverManager.getConnection(url, user, password); //Establish a connection to the database
+                            Statement statement = connection.createStatement()) { //Create a statement object to execute SQL commands
+                            try (ResultSet usersResult = statement.executeQuery("SELECT * FROM users")) { //Execute a query to get all the users from the database
+                                System.out.println("Users Table:");
+                                printUserTable(usersResult);
+                            }
+                            try (ResultSet transactionsResult = statement.executeQuery("SELECT * FROM transactions")) { //Execute a query to get all the transactions from the database
+                                System.out.println("Transactions Table:");
+                                printTransactionsTable(transactionsResult);
+                            }
+                            try (ResultSet budgetsResult = statement.executeQuery("SELECT * FROM budget")) { //Execute a query to get all the budgets from the database
+                                System.out.println("Budgets Table:");
+                                printBudgetsTable(budgetsResult);
+                            }
+                            try (ResultSet requestMoneyResult = statement.executeQuery("SELECT * FROM requestMoney")) { //Execute a query to get all the request money from the database
+                                System.out.println("Request Money Table:");
+                                printRequestMoneyTable(requestMoneyResult);
+                            }
+                            try (ResultSet friendsResult = statement.executeQuery("SELECT * FROM friends")) { //Execute a query to get all the friends from the database
+                                System.out.println("Friends Table:");
+                                printFriendsTable(friendsResult);
+                            }
+                        }
+                        break;
+                    default:
+                        System.out.println("Invalid input");
+                    }
+            } while(!input.equals("exit"));
 
-                try (ResultSet friendsResult = statement.executeQuery("SELECT * FROM friends")) { //Execute a query to get all the friends from the database
-                    System.out.println("\nFriends Table:");
-                    printFriendsTable(friendsResult);
-                }
-
-            } catch (SQLException e) {
-                System.err.println("Error during database printing: " + e.getMessage());
-            }
-        } catch (ClassNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             System.err.println("Error during database printing: " + e.getMessage());
         }
     }
@@ -99,7 +154,8 @@ public class DatabasePrint {
                                ", Receiver ID: " + transactionsResult.getInt("id_receiver") +
                                ", Sender Name: " + transactionsResult.getString("name_of_sender") +
                                ", Value: " + transactionsResult.getDouble("value") +
-                               ", Type: " + transactionsResult.getString("type"));
+                               ", Type: " + transactionsResult.getString("type") +
+                               ", Date: " + transactionsResult.getTimestamp("transaction_date"));
         }
     }
 

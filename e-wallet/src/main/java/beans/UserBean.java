@@ -82,7 +82,7 @@ public class UserBean implements Serializable {
 
     private String resetToken;
 
-    @PersistenceContext(unitName = "e-walletPU")
+    @PersistenceContext
     private EntityManager em;
 
     @Inject

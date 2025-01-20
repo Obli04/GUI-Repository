@@ -26,7 +26,7 @@ import jakarta.validation.ValidationException;
 @ApplicationScoped
 public class AuthService {
     
-   @PersistenceContext(unitName = "e-walletPU")
+   @PersistenceContext
    private EntityManager em;
    
    @Inject
