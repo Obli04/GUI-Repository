@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
+import beans.entities.Transaction;
 import beans.entities.User;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
@@ -12,6 +13,14 @@ import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+
+/**
+ * PiggyBankBean is a managed bean that handles operations related to the piggy bank feature.
+ * This includes adding funds to the piggy bank, withdrawing funds, setting and managing savings goals,
+ * and enforcing lock periods for funds in the piggy bank.
+ *
+ * @author Arthur PHOMMACHANH - xphomma00
+ */
 
 @Named
 @SessionScoped
@@ -75,14 +84,25 @@ public class PiggyBankBean implements Serializable {
         if (currentUser != null) {
             double currentPiggyBank = currentUser.getPiggyBank();
             double currentBalance = currentUser.getBalance();
-            if(currentBalance < addAmount) {
+            if (currentBalance < addAmount) {
                 throw new IllegalStateException("Insufficient funds");
-            }   
+            }
             currentUser.setPiggyBank(currentPiggyBank + addAmount);
             currentUser.setBalance(currentBalance - addAmount);
+
+            Transaction transaction = new Transaction();
+            transaction.setReceiver(currentUser);
+            transaction.setType("Deposit");
+            transaction.setCategory("Piggy Bank Deposit");
+            transaction.setValue(addAmount);
+            transaction.setTransactionDate(LocalDateTime.now());
+
+            em.persist(transaction);
             saveUser(currentUser);
+
         }
     }
+
 
     public double getSavingGoalAmount() {
         User currentUser = userBean.getCurrentUser();
@@ -147,8 +167,21 @@ public class PiggyBankBean implements Serializable {
             double currentBalance = currentUser.getBalance();
             currentUser.setBalance(currentBalance + withdrawAmount);
             saveUser(currentUser);
+
+            // Create a transaction for the withdrawal
+            Transaction transaction = new Transaction();
+            transaction.setSender(null);
+            transaction.setReceiver(currentUser);
+            transaction.setValue(withdrawAmount);
+            transaction.setType("Withdraw");
+            transaction.setCategory("Piggy Bank Withdraw");
+            transaction.setTransactionDate(LocalDateTime.now());
+
+            em.persist(transaction);
+            saveUser(currentUser);
         }
     }
+
 
     private void reloadPage() {
     }
