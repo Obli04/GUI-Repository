@@ -21,13 +21,11 @@
     <div class="content">
         <div class="page-title">
             <h1>Request Money</h1>
-            <p>Request money from your friends or using email/variable symbol</p>
         </div>
         
         <div class="form-container">
             <h:form id="requestForm">
                 <div class="form-section">
-                    <h2>Recipient Details</h2>
                     <div class="field">
                         <p:outputLabel for="friendSelect" value="Select Friend" />
                         <p:selectOneMenu id="friendSelect" value="#{requestBean.recipientIdentifier}">
@@ -40,15 +38,16 @@
                     
                     <div class="field">
                         <p:outputLabel for="recipient" value="Or enter email/variable symbol" />
-                        <p:autoComplete id="recipient" value="#{requestBean.recipientIdentifier}"
+                        <p:autoComplete id="recipient" 
+                                      value="#{requestBean.recipientIdentifier}"
                                       completeMethod="#{requestBean.getFriendEmails}"
                                       placeholder="Enter email or variable symbol"
-                                      required="true" />
+                                      required="true"
+                                      requiredMessage="Please enter an email address or variable symbol"/>
                     </div>
                 </div>
 
                 <div class="form-section">
-                    <h2>Request Details</h2>
                     <div class="field">
                         <p:outputLabel for="amount" value="Amount"/>
                         <p:inputNumber id="amount" 

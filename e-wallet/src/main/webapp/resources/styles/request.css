@@ -1,7 +1,7 @@
 .content {
     max-width: 800px;
     margin: 2rem auto;
-    padding: 0 2rem;
+    padding: 6rem 2rem 0 2rem;
 }
 
 .page-title {
@@ -59,8 +59,8 @@
 
 /* Input styling */
 .ui-selectonemenu,
-.ui-autocomplete-input,
-.ui-inputnumber-input,
+.ui-autocomplete,
+.ui-inputnumber,
 .ui-inputtextarea {
     width: 100% !important;
     padding: 0.6rem !important;
@@ -69,6 +69,31 @@
     box-sizing: border-box !important;
     font-size: 1rem !important;
     background-color: #fff !important;
+}
+
+/* Add specific styling for autoComplete */
+.ui-autocomplete-input {
+    width: 100% !important;
+    min-width: 300px !important;
+}
+
+.ui-autocomplete {
+    width: 100% !important;
+}
+
+/* Add specific styling for inputNumber */
+.ui-inputnumber {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.ui-inputnumber-input {
+    width: 100% !important;
+    border: none !important;
+    padding: 0.6rem !important;
+    font-size: 1rem !important;
+    background: transparent !important;
+    outline: none !important;
 }
 
 /* Button styling */
@@ -112,8 +137,8 @@
 /* Responsive design */
 @media screen and (max-width: 768px) {
     .content {
-        padding: 1rem;
-        margin-top: 100px;
+        padding: 5rem 1rem 1rem 1rem;
+        margin-top: 0;
     }
     
     .form-container {
