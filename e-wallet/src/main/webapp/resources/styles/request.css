@@ -71,29 +71,30 @@
     background-color: #fff !important;
 }
 
-/* Add specific styling for autoComplete */
+/* Styling for autoComplete component */
 .ui-autocomplete-input {
     width: 100% !important;
-    min-width: 300px !important;
+    min-width: 300px !important; /* Ensures minimum width on larger screens */
 }
 
 .ui-autocomplete {
-    width: 100% !important;
+    width: 100% !important; /* Makes the dropdown list match input width */
 }
 
-/* Add specific styling for inputNumber */
+/* Styling for number input component */
 .ui-inputnumber {
-    display: flex !important;
-    align-items: center !important;
+    display: flex !important; /* Uses flexbox for layout */
+    align-items: center !important; /* Vertically centers the input and buttons */
 }
 
+/* Styles the actual number input field */
 .ui-inputnumber-input {
     width: 100% !important;
-    border: none !important;
+    border: none !important; /* Removes inner border since parent has border */
     padding: 0.6rem !important;
     font-size: 1rem !important;
     background: transparent !important;
-    outline: none !important;
+    outline: none !important; /* Removes default focus outline */
 }
 
 /* Button styling */
