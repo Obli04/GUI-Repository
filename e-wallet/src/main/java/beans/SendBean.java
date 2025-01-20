@@ -2,14 +2,20 @@ package beans;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.primefaces.PrimeFaces;
 
+import beans.entities.Friends;
 import beans.entities.Transaction;
 import beans.entities.User;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.model.SelectItem;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
@@ -35,6 +41,63 @@ public class SendBean implements Serializable {
 
     private String recipientIdentifier;
     private double amount;
+
+    /** Map to store email-to-name mappings for friends display */
+    private final Map<String, String> friendEmailToNameMap = new HashMap<>();
+
+    /**
+     * Gets a list of friends' names and emails for the current user.
+     * @return List of SelectItem with friend's name as label and email as value
+     */
+    public List<SelectItem> getFriendsList() {
+        User currentUser = userBean.getCurrentUser();
+        List<SelectItem> friendItems = new ArrayList<>();
+        friendEmailToNameMap.clear();
+        
+        try {
+            // Get friends where current user is user1
+            List<Friends> friendsAsUser1 = em.createQuery(
+                "SELECT f FROM Friends f WHERE f.user1.id = :userId", 
+                Friends.class)
+                .setParameter("userId", currentUser.getId())
+                .getResultList();
+                
+            // Get friends where current user is user2
+            List<Friends> friendsAsUser2 = em.createQuery(
+                "SELECT f FROM Friends f WHERE f.user2.id = :userId", 
+                Friends.class)
+                .setParameter("userId", currentUser.getId())
+                .getResultList();
+                
+            // Process friends from both queries
+            for (Friends friendship : friendsAsUser1) {
+                User friend = friendship.getUser2();
+                String displayName = friend.getFirstName() + " " + friend.getSecondName();
+                friendEmailToNameMap.put(friend.getEmail(), displayName);
+                friendItems.add(new SelectItem(friend.getEmail(), displayName));
+            }
+            
+            for (Friends friendship : friendsAsUser2) {
+                User friend = friendship.getUser1();
+                String displayName = friend.getFirstName() + " " + friend.getSecondName();
+                friendEmailToNameMap.put(friend.getEmail(), displayName);
+                friendItems.add(new SelectItem(friend.getEmail(), displayName));
+            }
+            
+            return friendItems;
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Automatically insert the email when a friend is selected from the dropdown.
+     */
+    public void onFriendSelect() {
+        if (recipientIdentifier != null && !recipientIdentifier.isEmpty()) {
+            PrimeFaces.current().ajax().update("sendForm:recipient");
+        }
+    }
 
     /**
      * Method for sending money between users, returns null if error occurs
