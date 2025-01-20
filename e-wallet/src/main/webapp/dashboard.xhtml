@@ -38,7 +38,9 @@
                     <i class="financial-card-icon pi pi-wallet"></i>
                     <h3 class="financial-card-title">Balance</h3>
                 </div>
-                <div class="financial-card-amount">#{userBean.currentUser.balance} CZK</div>
+                <div class="financial-card-amount"><h:outputText value="#{userBean.currentUser.balance}">
+                    <f:convertNumber maxFractionDigits="2" minFractionDigits="2"/>
+                </h:outputText> CZK</div>
             </div>
             
             <div class="financial-card budget">
