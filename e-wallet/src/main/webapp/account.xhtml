@@ -186,6 +186,18 @@
             </p:card>
         </div>
 
+        <!-- Friends Button -->
+        <p:card styleClass="settings-card">
+            <f:facet name="title">
+                <i class="pi pi-users"></i> Friends
+            </f:facet>
+            <h:form>
+                <p:commandButton value="Manage Friends"
+                                 action="friends.xhtml?faces-redirect=true"
+                                 styleClass="p-button-info full-width"/>
+            </h:form>
+        </p:card>
+
         <!-- First Confirmation Dialog -->
         <p:dialog header="Delete Account Confirmation" 
                   widgetVar="deleteAccountDialog" 
