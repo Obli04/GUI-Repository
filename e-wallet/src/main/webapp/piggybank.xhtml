@@ -199,7 +199,7 @@
                 <p:commandButton value="Proceed"
                                  action="#{piggyBankBean.finalBreakAction}"
                                  update="cardsForm messages"
-                                 oncomplete="PF('emergencyDialog').hide(); PF('clickChallengeDialog').show();"
+                                 oncomplete="PF('emergencyDialog').hide(); PF('unlockDialog').show();"
                                  styleClass="ui-button-primary" />
                 <p:commandButton value="Close"
                                  onclick="PF('emergencyDialog').hide();"
@@ -209,16 +209,20 @@
         </p:dialog>
 
         <!-- Dialog for unlocking the piggy bank -->
-        <p:dialog id="unlockDialog" widgetVar="unlockDialog" header="Piggy Bank Unlocked" modal="true" closable="false">
+        <p:dialog id="unlockDialog" widgetVar="unlockDialog" header="Unlock Piggy Bank" modal="true" closable="false">
             <h:outputText value="The piggy bank has been successfully unlocked, and all funds are now available." />
             <div class="center-button">
-                <p:commandButton value="Close"
+                <p:commandButton value="Confirm Unlock"
+                                 action="#{piggyBankBean.unlockPiggyBank}"
+                                 update="withdrawForm unlockDialog messages"
+                                 oncomplete="PF('unlockDialog').hide();"
+                                 styleClass="ui-button-primary" />
+                <p:commandButton value="Cancel"
                                  onclick="PF('unlockDialog').hide();"
                                  type="button"
-                                 styleClass="ui-button-primary" />
+                                 styleClass="ui-button-secondary" />
             </div>
         </p:dialog>
-
 
         <p:messages id="messages" showDetail="true" closable="true" styleClass="global-messages"/>
     </div>
