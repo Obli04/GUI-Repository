@@ -176,6 +176,7 @@ public class AuthService {
            user.setVerificationToken(null); //Remove the verification token (and token expiry)
            user.setTokenExpiry(null);
            em.merge(user); //Merge the changes with the user
+           em.flush(); //Execute changes
            return true; //We verified the email!
        }
        return false; //We didn't verify the email
@@ -290,6 +291,7 @@ public class AuthService {
            user.setVerificationToken(token); //Set the token
            user.setTokenExpiry(LocalDateTime.now().plusHours(1)); //Set the token expiry to 1 hour from now
            em.merge(user); //Merge the changes with the user
+           em.flush(); //Execute changes
            try {
                emailService.sendPasswordResetEmail(email, token); //Send the password reset email with the generated token
            } catch (Exception e) {
@@ -319,6 +321,7 @@ public class AuthService {
                    user.setVerificationToken(null); //Remove the verification token
                    user.setTokenExpiry(null); //Remove the token expiry
                    em.merge(user); //Merge the changes with the user
+                   em.flush(); //Execute changes
                    return true; //Password reset successful
                }
                else throw new Exception("Token expired"); //Throw exception if the token is expired   

@@ -80,6 +80,8 @@ public class DatabasePrint {
                                ", Balance: " + userResult.getDouble("balance") +
                                ", Budget: " + userResult.getDouble("budget") +
                                ", Piggy Bank: " + userResult.getDouble("piggy_bank") +
+                               ", Lockout End Time: " + userResult.getTimestamp("lockoutendtime") +
+                               ", Piggy Bank Goal: " + userResult.getDouble("piggybankgoal") +
                                ", IBAN: " + userResult.getString("iban") +
                                ", Variable Symbol: " + userResult.getString("variable_symbol"));
         }

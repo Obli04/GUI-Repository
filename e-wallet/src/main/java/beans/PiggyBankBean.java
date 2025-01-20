@@ -1,37 +1,35 @@
 package beans;
 
-import beans.entities.User;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
+import beans.entities.User;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+
 @Named
 @SessionScoped
 public class PiggyBankBean implements Serializable {
+
+    @PersistenceContext
+    private EntityManager em;
 
     private double addAmount = 0.0;
     private double withdrawAmount = 0.0;
     private double savingGoalAmount = 0.0;
     private LocalDateTime lockEndDate;
     private long lockDurationInDays;
+    private double piggyBank = 0.0;
 
-    private int clickCount = 0;
 
     @Inject
     private UserBean userBean;
-
-    public int getClickCount() {
-        return clickCount;
-    }
-
-    public void setClickCount(int clickCount) {
-        this.clickCount = clickCount;
-    }
 
     public double getAddAmount() {
         return addAmount;
@@ -49,16 +47,26 @@ public class PiggyBankBean implements Serializable {
         this.withdrawAmount = withdrawAmount;
     }
 
-    public double getCurrentBalance() {
-        User currentUser = userBean.getCurrentUser();
-        return currentUser != null ? currentUser.getPiggyBank() : 0.0;
-    }
-
     public boolean isFundsLocked() {
         User currentUser = userBean.getCurrentUser();
         return currentUser != null && lockEndDate != null && LocalDateTime.now().isBefore(lockEndDate);
     }
 
+    public double getPiggyBank() {
+        User currentUser = userBean.getCurrentUser();
+        return currentUser != null ? currentUser.getPiggyBank() : 0.0;
+    }
+
+    @Transactional
+    public void setPiggyBank(double piggyBank) {
+        User currentUser = userBean.getCurrentUser();
+        if (currentUser != null) {
+            currentUser.setPiggyBank(piggyBank);
+            saveUser(currentUser);
+        }
+    }
+
+    @Transactional
     public void addToBalance() {
         if (addAmount <= 0) {
             throw new IllegalArgumentException("Amount should be positive");
@@ -66,7 +74,12 @@ public class PiggyBankBean implements Serializable {
         User currentUser = userBean.getCurrentUser();
         if (currentUser != null) {
             double currentPiggyBank = currentUser.getPiggyBank();
+            double currentBalance = currentUser.getBalance();
+            if(currentBalance < addAmount) {
+                throw new IllegalStateException("Insufficient funds");
+            }   
             currentUser.setPiggyBank(currentPiggyBank + addAmount);
+            currentUser.setBalance(currentBalance - addAmount);
             saveUser(currentUser);
         }
     }
@@ -82,7 +95,7 @@ public class PiggyBankBean implements Serializable {
         }
         User currentUser = userBean.getCurrentUser();
         if (currentUser != null) {
-            currentUser.setBudget(savingGoal);
+            currentUser.setPiggyBank(savingGoal);
             saveUser(currentUser);
         }
     }
@@ -116,6 +129,7 @@ public class PiggyBankBean implements Serializable {
         return 0;
     }
 
+    @Transactional
     public void withdrawFromPiggyBank() {
         if (withdrawAmount <= 0) {
             throw new IllegalArgumentException("Amount should be positive");
@@ -130,6 +144,8 @@ public class PiggyBankBean implements Serializable {
             }
             double currentPiggyBank = currentUser.getPiggyBank();
             currentUser.setPiggyBank(currentPiggyBank - withdrawAmount);
+            double currentBalance = currentUser.getBalance();
+            currentUser.setBalance(currentBalance + withdrawAmount);
             saveUser(currentUser);
         }
     }
@@ -138,6 +154,7 @@ public class PiggyBankBean implements Serializable {
     }
 
     private void saveUser(User user) {
-        userBean.getCurrentUser().setPiggyBank(user.getPiggyBank());
+        em.merge(user); // Merge the changes with the user
+        em.flush(); // Execute changes
     }
 }
