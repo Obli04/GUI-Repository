@@ -13,7 +13,7 @@ body {
 .content {
     max-width: 800px;
     margin: 2rem auto;
-    padding: 0 1rem;
+    padding: 6rem 2rem 0 2rem;
 }
 
 .content h1 {
@@ -23,61 +23,63 @@ body {
     font-size: 2.5rem;
 }
 
-.container {
-    background: rgba(255, 255, 255, 0.95) !important;
-    padding: 2rem;
-    border-radius: 12px;
+.form-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    padding: 2rem;
     backdrop-filter: blur(10px);
 }
 
-.balance-header {
-    background-color: #4CAF50;
-    padding: 1.5rem;
-    color: white;
-    font-size: 1.8rem;
-    font-weight: 600;
-    text-align: center;
+.form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.balance-text {
+.form-section:last-child {
+    border-bottom: none;
+}
+
+.field {
+    margin-bottom: 1.2rem;
+}
+
+.field label {
     display: block;
-    margin-top: 0.5rem;
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: white;
-}
-
-.send-info {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.ui-panelgrid {
-    width: 100%;
-    margin-bottom: 1.5rem;
-    display: grid;
-    gap: 1.5rem;
-}
-
-.ui-panelgrid td {
-    padding: 0.75rem;
-    vertical-align: middle;
-}
-
-.ui-panelgrid label {
-    color: #2c3e50;
-    font-weight: 500;
-    font-size: 1.1em;
     margin-bottom: 0.5rem;
+    color: #2c3e50 !important;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
+/* Input styling */
+.ui-selectonemenu,
+.ui-inputtext,
+.ui-inputnumber,
+.ui-inputtextarea {
+    width: 100% !important;
+    padding: 0.75rem !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 4px !important;
+    font-size: 1rem !important;
+    background: white !important;
+    color: #2c3e50 !important;
+}
+
+.ui-selectonemenu-label {
+    color: #2c3e50 !important;
+}
+
+.ui-inputnumber {
+    display: block !important;
+    width: 100% !important;
+}
+
+/* Button styling */
 .button-container {
+    margin-top: 2rem;
     text-align: right;
-    margin-top: 1rem;
 }
 
 .button-container .ui-button {
@@ -115,53 +117,19 @@ body {
     transform: translateY(-1px);
 }
 
-.ui-inputtext, .ui-inputnumber, .ui-inputtextarea {
-    width: 100% !important;
-    padding: 0.75rem !important;
-    border: 1px solid #e0e0e0 !important;
-    border-radius: 4px !important;
-    font-size: 1rem !important;
-    transition: all 0.3s ease !important;
-    background: white !important;
-    color: #2c3e50 !important;
-}
-
-.ui-inputnumber {
-    display: block !important;
-    width: 100% !important;
-    border: none !important;
-    background: none !important;
-    box-shadow: none !important;
-}
-
-.ui-inputtext:focus, .ui-inputnumber input:focus {
-    border-color: #2196F3 !important;
-    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2) !important;
-    outline: none !important;
-}
-
-.ui-outputlabel {
-    font-weight: 500 !important;
-    color: #546E7A !important;
-    margin-bottom: 0.5rem !important;
-    display: block !important;
-    font-size: 0.9rem !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .button-container {
-        text-align: center;
+/* Responsive design */
+@media screen and (max-width: 768px) {
+    .content {
+        padding: 5rem 1rem 1rem 1rem;
+        margin-top: 0;
     }
     
-    .container {
+    .form-container {
         padding: 1.5rem;
     }
     
-    .content h1 {
-        font-size: 2rem;
+    .button-container {
+        text-align: center;
     }
     
     .button-container .ui-button {
@@ -184,4 +152,81 @@ body {
 
 .ui-messages-success {
     border-left: 4px solid #4CAF50 !important;
+}
+
+/* Remove the previous divider and add more spacing */
+.field:not(:last-child) {
+    margin-bottom: 2rem !important;
+    border-bottom: none;
+}
+
+.field::after {
+    display: none; /* Remove the previous divider */
+}
+
+/* Ensure inputs take full width */
+.ui-selectonemenu,
+.ui-inputtext,
+.ui-inputnumber {
+    width: 100% !important;
+    display: block !important;
+}
+
+/* Form Sections */
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.form-section:last-child {
+    border-bottom: none;
+}
+
+/* Output label styling */
+.ui-outputlabel {
+    color: #2c3e50 !important;
+    font-weight: 500 !important;
+}
+
+/* Form label improvements */
+.form-label {
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
+    margin-bottom: 0.75rem !important;
+    display: block !important;
+    font-size: 1rem !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Dialog styling */
+.ui-dialog {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+    background: #fff !important;
+    color: #2c3e50 !important;
+    padding: 1.25rem !important;
+    border-bottom: 1px solid #eee !important;
+}
+
+.ui-dialog .ui-dialog-content {
+    padding: 1.5rem !important;
+}
+
+.ui-button-warning {
+    background: #ff9800 !important;
+    border: none !important;
+    color: white !important;
+}
+
+.ui-button-warning:hover {
+    background: #f57c00 !important;
 } 

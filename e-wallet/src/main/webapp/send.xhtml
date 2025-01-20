@@ -16,29 +16,47 @@
         <ui:include src="navbar.xhtml"/>
     </h:form>
 
-    <div class="content" style="margin-top: 120px;">
-        <h1>Send Money</h1>
+    <div class="content">
+        <div class="page-title">
+            <h1>Send Money</h1>
+        </div>
         
-        <p:card styleClass="container">
-            <h:form>
-                <p:panelGrid columns="1" styleClass="ui-noborder">
-                    <p:outputLabel for="recipient" value="Recipient Email or Variable Symbol"/>
-                    <p:inputText id="recipient" 
-                               value="#{sendBean.recipientIdentifier}"
-                               required="true"
-                               requiredMessage="Please enter recipient's email or variable symbol"
-                               placeholder="Enter email or variable symbol"/>
-                    
-                    <p:outputLabel for="amount" value="Amount"/>
-                    <p:inputNumber id="amount" 
-                                 value="#{sendBean.amount}"
-                                 required="true"
-                                 minValue="0.01"
-                                 decimalPlaces="2"
-                                 symbol=" CZK"
-                                 symbolPosition="s"
-                                 placeholder="Enter amount"/>
-                </p:panelGrid>
+        <div class="form-container">
+            <h:form id="sendForm">
+                <div class="form-section">
+                    <div class="field">
+                        <p:outputLabel for="friendSelect" value="1. Select Friend" />
+                        <p:selectOneMenu id="friendSelect" value="#{sendBean.recipientIdentifier}">
+                            <f:selectItem itemLabel="Select a friend" itemValue="" />
+                            <f:selectItems value="#{sendBean.friendsList}" />
+                            <p:ajax event="change" listener="#{sendBean.onFriendSelect}" 
+                                    update="recipient" process="@this" />
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="field">
+                        <p:outputLabel for="recipient" value="2. Or enter email/variable symbol" />
+                        <p:inputText id="recipient" 
+                                   value="#{sendBean.recipientIdentifier}"
+                                   required="true"
+                                   requiredMessage="Please enter recipient's email or variable symbol"
+                                   placeholder="Enter email or variable symbol"/>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="field">
+                        <p:outputLabel for="amount" value="3. Enter Amount"/>
+                        <p:inputNumber id="amount" 
+                                     value="#{sendBean.amount}"
+                                     required="true"
+                                     minValue="0.01"
+                                     decimalPlaces="2"
+                                     symbol=" CZK"
+                                     symbolPosition="s"
+                                     placeholder="Enter amount"/>
+                    </div>
+                </div>
                 
                 <div class="button-container">
                     <p:button value="Cancel"
@@ -46,7 +64,7 @@
                              styleClass="p-button-secondary"/>
                     <p:commandButton value="Send Money"
                                    action="#{sendBean.sendMoney}"
-                                   styleClass="p-button-success"
+                                   styleClass="p-button-primary"
                                    update="@form"/>
                 </div>
                 
@@ -54,7 +72,7 @@
                     <p:autoUpdate />
                 </p:messages>
             </h:form>
-        </p:card>
+        </div>
     </div>
 
     <p:dialog header="Budget Warning" widgetVar="budgetWarningDialog" modal="true" 
