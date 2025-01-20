@@ -135,25 +135,26 @@ public class RequestBean implements Serializable {
      */
     private User findUserByIdentifier(String identifier) {
         try {
-            // First attempt: find by email
-            User user = em.createQuery("SELECT u FROM User u WHERE u.email = :identifier", User.class)
+            // Check if identifier contains only numbers
+            boolean isNumeric = identifier.chars().allMatch(Character::isDigit);
+            
+            if (isNumeric) {
+                // Search by variable symbol for numeric-only identifier
+                return em.createQuery("SELECT u FROM User u WHERE u.variableSymbol = :identifier", User.class)
                          .setParameter("identifier", identifier)
                          .getResultList()
                          .stream()
                          .findFirst()
                          .orElse(null);
-            
-            // Second attempt: find by variable symbol if email search failed
-            if (user == null) {
-                user = em.createQuery("SELECT u FROM User u WHERE u.variableSymbol = :identifier", User.class)
+            } else {
+                // Search by email for alphanumeric identifier
+                return em.createQuery("SELECT u FROM User u WHERE u.email = :identifier", User.class)
                          .setParameter("identifier", identifier)
                          .getResultList()
                          .stream()
                          .findFirst()
                          .orElse(null);
             }
-            
-            return user;
         } catch (Exception e) {
             return null;
         }
