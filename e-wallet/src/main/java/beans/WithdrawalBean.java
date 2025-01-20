@@ -1,7 +1,7 @@
 package beans;
 
 import java.io.Serializable;
-
+import java.time.LocalDateTime;
 import beans.entities.Transaction;
 import beans.entities.User;
 import jakarta.enterprise.context.SessionScoped;
@@ -55,7 +55,7 @@ public class WithdrawalBean implements Serializable {
             withdrawal.setValue(amount);
             withdrawal.setType("Withdraw");
             withdrawal.setCategory("Bank Withdrawal - " + currentUser.getIban());
-            
+            withdrawal.setTransactionDate(LocalDateTime.now());
             currentUser.setBalance(currentUser.getBalance() - amount);
             
             em.persist(withdrawal);
