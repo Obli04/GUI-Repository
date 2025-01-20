@@ -100,19 +100,24 @@ public class PiggyBankBean implements Serializable {
         }
     }
 
+    // Ensure the property error doesn't show up
+    public double getPiggyBankGoal() {
+        return userBean.getCurrentUser().getPiggyBankGoal(); // Retrieve from the current user
+    }
 
     public double getSavingGoalAmount() {
         return userBean.getCurrentUser().getPiggyBankGoal();
     }
 
+    @Transactional
     public void setSavingGoalAmount(double savingGoal) {
         if (savingGoal <= 0) {
             throw new IllegalArgumentException("Saving goal should be positive");
         }
         User currentUser = userBean.getCurrentUser();
         if (currentUser != null) {
-            currentUser.setPiggyBank(savingGoal);
-            saveUser(currentUser);
+            currentUser.setPiggyBankGoal(savingGoal); // Correctly update the saving goal
+            saveUser(currentUser); // Persist the change
         }
     }
 
