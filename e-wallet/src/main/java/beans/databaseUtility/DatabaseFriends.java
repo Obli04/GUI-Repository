@@ -10,7 +10,7 @@ import java.util.Scanner;
 import io.github.cdimascio.dotenv.Dotenv;
 
 /**
- * A temporary class friend relationships in the database until the friend system is implemented.
+ * A temporary class to manage friend relationships in the database until the friend system is implemented.
  * This class provides methods to add and remove friendships between users.
  * 
  * @author Danilo Spera
