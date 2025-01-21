@@ -279,6 +279,8 @@
             </h:form>
         </p:dialog>
 
+        <p:poll interval="3" update="lockStatusCard" />
+
         <!-- Lock Status Card -->
         <h:panelGroup id="lockStatusCard">
             <div class="financial-card lock-status">
@@ -287,7 +289,9 @@
                     <h3 class="financial-card-title">Lock Status</h3>
                 </div>
                 <div class="financial-card-amount">
-                    <h:outputText value="#{piggyBankBean.isFundsLocked() ? 'Locked' : 'Unlocked'}" />
+                    <h:outputText value="#{piggyBankBean.isFundsLocked() ? 'Locked' : 'Unlocked'}"
+                                  style="font-size: 24px; font-weight: bold;"
+                                  styleClass="#{piggyBankBean.isFundsLocked() ? 'status-locked' : 'status-unlocked'}" />
                 </div>
             </div>
         </h:panelGroup>
