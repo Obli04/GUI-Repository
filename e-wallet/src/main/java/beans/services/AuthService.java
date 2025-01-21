@@ -503,7 +503,7 @@ public class AuthService {
        if (!BCrypt.checkpw(password, user.getPassword())) { //If the password is incorrect throw an exception
            throw new SecurityException("Incorrect password");
        }
-       if(user.getBalance() != 0) { //If the user has a balance throw an exception
+       if(user.getBalance() >= 0.01) { //If the user has a balance throw an exception
            throw new Exception("Your balance must be 0 to delete the account");
        }
        User deletedAccount = findUserByEmail("scacciadavide@gmail.com"); //Get the account with "Deleted Account" as name
@@ -517,6 +517,9 @@ public class AuthService {
              .setParameter("deletedAccount", deletedAccount)
              .setParameter("userId", user.getId())
              .executeUpdate();
+            /*em.createQuery("DELETE FROM requestMoney WHERE sender.id = :userId OR receiver.id = :userId") //Delete money requests where user is sender or receiver
+              .setParameter("userId", user.getId())
+              .executeUpdate();*/
         
            User managedUser = em.merge(user); //Merge the changes with the user
            em.remove(managedUser); //Remove the user
