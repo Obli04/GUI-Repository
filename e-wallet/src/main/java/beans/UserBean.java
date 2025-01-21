@@ -50,40 +50,22 @@ import jakarta.validation.ValidationException;
 public class UserBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    //Form fields
     private String email;
     private String password;
     private String firstName;
     private String secondName;
     private String twoFactorCode;
     private String iban;
-    
-    //Session data
+    private String loginMessage;
     private User currentUser;
+    private String currentQRSecret;
     private StreamedContent qrCodeImage;
     
     @Inject
     private AuthService authService;
 
-    private String message;
-    private String messageStyle;
-    
     @Inject
     private DepositBean depositBean;
-
-    private String currentPassword;
-    private String newPassword;
-    private String confirmPassword;
-
-    private boolean showTwoFactorInput = false;
-    private User tempUser;
-
-    private String currentQRSecret;
-
-    private String resetToken;
-
-    @PersistenceContext
-    private EntityManager em;
 
     @Inject
     private SessionTimeoutConfig sessionTimeoutConfig;
@@ -91,7 +73,26 @@ public class UserBean implements Serializable {
     @Inject
     private RateLimiterService rateLimiterService;
 
-    private String loginMessage;
+    private String message;
+    private String messageStyle;
+    
+
+    //Update password fields
+    private String currentPassword;
+    private String newPassword;
+    private String confirmPassword;
+
+    //2FA fields
+    private boolean showTwoFactorInput = false;
+    private User tempUser;
+
+
+    //Reset password fields
+    private String resetToken;
+
+    @PersistenceContext
+    private EntityManager em;
+
 
     /**
      * Handles the registration process for the user.
@@ -229,7 +230,7 @@ public class UserBean implements Serializable {
     }*/
 
     /**
-     * Helper methods for displaying messages
+     * Add error message
      */
     private void addErrorMessage(String summary, String detail) {
         FacesContext.getCurrentInstance().addMessage(null, 
@@ -243,14 +244,6 @@ public class UserBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, 
             new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail)); //Show an info message
     }
-
-    /**
-     * Check if user is logged in
-     */
-    public boolean isLoggedIn() {
-        return currentUser != null; //Check if the current user is not null
-    }
-
     /**
      * Logout method, it will clear the user data and invalidate the session
      * 
@@ -267,7 +260,19 @@ public class UserBean implements Serializable {
         this.firstName = null;
         this.secondName = null;
         this.iban = null;
+        this.currentQRSecret = null;
+        this.loginMessage = null;
+        this.twoFactorCode = null;
+        this.resetToken = null;
+        this.currentUser = null;
+        this.qrCodeImage = null;
+        this.currentPassword = null;
+        this.newPassword = null;
+        this.confirmPassword = null;
+        this.showTwoFactorInput = false;
+        this.tempUser = null;
         
+
         if (session != null) session.invalidate(); //Invalidate the session
         facesContext.responseComplete(); //Complete the response
         
@@ -771,4 +776,5 @@ public class UserBean implements Serializable {
     public String getLoginMessage() { return loginMessage; }
     public void setLoginMessage(String loginMessage) { this.loginMessage = loginMessage; }
     public void clearLoginMessage() { this.loginMessage = null; }
+    public boolean isLoggedIn() { return currentUser != null; }
 }
