@@ -127,14 +127,13 @@ public class AuthService {
            }
            
            RegistrationResult result = new RegistrationResult(); //Create a new RegistrationResult object
+           result.setSuccess(true); //Set success to true (user has been registered into database already either way)
            try {
                emailService.sendVerificationEmail(user.getEmail(), token); //Send the verification email with the generated token
-               result.setSuccess(true); //Set success to true
                result.setEmailSent(true); //Set email sent to true
                result.setMessage("Account created and verification email sent to: " + user.getEmail() + //Set email status to valid
                            ". Please check your inbox and spam folder.");
            } catch (Exception e) {
-               result.setSuccess(true); //Set success to true
                result.setEmailSent(false); //Set email sent to false
                result.setMessage("Account created successfully, but we couldn't send the verification email. " + //If problem while sending email then ask the user to resend the verification email during login
                            "Please try requesting a new verification email after logging in.");
@@ -362,7 +361,7 @@ public class AuthService {
    }
 
    /**
-    * Updates a user's information.
+    * Updates a user's information (email, first name, last name, iban).
     *
     * @param user the user to update
     * @throws Exception if the user is not found or update fails
