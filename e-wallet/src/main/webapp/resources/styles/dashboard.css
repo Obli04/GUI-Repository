@@ -572,18 +572,19 @@ h1,
 }
 
 .ui-growl-item {
-    background: rgba(255, 0, 0, 0.9) !important;
+    background: white !important;
     border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
 .ui-growl-message {
-    color: white !important;
+    color: #333 !important;
 }
 
 .ui-growl-title {
     font-size: 1.1em !important;
-    font-weight: bold !important;
-    color: white !important;
+    font-weight: 600 !important;
+    color: #333 !important;
 }
 
 .received-request {
