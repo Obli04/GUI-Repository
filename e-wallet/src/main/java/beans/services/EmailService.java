@@ -16,7 +16,7 @@ import jakarta.mail.internet.MimeMessage;
 
 /**
  * Service for sending emails, including verification and password reset emails.
- * Utilizes Jakarta Mail API to send emails through an SMTP server.
+ * Utilizes Jakarta Mail API to send emails through an SMTP server (Gmail).
  * 
  * @author Davide Scaccia - xscaccd00
  */
@@ -44,8 +44,6 @@ public class EmailService {
         props.put("mail.smtp.port", SMTP_PORT);
         props.put("mail.smtp.ssl.protocols", "TLSv1.2");
         props.put("mail.smtp.ssl.trust", SMTP_HOST);
-        props.put("mail.debug", "true");
-        props.put("mail.debug.auth", "true");
         
         try {
             Session session = Session.getInstance(props, new Authenticator() { //Session for the SMTP server
@@ -77,8 +75,8 @@ public class EmailService {
 
             message.setContent(htmlContent, "text/html; charset=utf-8"); //Setting the content type
             Transport.send(message); //Sending the message
-        } catch (MessagingException e) {
-            throw new Exception("Failed to send verification email: " + e.getMessage(), e); //Throwing an exception
+        } catch (MessagingException e) { //If we get an error we throw an exception
+            throw new Exception("Failed to send verification email: " + e.getMessage(), e);
         }
     }
 
@@ -98,8 +96,6 @@ public class EmailService {
         props.put("mail.smtp.port", SMTP_PORT);
         props.put("mail.smtp.ssl.protocols", "TLSv1.2");
         props.put("mail.smtp.ssl.trust", SMTP_HOST);
-        props.put("mail.debug", "true");
-        props.put("mail.debug.auth", "true");
 
         try { //Session for the SMTP server
             Session session = Session.getInstance(props, new Authenticator() {
@@ -132,7 +128,7 @@ public class EmailService {
 
             message.setContent(htmlContent, "text/html; charset=utf-8"); //Setting the content type
             Transport.send(message); //Sending the message
-        } catch (MessagingException e) {
+        } catch (MessagingException e) { //If we get an error we throw an exception
             throw new Exception("Failed to send password reset email: " + e.getMessage());
         }
     }
@@ -153,8 +149,6 @@ public class EmailService {
         props.put("mail.smtp.port", SMTP_PORT);
         props.put("mail.smtp.ssl.protocols", "TLSv1.2");
         props.put("mail.smtp.ssl.trust", SMTP_HOST);
-        props.put("mail.debug", "true");
-        props.put("mail.debug.auth", "true");
 
         try {
             Session session = Session.getInstance(props, new Authenticator() {
@@ -188,7 +182,7 @@ public class EmailService {
 
             message.setContent(htmlContent, "text/html; charset=utf-8");
             Transport.send(message);
-        } catch (MessagingException e) {
+        } catch (MessagingException e) { //If we get an error we throw an exception
             throw new Exception("Failed to send 2FA code email: " + e.getMessage());
         }
     }
@@ -209,8 +203,6 @@ public class EmailService {
         props.put("mail.smtp.port", SMTP_PORT);
         props.put("mail.smtp.ssl.protocols", "TLSv1.2");
         props.put("mail.smtp.ssl.trust", SMTP_HOST);
-        props.put("mail.debug", "true");
-        props.put("mail.debug.auth", "true");
 
         try {
             Session session = Session.getInstance(props, new Authenticator() {
@@ -246,7 +238,7 @@ public class EmailService {
 
             message.setContent(htmlContent, "text/html; charset=utf-8");
             Transport.send(message);
-        } catch (MessagingException e) {
+        } catch (MessagingException e) { //If we get an error we throw an exception
             throw new Exception("Failed to send money request email: " + e.getMessage());
         }
     }

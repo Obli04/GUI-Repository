@@ -24,8 +24,8 @@ public class SessionTimeoutConfig {
      * inactive interval for the associated HttpSession.
      */
     public void configureSessionTimeout() {
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(true);
-        session.setMaxInactiveInterval(SESSION_TIMEOUT_IN_MINUTES * 60);
+        FacesContext facesContext = FacesContext.getCurrentInstance(); //Get the current FacesContext
+        HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(true); //Get the current session
+        session.setMaxInactiveInterval(SESSION_TIMEOUT_IN_MINUTES * 60); //Set the maximum inactive interval for the session
     }
 }

@@ -19,6 +19,7 @@
     </h:head>
     
     <h:body>
+        <!-- Navbar -->
         <div class="header">
             <h:link outcome="index" styleClass="logo-container">
                 <h:graphicImage library="images" name="cash-hive-logo.png" alt="CashHive Logo" style="width: 175px; height: 50px;"/>
@@ -33,7 +34,8 @@
                 </h:panelGroup>
             </div>
         </div>
-    
+
+        <!-- Main Body -->
         <div class="p-d-flex p-jc-center p-ai-center" style="height: 100vh; display: flex; align-items: center; justify-content: center;">
             <p:card styleClass="login-card">
                 <h1 class="p-text-center" style="color: black;">
@@ -47,8 +49,10 @@
                                      process="@this" />
                 </h:form>
 
+                <!-- Login Form -->
                 <h:form id="loginForm" styleClass="login-form">
                     <div class="form-container">
+
                         <!-- Message Panel -->
                         <p:outputPanel id="messagePanel" styleClass="message-panel">
                             <h:outputText value="#{userBean.loginMessage}" 
@@ -122,8 +126,10 @@
                             </div>
                         </p:outputPanel>
                         
+                        <!-- Messages -->
                         <p:messages id="messages" showDetail="true" closable="true" />
                         
+                        <!-- Links to Register / Forgot Password -->
                         <div class="links-container">
                             <p:link outcome="register" 
                                     value="Create new account"

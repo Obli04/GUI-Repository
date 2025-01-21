@@ -8,9 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import jakarta.enterprise.context.ApplicationScoped;
 
 /**
- * Service for limiting the rate of actions performed by users.
- * This service tracks the number of attempts made by a user to login and locks them out
- * for a specified duration if they exceed the maximum allowed attempts.
+ * Service for limiting the rate of login attempts made by a user for a specific email.
+ * Tracks the number of attempts made by a user to login and locks them out
+ * for 5 minutes if they exceed the maximum allowed attempts (5).
  * 
  * @author Davide Scaccia - xscaccd00
  */
@@ -33,12 +33,12 @@ public class RateLimiterService {
         cleanupExpiredEntries(); //Clean up expired entries
         
         LocalDateTime lockoutEndTime = lockoutTime.get(email); //Get the lockout end time
-        if (lockoutEndTime != null && LocalDateTime.now().isBefore(lockoutEndTime)) {
-            return false; //Return false if the user is locked out
+        if (lockoutEndTime != null && LocalDateTime.now().isBefore(lockoutEndTime)) { //Return false if the user is locked out
+            return false;
         }
 
-        if (lockoutEndTime != null && LocalDateTime.now().isAfter(lockoutEndTime)) {
-            attemptCount.remove(email); //Remove the attempt count and lockoutTime if the user is not locked out anymore
+        if (lockoutEndTime != null && LocalDateTime.now().isAfter(lockoutEndTime)) { //Remove the attempt count and lockoutTime if the user is not locked out anymore
+            attemptCount.remove(email);
             lockoutTime.remove(email);
         }
 
@@ -52,8 +52,8 @@ public class RateLimiterService {
      * @param email the email of the user
      */
     public void recordFailedAttempt(String email) {
-        AtomicInteger attempts = attemptCount.computeIfAbsent(email, k -> new AtomicInteger(0));
-        if (attempts.incrementAndGet() >= MAX_ATTEMPTS) {
+        AtomicInteger attempts = attemptCount.computeIfAbsent(email, k -> new AtomicInteger(0)); //If the email is not present in the map, create a new AtomicInteger with a value of 0
+        if (attempts.incrementAndGet() >= MAX_ATTEMPTS) { //If the number of attempts is greater than or equal to the maximum allowed attempts, lock the user out for 5 minutes
             lockoutTime.put(email, LocalDateTime.now().plusMinutes(LOCK_DURATION_MINUTES));
         }
     }

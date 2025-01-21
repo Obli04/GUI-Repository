@@ -12,6 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </h:head>
 <h:body>
+    <!-- Navbar -->
     <div class="header">
         <h:link outcome="index" styleClass="logo-container">
             <h:graphicImage library="images" name="cash-hive-logo.png" alt="CashHive Logo"/>
@@ -22,6 +23,7 @@
         </div>
     </div>
 
+    <!-- Main Body -->
     <f:metadata>
         <f:viewParam name="token" value="#{verificationBean.token}"/>
         <f:event type="preRenderView" listener="#{verificationBean.verifyEmail}"/>
