@@ -1,0 +1,9 @@
+beans
+beans.databaseUtility
+beans.deposit
+beans.deposit.api
+beans.deposit.services
+beans.entities
+beans.services
+beans.transaction.api
+beans.transaction.services
