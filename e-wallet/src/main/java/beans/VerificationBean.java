@@ -18,14 +18,14 @@ import jakarta.inject.Named;
 @RequestScoped
 public class VerificationBean {
     
-    private String token;
+    private String token; //Token in the URL
     
     @Inject
-    private AuthService authService;
+    private AuthService authService; //Service for authentication
     
     /**
      * Verifies the user's email using the provided token.
-     * If the token is valid, the user's email is marked as verified, and a success message is displayed.
+     * If the token is valid, the user's email gets verified, and a success message is displayed.
      * If the token is invalid or expired, an error message is displayed.
      * 
      * @return a navigation outcome string, or null if verification fails

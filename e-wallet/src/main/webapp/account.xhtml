@@ -13,13 +13,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </h:head>
 <h:body>
+    <!-- Navbar -->
     <h:form id="navForm">
         <ui:include src="navbar.xhtml"/>
     </h:form>
+
+    <!-- Messages -->
     <p:growl id="growl" showDetail="true" life="5000" position="top-right">
         <p:autoUpdate />
     </p:growl>
 
+    <!-- Main Body (Account Settings Card) -->
     <div class="dashboard-content" style="margin-top: 120px;">
         <div class="user-info-card">
             <div class="user-welcome">
@@ -36,6 +40,7 @@
             </div>
         </div>
 
+        <!-- Profile Settings Card -->
         <div class="dashboard-grid">
             <p:card styleClass="settings-card">
                 <f:facet name="title">
@@ -120,6 +125,7 @@
                 </h:form>
             </p:card>
 
+            <!-- Two-Factor Authentication Card -->
             <p:card styleClass="settings-card">
                 <f:facet name="title">
                     <i class="pi pi-shield"></i> Two-Factor Authentication
@@ -160,6 +166,7 @@
                             </div>
                         </h:panelGroup>
 
+                        <!-- Disable 2FA -->
                         <h:panelGroup id="disablePanel" rendered="#{userBean.currentUser.twoFactorEnabled}">
                             <div class="form-group">
                                 <p:outputLabel for="twoFactorCode" value="2FA Code" styleClass="field-label"/>
@@ -174,7 +181,8 @@
                         </h:panelGroup>
                     </div>
                 </h:form>
-                
+
+                <!-- Send 2FA Code -->
                 <h:form id="twoFactorFormCode">
                     <p:commandLink value="Don't have access to your 2FA code?"
                             action="#{userBean.send2FACode}"

@@ -13,15 +13,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 /**
- * Security filter for protecting sensitive pages by ensuring that the user is authenticated.
- * This filter checks if a user is logged in before allowing access to certain pages.
+ * Security filter for protecting pages that should only be accessed by authenticated users.
  * If the user is not logged in, they are redirected to the login page.
  * 
  * @author Davide Scaccia - xscaccd00
  */
 @WebFilter(filterName = "SecurityFilter", urlPatterns = {
-    "/dashboard.xhtml", "/deposit.xhtml", "/withdraw.xhtml", 
-    "/budget.xhtml", "/account.xhtml", "/transactions.xhtml", "/transfer.xhtml", "/piggybank.xhtml", "/request.xhtml", "/send.xhtml", "/friends.xhtml"
+    "/dashboard.xhtml", "/deposit.xhtml", "/withdraw.xhtml", "/budget.xhtml", "/account.xhtml", "/transactions.xhtml", 
+    "/transfer.xhtml", "/piggybank.xhtml", "/request.xhtml", "/send.xhtml", "/friends.xhtml" //All pages that require authentication
 })
 public class SecurityFilter implements Filter {
 
