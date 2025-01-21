@@ -2,11 +2,14 @@ package beans;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import beans.entities.Transaction;
 import beans.entities.User;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
@@ -203,6 +206,68 @@ public class PiggyBankBean implements Serializable {
         }
     }
 
+    @Transactional
+    public void breakPiggyBank() {
+        User currentUser = userBean.getCurrentUser();
+
+        if (currentUser != null) {
+            if (isFundsLocked()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Piggy Bank Locked",
+                                "The piggy bank is locked until " + getFormattedLockEndDate()));
+                return;
+            }
+
+            double piggyBankAmount = currentUser.getPiggyBank();
+
+            if (piggyBankAmount > 0) {
+                currentUser.setBalance(currentUser.getBalance() + piggyBankAmount);
+
+                currentUser.setPiggyBank(0.0);
+                currentUser.setPiggyBankGoal(0.0);
+
+                Transaction transaction = new Transaction();
+                transaction.setSender(currentUser);
+                transaction.setReceiver(currentUser);
+                transaction.setType("Break Piggy Bank");
+                transaction.setCategory("Emergency");
+                transaction.setValue(piggyBankAmount);
+                transaction.setTransactionDate(LocalDateTime.now());
+
+                em.persist(transaction);
+
+                saveUser(currentUser);
+
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                "Piggy Bank Broken",
+                                "Funds transferred to your balance. Piggy bank and savings goal reset."));
+            } else {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_WARN,
+                                "Empty Piggy Bank",
+                                "The piggy bank is already empty."));
+            }
+        }
+    }
+
+    public String getFormattedLockEndDate() {
+        User currentUser = userBean.getCurrentUser();
+        if (currentUser != null && currentUser.getLockoutEndTime() != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+            return currentUser.getLockoutEndTime().format(formatter);
+        }
+        return "N/A"; // Ensure it's always a string
+    }
+
+
+    public String getLockStatusTitle() {
+        if (isFundsLocked()) {
+            return "Piggy bank is locked until " + getFormattedLockEndDate();
+        }
+        return "";
+    }
 
     private void saveUser(User user) {
         em.merge(user);
