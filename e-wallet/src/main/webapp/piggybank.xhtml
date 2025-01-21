@@ -55,6 +55,23 @@
             </div>
         </h:form>
 
+        <p:poll interval="1" update="lockStatusCard" />
+
+        <!-- Lock Status Card -->
+        <h:panelGroup id="lockStatusCard">
+            <div class="financial-card lock-status">
+                <div class="financial-card-header">
+                    <i class="financial-card-icon pi pi-lock"></i>
+                    <h3 class="financial-card-title">Lock Status</h3>
+                </div>
+                <div class="financial-card-amount">
+                    <h:outputText value="#{piggyBankBean.isFundsLocked() ? 'Locked' : 'Unlocked'}"
+                                  style="font-size: 24px; font-weight: bold;"
+                                  styleClass="#{piggyBankBean.isFundsLocked() ? 'status-locked' : 'status-unlocked'}" />
+                </div>
+            </div>
+        </h:panelGroup>
+
         <div class="form-cards-container">
 
             <!-- Deposit Form -->
@@ -183,10 +200,10 @@
 
             <!-- Emergency Button -->
             <p:card styleClass="form-card">
-                <h2 class="section-title">Emergency Button</h2>
+                <h2 class="section-title">Emergency Unlock</h2>
                 <h:form>
                     <div class="center-button">
-                        <p:commandButton value="Emergency Button"
+                        <p:commandButton value="Emergency Unlock"
                                          onclick="PF('emergencyBreakDialog').show();"
                                          type="button"
                                          styleClass="ui-button-danger" />
@@ -254,16 +271,50 @@
                 <div class="center-button">
                     <p:commandButton value="Break Piggy Bank"
                                      actionListener="#{piggyBankBean.prepareBreakDialog}"
-                                     onclick="PF('breakConfirmationDialog').show();"
-                                     update="messages breakConfirmationDialog"
+                                     onclick="PF('breakStep1Dialog').show();"
+                                     update="messages breakStep1Dialog"
                                      styleClass="ui-button-danger" />
                 </div>
             </h:form>
         </p:card>
 
-        <!-- Break Piggy Bank Dialog -->
-        <p:dialog id="breakConfirmationDialog" widgetVar="breakConfirmationDialog" header="Break Piggy Bank" modal="true" closable="false">
-            <h:outputText value="Breaking the piggy bank will transfer all funds to your balance and reset the savings goal. This action cannot be undone. Proceed?" />
+        <!-- Break Piggy Bank Dialog - Step 1 -->
+        <p:dialog id="breakStep1Dialog" widgetVar="breakStep1Dialog" header="Break Piggy Bank" modal="true" closable="false">
+            <h:outputText value="Breaking the piggy bank is a significant action. Are you sure you want to continue?" />
+            <h:form>
+                <div class="center-button">
+                    <p:commandButton value="Next"
+                                     onclick="PF('breakStep1Dialog').hide(); PF('breakStep2Dialog').show();"
+                                     type="button"
+                                     styleClass="ui-button-primary" />
+                    <p:commandButton value="Cancel"
+                                     onclick="PF('breakStep1Dialog').hide();"
+                                     type="button"
+                                     styleClass="ui-button-secondary" />
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <!-- Break Piggy Bank Dialog - Step 2 -->
+        <p:dialog id="breakStep2Dialog" widgetVar="breakStep2Dialog" header="Break Piggy Bank - Confirmation" modal="true" closable="false">
+            <h:outputText value="Breaking the piggy bank will transfer all funds to your balance and reset the savings goal. Proceeding will erase your savings progress." />
+            <h:form>
+                <div class="center-button">
+                    <p:commandButton value="Next"
+                                     onclick="PF('breakStep2Dialog').hide(); PF('breakConfirmationDialog').show();"
+                                     type="button"
+                                     styleClass="ui-button-primary" />
+                    <p:commandButton value="Cancel"
+                                     onclick="PF('breakStep2Dialog').hide();"
+                                     type="button"
+                                     styleClass="ui-button-secondary" />
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <!-- Break Piggy Bank Dialog - Step 3 -->
+        <p:dialog id="breakConfirmationDialog" widgetVar="breakConfirmationDialog" header="Final Confirmation" modal="true" closable="false">
+            <h:outputText value="This is the final confirmation. Breaking the piggy bank is irreversible. All funds will be transferred to your balance. Are you absolutely sure?" />
             <h:form>
                 <div class="center-button">
                     <p:commandButton value="Proceed"
@@ -271,31 +322,13 @@
                                      update="messages cardsForm lockStatusCard"
                                      oncomplete="PF('breakConfirmationDialog').hide();"
                                      styleClass="ui-button-primary" />
-                    <p:commandButton value="Close"
+                    <p:commandButton value="Cancel"
                                      onclick="PF('breakConfirmationDialog').hide();"
                                      type="button"
                                      styleClass="ui-button-secondary" />
                 </div>
             </h:form>
         </p:dialog>
-
-        <p:poll interval="3" update="lockStatusCard" />
-
-        <!-- Lock Status Card -->
-        <h:panelGroup id="lockStatusCard">
-            <div class="financial-card lock-status">
-                <div class="financial-card-header">
-                    <i class="financial-card-icon pi pi-lock"></i>
-                    <h3 class="financial-card-title">Lock Status</h3>
-                </div>
-                <div class="financial-card-amount">
-                    <h:outputText value="#{piggyBankBean.isFundsLocked() ? 'Locked' : 'Unlocked'}"
-                                  style="font-size: 24px; font-weight: bold;"
-                                  styleClass="#{piggyBankBean.isFundsLocked() ? 'status-locked' : 'status-unlocked'}" />
-                </div>
-            </div>
-        </h:panelGroup>
-
 
         <p:messages id="messages" showDetail="true" closable="true" styleClass="global-messages"/>
     </div>
