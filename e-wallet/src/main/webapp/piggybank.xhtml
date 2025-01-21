@@ -25,6 +25,7 @@
         <h1>Piggy Bank</h1>
 
         <h:form id="cardsForm">
+            <p:poll interval="3" update="savingGoalCard piggyBankCard" />
             <div class="financial-cards-container">
                 <!-- Saving Goal Card -->
                 <h:panelGroup id="savingGoalCard">
@@ -42,13 +43,15 @@
                 </h:panelGroup>
 
                 <!-- Piggy Bank Card -->
-                <div class="financial-card piggy">
-                    <div class="financial-card-header">
-                        <i class="financial-card-icon pi pi-money-bill"></i>
-                        <h3 class="financial-card-title">Piggy Bank</h3>
+                <h:panelGroup id="piggyBankCard">
+                    <div class="financial-card piggy">
+                        <div class="financial-card-header">
+                            <i class="financial-card-icon pi pi-money-bill"></i>
+                            <h3 class="financial-card-title">Piggy Bank</h3>
+                        </div>
+                        <div class="financial-card-amount">#{piggyBankBean.piggyBank} CZK</div>
                     </div>
-                    <div class="financial-card-amount">#{piggyBankBean.piggyBank} CZK</div>
-                </div>
+                </h:panelGroup>
             </div>
         </h:form>
 
