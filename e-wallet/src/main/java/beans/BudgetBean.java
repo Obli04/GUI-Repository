@@ -266,4 +266,58 @@ public class BudgetBean implements Serializable {
             return 0.0;
         }
     }
+
+    /**
+     * Gets the total budget.
+     * 
+     * @return the total budget.
+     */
+    public double getTotalBudget() {
+        return totalBudget;
+    }
+
+    /**
+     * Gets the selected category.
+     * 
+     * @return the selected category.
+     */
+    public String getSelectedCategory() {
+        return selectedCategory;
+    }
+
+    /**
+     * Sets the selected category.
+     * 
+     * @param selectedCategory the category to set.
+     */
+    public void setSelectedCategory(String selectedCategory) {
+        this.selectedCategory = selectedCategory;
+    }
+
+    /**
+     * Gets the category amount.
+     * 
+     * @return the category amount.
+     */
+    public double getCategoryAmount() {
+        return categoryAmount;
+    }
+
+    /**
+     * Sets the category amount.
+     * 
+     * @param categoryAmount the category amount to set.
+     */
+    public void setCategoryAmount(double categoryAmount) {
+        this.categoryAmount = categoryAmount;
+    }
+
+    /**
+     * Sets the total budget.
+     * 
+     * @param totalBudget the total budget to set.
+     */
+    public void setTotalBudget(double totalBudget) {
+        this.totalBudget = totalBudget;
+    }
 }
