@@ -26,18 +26,22 @@
 
         <h:form id="cardsForm">
             <div class="financial-cards-container">
-                <div class="financial-card saving-goal">
-                    <div class="financial-card-header">
-                        <i class="financial-card-icon pi pi-chart-bar"></i>
-                        <h3 class="financial-card-title">Saving Goal</h3>
+                <!-- Saving Goal Card -->
+                <h:panelGroup id="savingGoalCard">
+                    <div class="financial-card saving-goal">
+                        <div class="financial-card-header">
+                            <i class="financial-card-icon pi pi-chart-bar"></i>
+                            <h3 class="financial-card-title">Saving Goal</h3>
+                        </div>
+                        <div class="financial-card-amount" style="color: green;">
+                            <h:outputText value="Goal: #{piggyBankBean.piggyBankGoal} CZK" />
+                            <br />
+                            <h:outputText value="Remaining: #{piggyBankBean.remainingGoal} CZK" />
+                        </div>
                     </div>
-                    <div class="financial-card-amount" style="color: green;">
-                        <h:outputText value="Goal: #{piggyBankBean.piggyBankGoal} CZK" />
-                        <br />
-                        <h:outputText value="Remaining: #{piggyBankBean.remainingGoal} CZK" />
-                    </div>
-                </div>
+                </h:panelGroup>
 
+                <!-- Piggy Bank Card -->
                 <div class="financial-card piggy">
                     <div class="financial-card-header">
                         <i class="financial-card-icon pi pi-money-bill"></i>
@@ -50,6 +54,7 @@
 
         <div class="form-cards-container">
 
+            <!-- Deposit Form -->
             <p:card styleClass="form-card">
                 <h2 class="section-title">Deposit to Piggy Bank</h2>
                 <h:form id="depositForm">
@@ -73,6 +78,7 @@
                 </h:form>
             </p:card>
 
+            <!-- Withdraw Form -->
             <p:card styleClass="form-card">
                 <h2 class="section-title">Withdraw from Piggy Bank</h2>
                 <h:form id="withdrawForm">
@@ -97,6 +103,7 @@
                 </h:form>
             </p:card>
 
+            <!-- Set Saving Goal -->
             <p:card styleClass="form-card">
                 <h2 class="section-title">Set Saving Goal</h2>
                 <h:form id="setGoalForm">
@@ -113,21 +120,25 @@
                         <div class="center-button">
                             <p:commandButton value="Set Goal"
                                              action="#{piggyBankBean.setSavingGoalAmount}"
-                                             update="cardsForm messages"
+                                             update=":cardsForm:savingGoalCard :messages"
+                                             delay="500"
                                              styleClass="ui-button-primary" />
                         </div>
                     </h:panelGrid>
                 </h:form>
             </p:card>
 
+            <!-- Activate Piggy Bank Lock -->
             <p:card styleClass="form-card">
                 <h2 class="section-title">Activate Piggy Bank Lock</h2>
-                <div class="center-button">
-                    <p:commandButton value="Lock Piggy Bank"
-                                     onclick="PF('lockDialog').show();"
-                                     type="button"
-                                     styleClass="ui-button-primary" />
-                </div>
+                <h:form>
+                    <div class="center-button">
+                        <p:commandButton value="Lock Piggy Bank"
+                                         onclick="PF('lockDialog').show();"
+                                         type="button"
+                                         styleClass="ui-button-primary" />
+                    </div>
+                </h:form>
             </p:card>
 
             <p:dialog id="lockDialog" widgetVar="lockDialog" header="Set Lock Date" modal="true" closable="false" resizable="false" draggable="false">
@@ -142,8 +153,8 @@
                     </h:panelGrid>
                     <div class="center-button">
                         <p:commandButton value="Done"
-                                         action="#{piggyBankBean.calculateLockDuration}"
-                                         update="lockValidationDialog"
+                                         action="#{piggyBankBean.activateLock}"
+                                         update="cardsForm withdrawForm lockValidationDialog messages"
                                          oncomplete="PF('lockDialog').hide(); PF('lockValidationDialog').show();"
                                          styleClass="ui-button-primary" />
                     </div>
@@ -152,77 +163,87 @@
 
             <p:dialog id="lockValidationDialog" widgetVar="lockValidationDialog" header="Validate Lock" modal="true" closable="false">
                 <h:outputText value="You are going to lock the piggy bank for #{piggyBankBean.lockDurationInDays} days. Are you sure?" />
-                <div class="center-button">
-                    <p:commandButton value="Yes"
-                                     action="#{piggyBankBean.activateLock}"
-                                     update="cardsForm messages"
-                                     oncomplete="PF('lockValidationDialog').hide();"
-                                     styleClass="ui-button-primary" />
-                    <p:commandButton value="No"
-                                     onclick="PF('lockValidationDialog').hide();"
-                                     type="button"
-                                     styleClass="ui-button-secondary" />
-                </div>
+                <h:form>
+                    <div class="center-button">
+                        <p:commandButton value="Yes"
+                                         action="#{piggyBankBean.activateLock}"
+                                         update="cardsForm messages"
+                                         oncomplete="PF('lockValidationDialog').hide();"
+                                         styleClass="ui-button-primary" />
+                        <p:commandButton value="No"
+                                         onclick="PF('lockValidationDialog').hide();"
+                                         type="button"
+                                         styleClass="ui-button-secondary" />
+                    </div>
+                </h:form>
             </p:dialog>
 
+            <!-- Break Piggy Bank -->
             <p:card styleClass="form-card">
                 <h2 class="section-title">Break Piggy Bank</h2>
-                <div class="center-button">
-                    <p:commandButton value="Break Piggy Bank"
-                                     onclick="PF('breakConfirmationDialog').show();"
-                                     type="button"
-                                     styleClass="ui-button-danger" />
-                </div>
+                <h:form>
+                    <div class="center-button">
+                        <p:commandButton value="Break Piggy Bank"
+                                         onclick="PF('breakConfirmationDialog').show();"
+                                         type="button"
+                                         styleClass="ui-button-danger" />
+                    </div>
+                </h:form>
             </p:card>
+
+            <!-- Break Piggy Bank Dialogs -->
+            <p:dialog id="breakConfirmationDialog" widgetVar="breakConfirmationDialog" header="Are you sure you want to break the piggy bank?" modal="true" closable="false">
+                <h:outputText value="Are you sure you want to break the piggy bank? This action cannot be undone." />
+                <h:form>
+                    <div class="center-button">
+                        <p:commandButton value="Yes"
+                                         action="#{piggyBankBean.confirmBreakAction}"
+                                         update="cardsForm messages"
+                                         oncomplete="PF('breakConfirmationDialog').hide(); PF('emergencyDialog').show();"
+                                         styleClass="ui-button-primary" />
+                        <p:commandButton value="No"
+                                         onclick="PF('breakConfirmationDialog').hide();"
+                                         type="button"
+                                         styleClass="ui-button-secondary" />
+                    </div>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog id="emergencyDialog" widgetVar="emergencyDialog" header="Emergency Only" modal="true" closable="false">
+                <h:outputText value="The piggy bank must be broken only in an emergency. Are you sure you want to proceed?" />
+                <h:form>
+                    <div class="center-button">
+                        <p:commandButton value="Proceed"
+                                         action="#{piggyBankBean.finalBreakAction}"
+                                         update="cardsForm messages"
+                                         oncomplete="PF('emergencyDialog').hide(); PF('unlockDialog').show();"
+                                         styleClass="ui-button-primary" />
+                        <p:commandButton value="Close"
+                                         onclick="PF('emergencyDialog').hide();"
+                                         type="button"
+                                         styleClass="ui-button-secondary" />
+                    </div>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog id="unlockDialog" widgetVar="unlockDialog" header="Unlock Piggy Bank" modal="true" closable="false">
+                <h:outputText value="The piggy bank has been successfully unlocked, and all funds are now available." />
+                <h:form>
+                    <div class="center-button">
+                        <p:commandButton value="Confirm Unlock"
+                                         action="#{piggyBankBean.unlockPiggyBank}"
+                                         update="withdrawForm cardsForm messages"
+                                         oncomplete="PF('unlockDialog').hide();"
+                                         styleClass="ui-button-primary" />
+                        <p:commandButton value="Cancel"
+                                         onclick="PF('unlockDialog').hide();"
+                                         type="button"
+                                         styleClass="ui-button-secondary" />
+                    </div>
+                </h:form>
+            </p:dialog>
+
         </div>
-
-        <!-- Dialog for confirming break piggy bank action -->
-        <p:dialog id="breakConfirmationDialog" widgetVar="breakConfirmationDialog" header="Are you sure you want to break the piggy bank?" modal="true" closable="false">
-            <h:outputText value="Are you sure you want to break the piggy bank? This action cannot be undone." />
-            <div class="center-button">
-                <p:commandButton value="Yes"
-                                 action="#{piggyBankBean.confirmBreakAction}"
-                                 update="cardsForm messages"
-                                 oncomplete="PF('breakConfirmationDialog').hide(); PF('emergencyDialog').show();"
-                                 styleClass="ui-button-primary" />
-                <p:commandButton value="No"
-                                 onclick="PF('breakConfirmationDialog').hide();"
-                                 type="button"
-                                 styleClass="ui-button-secondary" />
-            </div>
-        </p:dialog>
-
-        <!-- Dialog for emergency warning -->
-        <p:dialog id="emergencyDialog" widgetVar="emergencyDialog" header="Emergency Only" modal="true" closable="false">
-            <h:outputText value="The piggy bank must be broken only in an emergency. Are you sure you want to proceed?" />
-            <div class="center-button">
-                <p:commandButton value="Proceed"
-                                 action="#{piggyBankBean.finalBreakAction}"
-                                 update="cardsForm messages"
-                                 oncomplete="PF('emergencyDialog').hide(); PF('unlockDialog').show();"
-                                 styleClass="ui-button-primary" />
-                <p:commandButton value="Close"
-                                 onclick="PF('emergencyDialog').hide();"
-                                 type="button"
-                                 styleClass="ui-button-secondary" />
-            </div>
-        </p:dialog>
-
-        <!-- Dialog for unlocking the piggy bank -->
-        <p:dialog id="unlockDialog" widgetVar="unlockDialog" header="Unlock Piggy Bank" modal="true" closable="false">
-            <h:outputText value="The piggy bank has been successfully unlocked, and all funds are now available." />
-            <div class="center-button">
-                <p:commandButton value="Confirm Unlock"
-                                 action="#{piggyBankBean.unlockPiggyBank}"
-                                 update="withdrawForm unlockDialog messages"
-                                 oncomplete="PF('unlockDialog').hide();"
-                                 styleClass="ui-button-primary" />
-                <p:commandButton value="Cancel"
-                                 onclick="PF('unlockDialog').hide();"
-                                 type="button"
-                                 styleClass="ui-button-secondary" />
-            </div>
-        </p:dialog>
 
         <p:messages id="messages" showDetail="true" closable="true" styleClass="global-messages"/>
     </div>
