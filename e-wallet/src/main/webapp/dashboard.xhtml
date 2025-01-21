@@ -33,15 +33,19 @@
 
 
         <div class="financial-cards-container">
-            <div class="financial-card balance">
-                <div class="financial-card-header">
-                    <i class="financial-card-icon pi pi-wallet"></i>
-                    <h3 class="financial-card-title">Balance</h3>
+            <h:form id="balanceForm">
+                <div class="financial-card balance">
+                    <div class="financial-card-header">
+                        <i class="financial-card-icon pi pi-wallet"></i>
+                        <h3 class="financial-card-title">Balance</h3>
+                    </div>
+                    <div class="financial-card-amount">
+                        <h:outputText id="balanceAmount" value="#{userBean.currentUser.balance}">
+                            <f:convertNumber maxFractionDigits="2" minFractionDigits="2"/>
+                        </h:outputText> CZK
+                    </div>
                 </div>
-                <div class="financial-card-amount"><h:outputText value="#{userBean.currentUser.balance}">
-                    <f:convertNumber maxFractionDigits="2" minFractionDigits="2"/>
-                </h:outputText> CZK</div>
-            </div>
+            </h:form>
             
             <div class="financial-card budget">
                 <div class="financial-card-header">
@@ -79,52 +83,56 @@
         </div>
 
         <div class="money-requests-section">
-            <p:panel id="allRequests" header="Money Requests" styleClass="request-panel" 
-                     rendered="#{not empty requestBean.receivedRequests or not empty requestBean.sentRequests}">
-                <p:dataTable value="#{requestBean.allRequests}" var="moneyRequest"
-                             styleClass="request-table" paginator="false">
-                    <p:column headerText="Type">
-                        <h:outputText value="#{moneyRequest.receiver.id eq userBean.currentUser.id ? 'Received' : 'Sent'}" 
-                                    styleClass="#{moneyRequest.receiver.id eq userBean.currentUser.id ? 'received-request' : 'sent-request'}"/>
-                    </p:column>
-                    
-                    <p:column headerText="From/To">
-                        <h:outputText value="#{moneyRequest.receiver.id eq userBean.currentUser.id ? moneyRequest.sender.email : moneyRequest.receiver.email}" />
-                    </p:column>
-                    
-                    <p:column headerText="Amount">
-                        <h:outputText value="#{moneyRequest.value}">
-                            <f:convertNumber type="currency" currencySymbol="Kč"/>
-                        </h:outputText>
-                    </p:column>
-                    
-                    <p:column headerText="Description">
-                        <h:outputText value="#{moneyRequest.description}" />
-                    </p:column>
-                    
-                    <p:column headerText="Actions" styleClass="action-column">
-                        <h:form>
-                            <h:panelGroup rendered="#{moneyRequest.receiver.id eq userBean.currentUser.id}">
-                                <p:commandButton value="Accept" 
-                                               action="#{requestBean.acceptRequest(moneyRequest)}"
-                                               styleClass="p-button-success"
-                                               update="@form :growl"/>
-                                
-                                <p:commandButton value="Decline"
-                                               action="#{requestBean.declineRequest(moneyRequest)}"
-                                               styleClass="p-button-danger"
-                                               update="@form :growl"/>
-                            </h:panelGroup>
-                            <h:panelGroup rendered="#{moneyRequest.sender.id eq userBean.currentUser.id}">
-                                <p:commandButton value="Delete" 
-                                               action="#{requestBean.deleteRequest(moneyRequest)}"
-                                               styleClass="p-button-danger"
-                                               oncomplete="window.location.reload()"/>
-                            </h:panelGroup>
-                        </h:form>
-                    </p:column>
-                </p:dataTable>
-            </p:panel>
+            <h:form id="requestsForm">
+                <p:outputPanel id="requestsPanel">
+                    <p:panel id="allRequests" header="Money Requests" styleClass="request-panel" 
+                             rendered="#{not empty requestBean.allRequests}">
+                        <p:dataTable id="requestsTable" value="#{requestBean.allRequests}" var="moneyRequest"
+                                     styleClass="request-table" paginator="false">
+                            <p:column headerText="Type">
+                                <h:outputText value="#{moneyRequest.receiver.id eq userBean.currentUser.id ? 'Received' : 'Sent'}" 
+                                            styleClass="#{moneyRequest.receiver.id eq userBean.currentUser.id ? 'received-request' : 'sent-request'}"/>
+                            </p:column>
+                            
+                            <p:column headerText="From/To">
+                                <h:outputText value="#{moneyRequest.receiver.id eq userBean.currentUser.id ? moneyRequest.sender.email : moneyRequest.receiver.email}" />
+                            </p:column>
+                            
+                            <p:column headerText="Amount">
+                                <h:outputText value="#{moneyRequest.value}">
+                                    <f:convertNumber type="currency" currencySymbol="Kč"/>
+                                </h:outputText>
+                            </p:column>
+                            
+                            <p:column headerText="Description">
+                                <h:outputText value="#{moneyRequest.description}" />
+                            </p:column>
+                            
+                            <p:column headerText="Actions" styleClass="action-column">
+                                <h:panelGroup rendered="#{moneyRequest.receiver.id eq userBean.currentUser.id}">
+                                    <p:commandButton value="Accept" 
+                                                   action="#{requestBean.acceptRequest(moneyRequest)}"
+                                                   styleClass="p-button-success"
+                                                   update=":balanceForm:balanceAmount :requestsForm:requestsPanel :transactionsTable"
+                                                   oncomplete="if (args.budgetWarning) PF('budgetWarningDialog').show()"/>
+                                    
+                                    <p:commandButton value="Decline"
+                                                   action="#{requestBean.declineRequest(moneyRequest)}"
+                                                   styleClass="p-button-danger"
+                                                   update=":balanceForm:balanceAmount :requestsForm:requestsPanel :transactionsTable"/>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{moneyRequest.sender.id eq userBean.currentUser.id}">
+                                    <p:commandButton value="Delete" 
+                                                   action="#{requestBean.deleteRequest(moneyRequest)}"
+                                                   styleClass="p-button-danger"
+                                                   update=":requestsForm:requestsPanel"/>
+                                </h:panelGroup>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                </p:outputPanel>
+            </h:form>
+
             <p:dialog header="Budget Warning" widgetVar="budgetWarningDialog" modal="true" 
                       showEffect="fade" hideEffect="fade" responsive="true">
                 <h:form>
@@ -140,9 +148,10 @@
                         <div style="display: flex; justify-content: flex-end; gap: 10px;">
                             <p:commandButton value="Back" onclick="PF('budgetWarningDialog').hide()" 
                                            styleClass="ui-button-secondary"/>
-                            <p:commandButton value="Proceed" action="#{requestBean.confirmAcceptRequest}"
+                            <p:commandButton value="Proceed" 
+                                           action="#{requestBean.confirmAcceptRequest}"
                                            oncomplete="PF('budgetWarningDialog').hide()" 
-                                           update="@all"
+                                           update=":balanceForm:balanceAmount :requestsForm:requestsPanel :transactionsTable"
                                            styleClass="ui-button-warning"/>
                         </div>
                     </div>

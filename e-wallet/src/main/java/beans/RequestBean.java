@@ -251,25 +251,22 @@ public class RequestBean implements Serializable {
                 return;
             }
 
-            // Check if accepting the request would exceed budget limits
             // Check budget status
             double remainingBudget = budgetBean.getRemainingBudget(receiver.getId());
             double requestAmount = managedRequest.getValue();
             
             // If budget has been setted and already exceeded or would be exceeded by this request, show warning
-            if (receiver.getBudget()>0 && (remainingBudget < 0 || (remainingBudget - requestAmount) < 0)) {
-                // Store the request in view scope to access it later if user confirms
+            if (receiver.getBudget() > 0 && (remainingBudget < 0 || (remainingBudget - requestAmount) < 0)) {
+                // Store the request in view scope to be retrieved later
                 FacesContext.getCurrentInstance().getViewRoot().getViewMap().put("pendingRequest", managedRequest);
-                // Display the warning dialog using PrimeFaces
-                PrimeFaces.current().executeScript("PF('budgetWarningDialog').show()");
+                // Show the warning dialog
+                PrimeFaces.current().ajax().addCallbackParam("budgetWarning", true);
                 return;
             }
-
-            // If budget check passes, process the request normally
+            // If no budget warning, process the request
             processAcceptedRequest(managedRequest);
             
-        } catch (IOException | IllegalStateException | IllegalArgumentException e) {
-            // Log error details in message
+        } catch (IOException | IllegalStateException | IllegalArgumentException | SecurityException e) {
             addMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to process request: " + e.getMessage());
         }
     }
@@ -339,7 +336,6 @@ public class RequestBean implements Serializable {
         em.flush();
         
         addMessage(FacesMessage.SEVERITY_INFO, "Success", "Request accepted and payment sent");
-        FacesContext.getCurrentInstance().getExternalContext().redirect("dashboard.xhtml");
     }
     
     /**
@@ -373,9 +369,8 @@ public class RequestBean implements Serializable {
             em.remove(managedRequest);
             
             addGrowlMessage(FacesMessage.SEVERITY_INFO, "Success", "Request declined");
-            FacesContext.getCurrentInstance().getExternalContext().redirect("dashboard.xhtml");
             
-        } catch (IOException e) {
+        } catch (Exception e) {
             addGrowlMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to decline request");
         }
     }
