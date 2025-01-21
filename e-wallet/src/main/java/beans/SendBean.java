@@ -110,7 +110,7 @@ public class SendBean implements Serializable {
         User recipient;
 
         try {
-            if (amount <= 0.01) {
+            if (amount < 0.01) {
                 addMessage(FacesMessage.SEVERITY_ERROR, "Invalid amount", 
                     "The transfer amount must be greater than 0 CZK");
                 return null;
