@@ -29,9 +29,13 @@
                                 </div>
                                 <div class="friend-action-buttons">
                                     <p:commandButton value="Remove"
-                                                     action="#{friendBean.removeFriend(friend.user1.id == friendBean.userBean.currentUser.id ? friend.user2 : friend.user1)}"
-                                                     update=":mainForm:friendsPanelGroup :mainForm:searchResultsPanel"
-                                                     styleClass="ui-button remove-button"/>
+                                                   action="#{friendBean.removeFriend(friend.user1.id == friendBean.userBean.currentUser.id ? friend.user2 : friend.user1)}"
+                                                   update=":mainForm:friendsPanelGroup"
+                                                   styleClass="ui-button remove-button">
+                                        <p:confirm header="Confirmation" 
+                                                  message="Are you sure you want to remove this friend?" 
+                                                  icon="pi pi-exclamation-triangle" />
+                                    </p:commandButton>
                                 </div>
                             </div>
                         </ui:repeat>
@@ -44,34 +48,53 @@
 
             <div class="friends-header" style="margin-top: 2rem;">Search Friends by Email</div>
             <div class="search-container">
-                <p:inputText id="searchEmail" value="#{friendBean.searchEmail}" placeholder="Enter email to search" styleClass="search-input"/>
+                <p:inputText id="searchEmail" 
+                            value="#{friendBean.searchEmail}" 
+                            placeholder="Enter email to search">
+                    <p:ajax event="keyup" 
+                            listener="#{friendBean.searchUsersByEmail}" 
+                            update=":mainForm:searchResultsPanel"
+                            delay="500"/>
+                </p:inputText>
                 <p:commandButton value="Search"
-                                 action="#{friendBean.searchUsersByEmail}"
-                                 update=":mainForm:searchResultsPanel"
-                                 styleClass="ui-button search-button"/>
+                               action="#{friendBean.searchUsersByEmail}"
+                               update=":mainForm:searchResultsPanel"
+                               styleClass="ui-button search-button"/>
             </div>
 
-            <h:panelGroup id="searchResultsPanel" rendered="#{not empty friendBean.searchResults}">
-                <div class="friends-grid">
-                    <ui:repeat value="#{friendBean.searchResults}" var="result">
-                        <div class="friend-card">
-                            <div class="friend-name">
-                                #{result.firstName.concat(' ').concat(result.secondName)}
+            <h:panelGroup id="searchResultsPanel">
+                <h:panelGroup rendered="#{not empty friendBean.searchResults}">
+                    <div class="friends-grid">
+                        <ui:repeat value="#{friendBean.searchResults}" var="result">
+                            <div class="friend-card">
+                                <div class="friend-name">
+                                    #{result.firstName.concat(' ').concat(result.secondName)}
+                                </div>
+                                <div class="friend-action-buttons">
+                                    <p:commandButton value="Add Friend"
+                                                   action="#{friendBean.addFriend(result)}"
+                                                   update=":mainForm:friendsPanelGroup :mainForm:searchResultsPanel"
+                                                   styleClass="ui-button add-button"
+                                                   rendered="#{not friendBean.isFriend(result)}"/>
+                                    <p:commandButton value="Already Friends"
+                                                   disabled="true"
+                                                   styleClass="ui-button disabled-button"
+                                                   rendered="#{friendBean.isFriend(result)}"/>
+                                </div>
                             </div>
-                            <div class="friend-action-buttons">
-                                <p:commandButton value="Add Friend"
-                                                 action="#{friendBean.addFriend(result)}"
-                                                 update=":mainForm:friendsPanelGroup :mainForm:searchResultsPanel"
-                                                 styleClass="ui-button add-button"/>
-                            </div>
-                        </div>
-                    </ui:repeat>
-                </div>
-            </h:panelGroup>
-            <h:panelGroup rendered="#{empty friendBean.searchResults}">
-                <div class="no-friends-message">No users found with this email.</div>
+                        </ui:repeat>
+                    </div>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{empty friendBean.searchResults and not empty friendBean.searchEmail}">
+                    <div class="no-friends-message">No users found with this email.</div>
+                </h:panelGroup>
             </h:panelGroup>
         </div>
+
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
+        </p:confirmDialog>
     </h:form>
 </h:body>
 </html>
