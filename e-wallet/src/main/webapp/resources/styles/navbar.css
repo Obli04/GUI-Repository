@@ -2,7 +2,7 @@
     background: linear-gradient(135deg, #1a1f25 0%, #17171f 100%);
     padding: 1rem 2rem;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     position: sticky;
@@ -23,6 +23,17 @@
     justify-content: space-between;
 }
 
+.left-menu {
+    display: flex;
+    align-items: center;
+}
+
+.right-menu {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
 .custom-menubar .ui-menuitem {
     margin: 0 0.5rem;
 }
@@ -35,6 +46,12 @@
     transition: all 0.3s ease !important;
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.custom-menubar .ui-menuitem-link i {
+    margin-right: 8px;
 }
 
 .custom-menubar .ui-menuitem-link:hover {
@@ -51,19 +68,6 @@
     background: linear-gradient(135deg, rgba(255, 152, 0, 0.2) 0%, rgba(255, 152, 0, 0.3) 100%) !important;
     color: #ff9800 !important;
 }
-
-.custom-menubar .ui-menuitem:last-child .ui-menuitem-link {
-    background: transparent !important;
-    color: #ff9800 !important;
-    font-weight: 600 !important;
-    border: 2px solid #ff9800 !important;
-}
-
-.custom-menubar .ui-menuitem:last-child .ui-menuitem-link:hover {
-    background: rgba(255, 152, 0, 0.1) !important;
-    box-shadow: none;
-}
-
 .custom-menubar .ui-menuitem-icon {
     margin-right: 8px;
     font-size: 1.1em;

@@ -6,25 +6,44 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     
     <h:outputStylesheet library="styles" name="navbar.css"/>
-    
+
     <div class="main-navbar">
-        <p:menubar styleClass="custom-menubar">
-            <p:menuitem value="Dashboard" outcome="dashboard.xhtml" 
-                       styleClass="#{view.viewId eq '/dashboard.xhtml' ? 'active-page' : ''}"/>
-            <p:menuitem value="Deposit" outcome="deposit.xhtml"
-                       styleClass="#{view.viewId eq '/deposit.xhtml' ? 'active-page' : ''}"/>
-            <p:menuitem value="Withdraw" outcome="withdraw.xhtml"
-                       styleClass="#{view.viewId eq '/withdraw.xhtml' ? 'active-page' : ''}"/>
-            <p:menuitem value="Budget" outcome="budget.xhtml"
-                       styleClass="#{view.viewId eq '/budget.xhtml' ? 'active-page' : ''}"/>
-            <p:menuitem value="Transaction History" outcome="transactions.xhtml"
-                       styleClass="#{view.viewId eq '/transactions.xhtml' ? 'active-page' : ''}"/>
-            <p:menuitem value="PiggyBank" outcome="piggybank.xhtml"
-                       styleClass="#{view.viewId eq '/piggybank.xhtml' ? 'active-page' : ''}"/>
-            <p:menuitem value="Account" outcome="account.xhtml"
-                       styleClass="#{view.viewId eq '/account.xhtml' ? 'active-page' : ''}"/>
-            <p:menuitem value="Logout" action="#{userBean.logout}" ajax="false"
-                       styleClass="logout-btn"/>
-        </p:menubar>
+            <div class="left-menu">
+                <p:menubar styleClass="custom-menubar">
+                    <!-- Left side items -->
+                    <p:menuitem value="Dashboard" outcome="dashboard.xhtml" 
+                            icon="pi pi-home"
+                            styleClass="#{view.viewId eq '/dashboard.xhtml' ? 'active-page' : ''}"/>
+                    <p:menuitem value="Deposit" outcome="deposit.xhtml"
+                            icon="pi pi-money-bill"
+                            styleClass="#{view.viewId eq '/deposit.xhtml' ? 'active-page' : ''}"/>
+                    <p:menuitem value="Withdraw" outcome="withdraw.xhtml"
+                            icon="pi pi-wallet"
+                            styleClass="#{view.viewId eq '/withdraw.xhtml' ? 'active-page' : ''}"/>
+                    <p:menuitem value="Budget" outcome="budget.xhtml"
+                            icon="pi pi-chart-line"
+                            styleClass="#{view.viewId eq '/budget.xhtml' ? 'active-page' : ''}"/>
+                    <p:menuitem value="Transaction History" outcome="transactions.xhtml"
+                            icon="pi pi-list"
+                            styleClass="#{view.viewId eq '/transactions.xhtml' ? 'active-page' : ''}"/>
+                    <p:menuitem value="PiggyBank" outcome="piggybank.xhtml"
+                            icon="pi pi-briefcase"
+                            styleClass="#{view.viewId eq '/piggybank.xhtml' ? 'active-page' : ''}"/>
+                 </p:menubar>
+            </div>
+            <div class="right-menu">
+                <p:menubar styleClass="custom-menubar">
+                    <!-- Right side items -->
+                    <p:menuitem value="Friends" outcome="friends.xhtml"
+                           icon="pi pi-users"
+                           styleClass="#{view.viewId eq '/friends.xhtml' ? 'active-page' : ''}"/>
+                    <p:menuitem value="Account" outcome="account.xhtml"
+                            icon="pi pi-user"
+                            styleClass="#{view.viewId eq '/account.xhtml' ? 'active-page' : ''}"/>
+                    <p:menuitem value="Logout" action="#{userBean.logout}" ajax="false"
+                            icon="pi pi-sign-out"
+                            styleClass="logout-btn"/>
+                </p:menubar>
+            </div>
     </div>
 </ui:composition>
