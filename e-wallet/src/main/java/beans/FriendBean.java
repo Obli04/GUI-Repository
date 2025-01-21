@@ -18,7 +18,7 @@ import java.util.List;
  * Bean for managing friendships.
  * Provides functionality to retrieve, add, and remove friends.
  *
- * @author Arthur
+ * @author Arthur PHOMMACHANH - xphomma00
  */
 @Named
 @SessionScoped
@@ -28,9 +28,11 @@ public class FriendBean implements Serializable {
     private EntityManager em;
 
     @Inject
-    private UserBean userBean; // Ensure UserBean is properly injected and accessible
+    private UserBean userBean;
 
     private User friendToAdd;
+    private String searchEmail;
+    private List<User> searchResults;
 
     /**
      * Retrieves the list of friends for the currently logged-in user.
@@ -97,22 +99,18 @@ public class FriendBean implements Serializable {
             throw new IllegalArgumentException("Both users must be valid.");
         }
 
-        // Fetch the friendship relationship
         List<Friends> friendships = em.createQuery(
                         "SELECT f FROM Friends f WHERE (f.user1 = :user1 AND f.user2 = :user2) OR (f.user1 = :user2 AND f.user2 = :user1)", Friends.class)
                 .setParameter("user1", currentUser)
                 .setParameter("user2", friend)
                 .getResultList();
 
-        // Remove each friendship found (in case of duplicates)
         for (Friends friendship : friendships) {
             em.remove(friendship);
         }
 
-        // Force a refresh of the lists
         em.flush();
     }
-
 
     /**
      * Retrieves a list of users who are not yet friends with the currently logged-in user.
@@ -123,7 +121,6 @@ public class FriendBean implements Serializable {
             return Collections.emptyList();
         }
 
-        // Fetch users who are not in any friendship relationship with the current user
         String jpql = "SELECT u FROM User u " +
                 "WHERE u != :currentUser AND u.id NOT IN " +
                 "(SELECT f.user1.id FROM Friends f WHERE f.user2 = :currentUser) AND u.id NOT IN " +
@@ -134,25 +131,53 @@ public class FriendBean implements Serializable {
                 .getResultList();
     }
 
-
     /**
-     * Getter for userBean to ensure it is accessible in XHTML.
+     * Searches for users by email.
      */
+    public void searchUsersByEmail() {
+        if (searchEmail == null || searchEmail.trim().isEmpty()) {
+            searchResults = Collections.emptyList();
+            return;
+        }
+
+        User currentUser = userBean.getCurrentUser();
+        if (currentUser == null) {
+            searchResults = Collections.emptyList();
+            return;
+        }
+
+        searchResults = em.createQuery("SELECT u FROM User u WHERE u.email = :email AND u != :currentUser", User.class)
+                .setParameter("email", searchEmail.trim())
+                .setParameter("currentUser", currentUser)
+                .getResultList();
+    }
+
+    // Getters and Setters
     public UserBean getUserBean() {
         return userBean;
     }
 
-    /**
-     * Gets the current friend to add.
-     */
     public User getFriendToAdd() {
         return friendToAdd;
     }
 
-    /**
-     * Sets the friend to add.
-     */
     public void setFriendToAdd(User friendToAdd) {
         this.friendToAdd = friendToAdd;
+    }
+
+    public String getSearchEmail() {
+        return searchEmail;
+    }
+
+    public void setSearchEmail(String searchEmail) {
+        this.searchEmail = searchEmail;
+    }
+
+    public List<User> getSearchResults() {
+        return searchResults;
+    }
+
+    public void setSearchResults(List<User> searchResults) {
+        this.searchResults = searchResults;
     }
 }
