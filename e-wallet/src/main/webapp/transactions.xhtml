@@ -5,6 +5,9 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<f:metadata>
+    <f:event type="preRenderView" listener="#{transactionBean.resetCharts}"/>
+</f:metadata>
 <h:head>
     <title>Transaction History - CashHive</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
@@ -66,11 +69,6 @@
 
                 <p:column headerText="Sender">
                     <h:outputText value="#{transactionBean.getSenderDisplayName(transaction, userBean.currentUser)}" />
-                    
-                    <!-- <h:outputText value="#{transaction.type eq 'Deposit' ? transaction.nameOfSender :
-                                            transaction.type  eq 'Declined' ? transaction.sender.firstName.concat(' ').concat(transaction.sender.secondName) :
-                                            (transaction.category eq 'User Transfer' or transaction.category eq 'Money Request') and transaction.sender.id eq userBean.currentUser.id ? 'You' : transaction.sender.firstName.concat(' ').concat(transaction.sender.secondName)}"
-                                    rendered="#{transaction.type != 'Withdraw'}" /> -->
                 </p:column>
                 
 
