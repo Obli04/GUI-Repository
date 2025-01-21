@@ -3,7 +3,6 @@ package beans;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Objects;
 
 import beans.entities.Transaction;
 import beans.entities.User;
@@ -33,7 +32,6 @@ public class PiggyBankBean implements Serializable {
     private double withdrawAmount = 0.0;
     private LocalDateTime lockEndDate;
 
-
     @Inject
     private UserBean userBean;
 
@@ -55,7 +53,8 @@ public class PiggyBankBean implements Serializable {
 
     public boolean isFundsLocked() {
         User currentUser = userBean.getCurrentUser();
-        return currentUser != null && lockEndDate != null && LocalDateTime.now().isBefore(lockEndDate);
+        return currentUser != null && currentUser.getLockoutEndTime() != null &&
+                LocalDateTime.now().isBefore(currentUser.getLockoutEndTime());
     }
 
     public double getPiggyBank() {
@@ -96,13 +95,11 @@ public class PiggyBankBean implements Serializable {
 
             em.persist(transaction);
             saveUser(currentUser);
-
         }
     }
 
-    // Ensure the property error doesn't show up
     public double getPiggyBankGoal() {
-        return userBean.getCurrentUser().getPiggyBankGoal(); // Retrieve from the current user
+        return userBean.getCurrentUser().getPiggyBankGoal();
     }
 
     public double getSavingGoalAmount() {
@@ -112,39 +109,58 @@ public class PiggyBankBean implements Serializable {
     @Transactional
     public void setSavingGoalAmount(double savingGoal) {
         if (savingGoal <= 0) {
-            throw new IllegalArgumentException("Saving goal should be positive");
+            throw new IllegalArgumentException("Saving goal should be positive.");
         }
         User currentUser = userBean.getCurrentUser();
         if (currentUser != null) {
-            currentUser.setPiggyBankGoal(savingGoal); // Correctly update the saving goal
-            saveUser(currentUser); // Persist the change
+            currentUser.setPiggyBankGoal(savingGoal);
+            saveUser(currentUser);
+
+            userBean.refreshBalance();
         }
     }
+
 
     public double getRemainingGoal() {
         return Math.max(userBean.getCurrentUser().getPiggyBankGoal() - userBean.getCurrentUser().getPiggyBank(), 0);
     }
+
 
     public LocalDateTime getLockEndDate() {
         return lockEndDate;
     }
 
     public void setLockEndDate(LocalDateTime lockEndDate) {
-        Objects.requireNonNull(lockEndDate);
-        if (lockEndDate.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Lock date cannot be in the past");
-        }
         this.lockEndDate = lockEndDate;
-        User currentUser = userBean.getCurrentUser();
-        saveUser(currentUser);
     }
 
     public long getLockDurationInDays() {
-        if (lockEndDate != null) {
-            return ChronoUnit.DAYS.between(LocalDateTime.now(), lockEndDate);
+        User currentUser = userBean.getCurrentUser();
+        if (currentUser != null && currentUser.getLockoutEndTime() != null) {
+            return ChronoUnit.DAYS.between(LocalDateTime.now(), currentUser.getLockoutEndTime());
         }
         return 0;
     }
+
+    @Transactional
+    public void activateLock() {
+        if (lockEndDate == null) {
+            throw new IllegalArgumentException("You must select a lock end date.");
+        }
+        if (lockEndDate.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Lock end date must be in the future.");
+        }
+
+        User currentUser = userBean.getCurrentUser();
+        if (currentUser != null) {
+            currentUser.setLockoutEndTime(lockEndDate);
+            saveUser(currentUser);
+        }
+
+        // Reset lockEndDate for next use
+        lockEndDate = null;
+    }
+
 
     @Transactional
     public void withdrawFromPiggyBank() {
@@ -153,7 +169,7 @@ public class PiggyBankBean implements Serializable {
         }
         User currentUser = userBean.getCurrentUser();
         if (currentUser != null) {
-            if (lockEndDate != null && LocalDateTime.now().isBefore(lockEndDate)) {
+            if (isFundsLocked()) {
                 throw new IllegalStateException("Piggy bank is locked");
             }
             if (currentUser.getPiggyBank() < withdrawAmount) {
@@ -163,9 +179,7 @@ public class PiggyBankBean implements Serializable {
             currentUser.setPiggyBank(currentPiggyBank - withdrawAmount);
             double currentBalance = currentUser.getBalance();
             currentUser.setBalance(currentBalance + withdrawAmount);
-            saveUser(currentUser);
 
-            // Create a transaction for the withdrawal
             Transaction transaction = new Transaction();
             transaction.setSender(null);
             transaction.setReceiver(currentUser);
@@ -179,8 +193,19 @@ public class PiggyBankBean implements Serializable {
         }
     }
 
+    @Transactional
+    public void unlockPiggyBank() {
+        User currentUser = userBean.getCurrentUser();
+        if (currentUser != null) {
+            // Clear the lockoutEndTime to unlock the piggy bank
+            currentUser.setLockoutEndTime(null);
+            saveUser(currentUser);
+        }
+    }
+
+
     private void saveUser(User user) {
-        em.merge(user); // Merge the changes with the user
-        em.flush(); // Execute changes
+        em.merge(user);
+        em.flush();
     }
 }
