@@ -87,7 +87,7 @@ public class RequestBean implements Serializable {
                 return null;
             }
             
-            // Lookup recipient user in database
+            // Lookup receiver user in database
             User recipient = findUserByIdentifier(recipientIdentifier);
             if (recipient == null) {
                 addGrowlMessage(FacesMessage.SEVERITY_ERROR, "User not found", 
@@ -127,8 +127,7 @@ public class RequestBean implements Serializable {
     }
     
     /**
-     * Looks up a user by either email or variable symbol.
-     * Tries email first, then falls back to variable symbol if no user is found.
+     * Searches a user by either email or variable symbol.
      *
      * @param identifier The email or variable symbol to search for
      * @return User if found, null otherwise
