@@ -218,6 +218,18 @@ h1 {
     color: #2c3e50;
 }
 
+.status-locked {
+    color: red;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.status-unlocked {
+    color: green;
+    font-size: 24px;
+    font-weight: bold;
+}
+
 @media (max-width: 768px) {
     .financial-cards-container,
     .form-cards-container {
