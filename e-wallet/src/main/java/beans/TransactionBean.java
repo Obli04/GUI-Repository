@@ -22,9 +22,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 
-/** 
- * TransactionBean is a managed bean responsible for managing user transactions, 
- * particularly for fetching and returning all transactions done by a user.
+/**
+ * Manages transaction-related operations and chart visualizations.
+ * This bean handles user transactions and provides data for bar and pie charts
+ * displaying transaction statistics.
  * 
  * @author xromang00
  */
@@ -41,14 +42,43 @@ public class TransactionBean implements Serializable {
     
     @Inject
     private UserBean userBean;
+
+    /**
+     * Resets both bar and pie chart models to null.
+     * This forces the charts to be recreated next time they are requested.
+     */
+    public void resetCharts() {
+        barModel = null;
+        pieModel = null;
+    }
+
+    /**
+     * Lifecycle method called when the page is loaded.
+     * Ensures charts are reset to show fresh data.
+     */
+    public void onPageLoad() {
+        resetCharts();
+    }
     
+    /**
+     * Gets the bar chart model for transaction visualization.
+     * Creates a new model if none exists using lazy loading pattern.
+     * 
+     * @return BarChartModel configured with transaction data
+     */
     public BarChartModel getBarModel() {
         if (barModel == null) {
             createBarModel();
         }
         return barModel;
     }
-    
+
+    /**
+     * Gets the pie chart model for transaction distribution visualization.
+     * Creates a new model if none exists using lazy loading pattern.
+     * 
+     * @return PieChartModel configured with transaction distribution data
+     */
     public PieChartModel getPieModel() {
         if (pieModel == null) {
             createPieModel();
@@ -72,8 +102,11 @@ public class TransactionBean implements Serializable {
         return query.getResultList();
     }
     
-
-    /**/public void createBarModel() {
+    /**
+     * Creates and configures the bar chart model with transaction data.
+     * Sets up datasets, labels, and styling options for the visualization.
+     */
+    public void createBarModel() {
         barModel = new BarChartModel();
         ChartData data = new ChartData();
         
@@ -146,108 +179,10 @@ public class TransactionBean implements Serializable {
         options.setTitle(title);
     }/**/
 
-    // DEBUG
-    /*public void createBarModel() {
-        barModel = new BarChartModel();
-        ChartData data = new ChartData();
-        
-        // Query prelievi
-        TypedQuery<Double> withdrawQuery = em.createQuery(
-            "SELECT COALESCE(SUM(t.value), 0.0) FROM Transaction t " +
-            "WHERE t.type = 'Withdraw' " +
-            "AND t.receiver.id = :userId " +
-            "AND EXTRACT(MONTH FROM t.transactionDate) = EXTRACT(MONTH FROM CURRENT_DATE) " +
-            "AND EXTRACT(YEAR FROM t.transactionDate) = EXTRACT(YEAR FROM CURRENT_DATE)", 
-            Double.class);
-        withdrawQuery.setParameter("userId", userBean.getCurrentUser().getId());
-        Double withdrawals = withdrawQuery.getSingleResult();
-    
-        // Query depositi
-        TypedQuery<Double> depositQuery = em.createQuery(
-            "SELECT COALESCE(SUM(t.value), 0.0) FROM Transaction t " +
-            "WHERE t.type = 'Deposit' " +
-            "AND t.receiver.id = :userId " +
-            "AND EXTRACT(MONTH FROM t.transactionDate) = EXTRACT(MONTH FROM CURRENT_DATE) " +
-            "AND EXTRACT(YEAR FROM t.transactionDate) = EXTRACT(YEAR FROM CURRENT_DATE)", 
-            Double.class);
-        depositQuery.setParameter("userId", userBean.getCurrentUser().getId());
-        Double deposits = depositQuery.getSingleResult();
-    
-        // Query trasferimenti
-        TypedQuery<Object[]> transferQuery = em.createQuery(
-            "SELECT COALESCE(SUM(CASE WHEN t.sender.id = :userId THEN t.value ELSE 0.0 END), 0.0), " +
-            "COALESCE(SUM(CASE WHEN t.receiver.id = :userId THEN t.value ELSE 0.0 END), 0.0) " +
-            "FROM Transaction t " +
-            "WHERE t.type = 'Transfer' " +
-            "AND (t.sender.id = :userId OR t.receiver.id = :userId) " +
-            "AND EXTRACT(MONTH FROM t.transactionDate) = EXTRACT(MONTH FROM CURRENT_DATE) " +
-            "AND EXTRACT(YEAR FROM t.transactionDate) = EXTRACT(YEAR FROM CURRENT_DATE)", 
-            Object[].class);
-        transferQuery.setParameter("userId", userBean.getCurrentUser().getId());
-        Object[] transfers = transferQuery.getSingleResult();
-        
-        Double transfersOut = (Double) transfers[0];
-        Double transfersIn = (Double) transfers[1];
-    
-        // Calcolo totali
-        Double totalSpent = withdrawals + transfersOut;
-        Double totalReceived = deposits + transfersIn;
-    
-        // Preparazione dati per il grafico
-        List<Number> amounts = new ArrayList<>();
-        List<String> labels = new ArrayList<>();
-        
-        amounts.add(withdrawals);
-        amounts.add(transfersOut);
-        amounts.add(deposits);
-        amounts.add(transfersIn);
-        // amounts.add(totalSpent);
-        // amounts.add(totalReceived);
-        labels.add("Withdrawals");
-        labels.add("Transfers Out");
-        labels.add("Deposits");
-        labels.add("Transfers In");
-        // labels.add("Money Spent");
-        // labels.add("Money Received");
-    
-        // Configurazione BarChartDataSet
-        BarChartDataSet barDataSet = new BarChartDataSet();
-        barDataSet.setData(amounts);
-        barDataSet.setLabel("Transaction Summary");
-        
-        // Colori per le barre
-        List<String> bgColor = new ArrayList<>();
-        bgColor.add("rgba(255, 99, 132, 0.2)"); // Rosso per spese
-        bgColor.add("rgba(75, 192, 192, 0.2)"); // Verde per entrate
-        barDataSet.setBackgroundColor(bgColor);
-        
-        List<String> borderColor = new ArrayList<>();
-        borderColor.add("rgb(255, 99, 132)");
-        borderColor.add("rgb(75, 192, 192)");
-        barDataSet.setBorderColor(borderColor);
-        barDataSet.setBorderWidth(1);
-    
-        // Aggiunta dati al modello
-        data.addChartDataSet(barDataSet);
-        data.setLabels(labels);
-        barModel.setData(data);
-    
-        // Configurazione opzioni
-        BarChartOptions options = new BarChartOptions();
-        CartesianScales cScales = new CartesianScales();
-        CartesianLinearAxes linearAxes = new CartesianLinearAxes();
-        linearAxes.setOffset(true);
-        cScales.addYAxesData(linearAxes);
-        options.setScales(cScales);
-        
-        Title title = new Title();
-        title.setDisplay(true);
-        title.setText("Monthly Transaction Summary");
-        options.setTitle(title);
-    
-        barModel.setOptions(options);
-    }*/
-    
+    /**
+     * Creates and configures the pie chart model showing transaction distribution.
+     * Sets up datasets, labels, and styling options for the visualization.
+     */
     public void createPieModel() {
         pieModel = new PieChartModel();
         ChartData data = new ChartData();
@@ -353,6 +288,12 @@ public class TransactionBean implements Serializable {
     }
     
 
+    /**
+     * Gets the display name of the sender of a transaction.
+     * @param transaction the transaction to get the sender display name for.
+     * @param currentUser the currently logged in user.
+     * @return the display name of the sender.
+     */
     public String getSenderDisplayName(Transaction transaction, User currentUser) {
         switch (transaction.getType()) {
             case "Withdraw":
@@ -375,14 +316,5 @@ public class TransactionBean implements Serializable {
      */
     public List<Transaction> getTransactions() {
         return transactions;
-    }
-    
-    /**
-     * Sets the list of transactions.
-     * 
-     * @param transactions the list of transactions to set.
-     */
-    public void setTransactions(List<Transaction> transactions) {
-        this.transactions = transactions;
     }
 } 

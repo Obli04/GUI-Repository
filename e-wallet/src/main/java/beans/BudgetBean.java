@@ -140,6 +140,7 @@ public class BudgetBean implements Serializable {
     /**
      * Calculates the remaining budget for the current user.
      * 
+     * @param userId the ID of the user to calculate the budget for.
      * @return the remaining budget amount.
      */
     public double getRemainingBudget(Long userId) {
@@ -156,6 +157,7 @@ public class BudgetBean implements Serializable {
     /**
      * Retrieves the total amount spent by the current user for the current month.
      * 
+     * @param userId the ID of the user to calculate the total spent amount for.
      * @return the total spent amount.
      */
     public double getTotalSpent(Long userId) {
@@ -193,60 +195,7 @@ public class BudgetBean implements Serializable {
             new FacesMessage(severity, summary, detail));
     }
     
-
-    /**
-     * Gets the total budget.
-     * 
-     * @return the total budget.
-     */
-    public double getTotalBudget() {
-        return totalBudget;
-    }
     
-    /**
-     * Sets the total budget.
-     * 
-     * @param totalBudget the total budget to set.
-     */
-    public void setTotalBudget(double totalBudget) {
-        this.totalBudget = totalBudget;
-    }
-    
-    /**
-     * Gets the selected category.
-     * 
-     * @return the selected category.
-     */
-    public String getSelectedCategory() {
-        return selectedCategory;
-    }
-    
-    /**
-     * Sets the selected category.
-     * 
-     * @param selectedCategory the category to set.
-     */
-    public void setSelectedCategory(String selectedCategory) {
-        this.selectedCategory = selectedCategory;
-    }
-    
-    /**
-     * Gets the category amount.
-     * 
-     * @return the category amount.
-     */
-    public double getCategoryAmount() {
-        return categoryAmount;
-    }
-    
-    /**
-     * Sets the category amount.
-     * 
-     * @param categoryAmount the category amount to set.
-     */
-    public void setCategoryAmount(double categoryAmount) {
-        this.categoryAmount = categoryAmount;
-    }
     
     /**
      * Gets the available categories.
@@ -268,6 +217,10 @@ public class BudgetBean implements Serializable {
     
     /**
      * Initializes the bean by loading the user's existing budgets.
+     * This method is called after the bean is constructed.
+     * It retrieves the budgets for the current user and stores them in a map.
+     * If the user is not logged in, the map will be empty.
+     * If the user has no budgets set, the map will be empty.
      */
     @PostConstruct
     public void init() {
@@ -284,6 +237,8 @@ public class BudgetBean implements Serializable {
     
     /**
      * Retrieves the amount spent in a specific category for the current month.
+     * If the user is not logged in, or an error occurs, 0.0 is returned.
+     * if the category is not found, 0.0 is returned.
      * 
      * @param category the category to check.
      * @return the amount spent in the specified category.
@@ -293,7 +248,6 @@ public class BudgetBean implements Serializable {
         if (currentUser == null) return 0.0;
         
         try {
-            // Query to calculate the total spent amount for the specified category
             TypedQuery<Double> query = em.createQuery(
                 "SELECT COALESCE(SUM(CASE " +
                 "    WHEN t.type = 'Withdraw' THEN t.value " +
@@ -307,9 +261,9 @@ public class BudgetBean implements Serializable {
             query.setParameter("userId", currentUser.getId());
             query.setParameter("category", category);
             
-            return query.getSingleResult(); // Return the total spent amount
+            return query.getSingleResult();
         } catch (Exception e) {
-            return 0.0; // Return 0.0 in case of any error
+            return 0.0;
         }
     }
 }
