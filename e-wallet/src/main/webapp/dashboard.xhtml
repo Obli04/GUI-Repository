@@ -25,9 +25,9 @@
     </h:form>
 
     <div class="content" style="margin-top: 150px">
-        <p:growl id="growl" showDetail="true" sticky="true" position="bottom-right">
-            <p:autoUpdate />
-        </p:growl>
+    <p:growl id="growl" showDetail="true" life="5000" position="bottom-right">
+        <p:autoUpdate />
+    </p:growl>
         <h1>Hello, <span class="user-full-name">#{userBean.firstName} #{userBean.secondName}</span></h1>
         <p>Email: #{userBean.email}</p>
 
