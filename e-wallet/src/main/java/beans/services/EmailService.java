@@ -23,8 +23,8 @@ import jakarta.mail.internet.MimeMessage;
 
 @ApplicationScoped
 public class EmailService {
-    private static final String FROM_EMAIL = "***REMOVED***"; //Credentials for the email
-    private static final String EMAIL_PASSWORD = "***REMOVED***";
+    private static final String FROM_EMAIL = "REDACTED";
+    private static final String EMAIL_PASSWORD = "REDACTED";
     private static final int SMTP_PORT = 587;
     private static final String SMTP_HOST = "smtp.gmail.com";
 
