@@ -61,3 +61,66 @@
     </div>
 </h:body>
 </html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Welcome to CashHive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+    <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/favicon.ico"/>
+    <h:outputStylesheet library="styles" name="index.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</h:head>
+<h:body>
+    <!-- Navbar -->
+    <div class="header">
+        <h:link outcome="index" styleClass="logo-container">
+            <h:graphicImage library="images" name="cash-hive-logo.png" alt="CashHive Logo" style="width: 175px; height: 50px;"/>
+        </h:link>
+        <div class="auth-buttons">
+            <h:panelGroup rendered="#{userBean.loggedIn}">
+                <h:link outcome="dashboard" styleClass="auth-button register-btn" value="Dashboard"/>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{!userBean.loggedIn}">
+                <h:link outcome="login" styleClass="auth-button login-btn" value="Login"/>
+                <h:link outcome="register" styleClass="auth-button register-btn" value="Register"/>
+            </h:panelGroup>
+        </div>
+    </div>
+
+    <!-- Main Body -->
+    <div class="content">
+        <div class="hero-section">
+            <h1 class="hero-title">Your Money, Your Control</h1>
+            <p class="hero-subtitle">Experience seamless digital banking with CashHive's modern e-wallet solution</p>
+            <h:link outcome="register" styleClass="cta-button" value="Get Started"/>
+        </div>
+
+        <!-- Features -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-wallet feature-icon"></i>
+                <h3>Digital Wallet</h3>
+                <p>Manage your money securely with our state-of-the-art digital wallet</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-exchange-alt feature-icon"></i>
+                <h3>Quick Transfers</h3>
+                <p>Send and receive money instantly with zero hassle</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-line feature-icon"></i>
+                <h3>Budget Tracking</h3>
+                <p>Keep track of your expenses and save more effectively</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2025 CashHive. All rights reserved.</p>
+        <p>Contact us: ***REMOVED*** | +39 331 164 3044</p>
+    </div>
+</h:body>
+</html>
